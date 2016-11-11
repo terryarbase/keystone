@@ -245,9 +245,63 @@ localfiles.prototype.inputIsValid = function (data) { // eslint-disable-line no-
 /**
  * Updates the value for this field in the item from a data object
  */
-localfiles.prototype.updateItem = function (item, data, callback) { // eslint-disable-line no-unused-vars
+localfiles.prototype.updateItem = function (item, data, files, callback) { // eslint-disable-line no-unused-vars
 	// TODO - direct updating of data (not via upload)
-	process.nextTick(callback);
+	// process.nextTick(callback);
+
+	// Process arguments
+	if (typeof files === 'function') {
+		callback = files;
+		files = {};
+	}
+	if (!files) {
+		files = {};
+	}
+
+	// Prepare values
+	var value = this.getValueFromData(data);
+	var uploadedFile;
+	var uploadedFiles = [];
+
+	// Providing the string "remove" removes the file and resets the field
+	if (value === 'remove') {
+		// this.remove(item);
+		utils.defer(callback);
+	}
+
+	// // Find an uploaded file in the files argument, either referenced in the
+	// // data argument or named with the field path / field_upload path + suffix
+	if (typeof value === 'string' && value.substr(0, 7) === 'upload:') {
+		uploadedFile = files[value.substr(7)];
+	} else {
+		uploadedFile = this.getValueFromData(files) || this.getValueFromData(files, '_upload');
+	}
+
+	// // Ensure a valid file was uploaded, else null out the value
+	// if (uploadedFile && !uploadedFile.path) {
+	// 	uploadedFile = undefined;
+	// }
+
+	if (uploadedFile){
+		uploadedFiles.push(uploadedFile);
+	}
+	// If we have a file to upload, we do that and stop here
+	if (uploadedFiles.length > 0) {
+		return this.uploadFiles(item, uploadedFiles, true, callback);
+	}
+
+	// Empty / null values reset the field
+	if (value === null || value === '' || (typeof value === 'object' && !Object.keys(value).length)) {
+		this.reset(item);
+		value = undefined;
+	}
+
+	// If there is a valid value at this point, set it on the field
+	if (typeof value === 'object') {
+		item.set(this.path, value);
+	}
+	utils.defer(callback);
+
 };
 
 /**
