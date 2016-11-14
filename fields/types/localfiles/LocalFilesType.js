@@ -283,7 +283,12 @@ localfiles.prototype.updateItem = function (item, data, files, callback) { // es
 	// }
 
 	if (uploadedFile){
-		uploadedFiles.push(uploadedFile);
+		if (!Array.isArray(uploadedFile)) {
+			uploadedFiles.push(uploadedFile);
+		}
+		if (uploadedFile.length > 0) {
+			uploadedFiles = uploadedFile;
+		}
 	}
 	// If we have a file to upload, we do that and stop here
 	if (uploadedFiles.length > 0) {
