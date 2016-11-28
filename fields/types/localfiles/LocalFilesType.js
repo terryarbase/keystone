@@ -260,7 +260,6 @@ localfiles.prototype.updateItem = function (item, data, files, callback) { // es
 
 	//Check delete
 	var imageActionContent = this.getValueFromData(data,'_action');
-	console.log('imageAction value in updateitem:' + imageActionContent);
 	if (typeof imageActionContent === 'string' && imageActionContent.substr(0, 7) === 'delete:') {
 		var field = this;
 		action = imageActionContent.split(':');
