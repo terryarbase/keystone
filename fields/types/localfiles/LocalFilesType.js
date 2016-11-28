@@ -258,6 +258,20 @@ localfiles.prototype.updateItem = function (item, data, files, callback) { // es
 		files = {};
 	}
 
+	//Check delete
+	var imageActionContent = this.getValueFromData(data,'_action');
+	console.log('imageAction value in updateitem:' + imageActionContent);
+	if (typeof imageActionContent === 'string' && imageActionContent.substr(0, 7) === 'delete:') {
+		var field = this;
+		action = imageActionContent.split(':');
+		var method = action[0];
+		var ids = action[1];
+		if (!(/^(delete|reset)$/.test(method)) || !ids) return;
+		ids.split(',').forEach(function (id) {
+			field.apply(item, method, id);
+		});
+	}
+
 	// Prepare values
 	var value = this.getValueFromData(data);
 	var uploadedFile;
