@@ -68,16 +68,36 @@ var tempId = 0;
 module.exports = Field.create({
 
 	getInitialState () {
+		return this.getUpdateStateFromProps(this.props);
+	},
+	getUpdateStateFromProps (props){
 		var items = [];
 		var self = this;
 
-		_.forEach(this.props.value, function (item) {
+		_.forEach(props.value, function (item) {
 			self.pushItem(item, items);
 		});
 
 		return { items: items };
 	},
+	componentWillUpdate(nextProps, nextState){
+		var isSameProps = true;
 
+		if(nextProps.value.length === this.props.value.length){
+			for(var i=0; i<nextProps.value.length; i++){
+				if(nextProps.value[i].filename !== this.props.value[i].filename){
+					isSameProps = false;
+				}
+			}
+		}
+		else{
+			isSameProps = false;
+		}
+
+		if(!isSameProps){
+			this.setState(this.getUpdateStateFromProps(nextProps));
+		}
+	},
 	removeItem (id) {
 		var thumbs = [];
 		var self = this;
