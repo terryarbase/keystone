@@ -95,6 +95,7 @@ module.exports = Field.create({
 		}
 
 		if(!isSameProps){
+			this.clearFiles();
 			this.setState(this.getUpdateStateFromProps(nextProps));
 		}
 	},
