@@ -48,8 +48,16 @@ var LocalFilesFieldItem = React.createClass({
 			note = <FormInput key="upload-note" noedit className="field-type-localfiles__note field-type-localfiles__note--upload">save to upload</FormInput>;
 		}
 
+		//add preview image
+		var imagePath = this.props.path.replace('./public', '');
+		var imageStyle = {
+			maxHeight: 90, 
+			maxWidth: 90
+		};
+
 		return (
 			<FormField>
+				<img style={imageStyle} src={imagePath + '/' + this.props.filename} />
 				<img key="file-type-icon" className="file-icon" src={Keystone.adminPath + '/images/icons/32/' + iconName + '.png'} />
 				<FormInput key="file-name" noedit className="field-type-localfiles__filename">
 					{filename}
