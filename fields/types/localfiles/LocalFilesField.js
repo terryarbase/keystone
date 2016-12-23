@@ -49,7 +49,11 @@ var LocalFilesFieldItem = React.createClass({
 		}
 
 		//add preview image
-		var imagePath = this.props.path.replace('./public', '');
+		let imagePath = '';
+		if(this.props.path !== undefined){
+			imagePath = this.props.path.replace('./public', '');
+		}
+		
 		var imageStyle = {
 			maxHeight: 90, 
 			maxWidth: 90
