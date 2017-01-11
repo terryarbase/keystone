@@ -9,6 +9,7 @@ import React, { PropTypes } from 'react';
 import { Button, FormField, FormInput, FormNote } from 'elemental';
 import FileChangeMessage from '../../components/FileChangeMessage';
 import HiddenFileInput from '../../components/HiddenFileInput';
+import ImageThumbnail from '../../components/ImageThumbnail';
 
 let uploadInc = 1000;
 
@@ -185,6 +186,34 @@ module.exports = Field.create({
 			return null;
 		}
 	},
+	isImage () {
+		const imageMimeType = [
+			"image/png",
+			"image/jpeg",
+			"image/jpg",
+			"image/gif",
+		];
+		for(var i = 0; i < imageMimeType.length; i++){
+			if(this.props.value.mimetype === imageMimeType[i]){
+				return true;
+			}
+		}
+		return false;
+	},
+	renderImagePreview () {
+		const imageSrc = '/' + this.props.value.publicPath + '/' + this.props.value.filename;
+
+		return (
+			<ImageThumbnail
+				component="a"
+				href={imageSrc}
+				target="__blank"
+				style={{ float: 'left', marginRight: '1em' }}
+			>
+				<img src={imageSrc} style={{ height: 90 }} />
+			</ImageThumbnail>
+		);
+	},
 	renderUI () {
 		const buttons = (
 			<div style={this.hasFile() ? { marginTop: '1em' } : null}>
@@ -195,19 +224,12 @@ module.exports = Field.create({
 			</div>
 		);
 
-		//add preview image
-		var imagePath = this.props.value.publicPath;
-		var imageStyle = {
-			maxHeight: 90, 
-			maxWidth: 90
-		};
-
 		return (
 			<div data-field-name={this.props.path} data-field-type="file">
 				<FormField label={this.props.label} htmlFor={this.props.path}>
 					{this.shouldRenderField() ? (
 						<div>
-							<img style={imageStyle} src={ '/' + imagePath + '/' + this.props.value.filename} />
+							{this.hasFile() && this.isImage() && this.renderImagePreview()}
 							{this.hasFile() && this.renderFileNameAndChangeMessage()}
 							{buttons}
 							<HiddenFileInput
