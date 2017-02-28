@@ -78,6 +78,8 @@ var RelationshipFilter = React.createClass({
 				// TODO: Handle errors better
 				console.error('Error loading items:', err);
 			}
+			//handle unexpected JSON string not parsed
+			items = typeof items === 'string' ? JSON.parse(items) : items;
 			this.setState({
 				valueIsLoading: false,
 				selectedItems: items || [],
@@ -118,6 +120,8 @@ var RelationshipFilter = React.createClass({
 				});
 				return;
 			}
+			//handle unexpected JSON string not parsed
+			data = typeof data === 'string' ? JSON.parse(data) : data;
 			data.results.forEach(this.cacheItem);
 			if (thenPopulateValue) {
 				this.populateValue(this.props.filter.value);

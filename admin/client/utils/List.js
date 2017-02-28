@@ -100,6 +100,8 @@ List.prototype.createItem = function (formData, callback) {
 		body: formData,
 	}, (err, resp, data) => {
 		if (err) callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
 		if (resp.statusCode === 200) {
 			callback(null, data);
 		} else {
@@ -128,6 +130,8 @@ List.prototype.updateItem = function (id, formData, callback) {
 		body: formData,
 	}, (err, resp, data) => {
 		if (err) return callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
 		if (resp.statusCode === 200) {
 			callback(null, data);
 		} else {
@@ -235,6 +239,10 @@ List.prototype.loadItem = function (itemId, options, callback) {
 	}, (err, resp, data) => {
 		if (err) return callback(err);
 		// Pass the data as result or error, depending on the statusCode
+
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
+
 		if (resp.statusCode === 200) {
 			callback(null, data);
 		} else {
@@ -257,6 +265,9 @@ List.prototype.loadItems = function (options, callback) {
 		responseType: 'json',
 	}, (err, resp, data) => {
 		if (err) callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
+
 		// Pass the data as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, data);
@@ -315,6 +326,8 @@ List.prototype.deleteItems = function (itemIds, callback) {
 		},
 	}, (err, resp, body) => {
 		if (err) return callback(err);
+		// handle unexpected JSON string not parsed
+		body = typeof body === 'string' ? JSON.parse(body) : body;
 		// Pass the body as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, body);
@@ -338,6 +351,7 @@ List.prototype.reorderItems = function (item, oldSortOrder, newSortOrder, pageOp
 			console.log('Error parsing results json:', e, body);
 			return callback(e);
 		}
+
 		// Pass the body as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, body);
