@@ -14,6 +14,7 @@ import {
 } from '../../../admin/client/App/elemental';
 import FileChangeMessage from '../../components/FileChangeMessage';
 import HiddenFileInput from '../../components/HiddenFileInput';
+import ImageThumbnail from '../../components/ImageThumbnail';
 
 let uploadInc = 1000;
 
@@ -190,6 +191,34 @@ module.exports = Field.create({
 			return null;
 		}
 	},
+	isImage () {
+		const imageMimeType = [
+			"image/png",
+			"image/jpeg",
+			"image/jpg",
+			"image/gif",
+		];
+		for(var i = 0; i < imageMimeType.length; i++){
+			if(this.props.value.mimetype === imageMimeType[i]){
+				return true;
+			}
+		}
+		return false;
+	},
+	renderImagePreview () {
+		const imageSrc = '/' + this.props.value.publicPath + '/' + this.props.value.filename;
+
+		return (
+			<ImageThumbnail
+				component="a"
+				href={imageSrc}
+				target="__blank"
+				style={{ float: 'left', marginRight: '1em' }}
+			>
+				<img src={imageSrc} style={{ height: 90 }} />
+			</ImageThumbnail>
+		);
+	},
 	renderUI () {
 		const { label, note, path } = this.props;
 		const buttons = (
@@ -206,6 +235,7 @@ module.exports = Field.create({
 				<FormField label={label} htmlFor={path}>
 					{this.shouldRenderField() ? (
 						<div>
+							{this.hasFile() && this.isImage() && this.renderImagePreview()}
 							{this.hasFile() && this.renderFileNameAndChangeMessage()}
 							{buttons}
 							<HiddenFileInput

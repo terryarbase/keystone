@@ -1,12 +1,22 @@
 /**
 Deprecated.
 
-Using this field will now throw an error, and this code will be removed soon.
-
-See https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide
+This FieldType will be removed shortly in favour of the new generic File type,
+in conjunction with the FS storage adapter.
 */
 
-/* eslint-disable */
+var _ = require('lodash');
+var async = require('async');
+var FieldType = require('../Type');
+var fs = require('fs-extra');
+var grappling = require('grappling-hook');
+var keystone = require('../../../');
+var moment = require('moment');
+var path = require('path');
+var util = require('util');
+var utils = require('keystone-utils');
+
+var loggedWarning = false;
 
 /**
  * localfiles FieldType Constructor
@@ -15,10 +25,12 @@ See https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide
  */
 function localfiles (list, path, options) {
 
-	throw new Error('The LocalFiles field type has been removed. Please use File instead.'
-		+ '\n\nSee https://github.com/keystonejs/keystone/wiki/File-Fields-Upgrade-Guide\n');
+	if (!loggedWarning) {
+		loggedWarning = true;
+		console.warn('The LocalFiles field type has been deprecated and will be removed '
+			+ 'very soon. Please see https://github.com/keystonejs/keystone/issues/3228');
+	}
 
-	/*
 	grappling.mixin(this).allowHooks('move');
 	this._underscoreMethods = ['format', 'uploadFiles'];
 	this._fixedSize = 'full';
@@ -52,10 +64,9 @@ function localfiles (list, path, options) {
 	if (options.post && options.post.move) {
 		this.post('move', options.post.move);
 	}
-	*/
 }
 localfiles.properName = 'LocalFiles';
-// util.inherits(localfiles, FieldType);
+util.inherits(localfiles, FieldType);
 
 /**
  * Registers the field on the List's Mongoose Schema.
@@ -234,9 +245,81 @@ localfiles.prototype.inputIsValid = function (data) { // eslint-disable-line no-
 /**
  * Updates the value for this field in the item from a data object
  */
-localfiles.prototype.updateItem = function (item, data, callback) { // eslint-disable-line no-unused-vars
+localfiles.prototype.updateItem = function (item, data, files, callback) { // eslint-disable-line no-unused-vars
 	// TODO - direct updating of data (not via upload)
-	process.nextTick(callback);
+	// process.nextTick(callback);
+
+	// Process arguments
+	if (typeof files === 'function') {
+		callback = files;
+		files = {};
+	}
+	if (!files) {
+		files = {};
+	}
+
+	//Check delete
+	var imageActionContent = this.getValueFromData(data,'_action');
+	if (typeof imageActionContent === 'string' && imageActionContent.substr(0, 7) === 'delete:') {
+		var field = this;
+		action = imageActionContent.split(':');
+		var method = action[0];
+		var ids = action[1];
+		if (!(/^(delete|reset)$/.test(method)) || !ids) return;
+		ids.split(',').forEach(function (id) {
+			field.apply(item, method, id);
+		});
+	}
+
+	// Prepare values
+	var value = this.getValueFromData(data);
+	var uploadedFile;
+	var uploadedFiles = [];
+
+	// Providing the string "remove" removes the file and resets the field
+	if (value === 'remove') {
+		// this.remove(item);
+		utils.defer(callback);
+	}
+
+	// // Find an uploaded file in the files argument, either referenced in the
+	// // data argument or named with the field path / field_upload path + suffix
+	if (typeof value === 'string' && value.substr(0, 7) === 'upload:') {
+		uploadedFile = files[value.substr(7)];
+	} else {
+		uploadedFile = this.getValueFromData(files) || this.getValueFromData(files, '_upload');
+	}
+
+	// // Ensure a valid file was uploaded, else null out the value
+	// if (uploadedFile && !uploadedFile.path) {
+	// 	uploadedFile = undefined;
+	// }
+
+	if (uploadedFile){
+		if (!Array.isArray(uploadedFile)) {
+			uploadedFiles.push(uploadedFile);
+		}
+		if (uploadedFile.length > 0) {
+			uploadedFiles = uploadedFile;
+		}
+	}
+	// If we have a file to upload, we do that and stop here
+	if (uploadedFiles.length > 0) {
+		return this.uploadFiles(item, uploadedFiles, true, callback);
+	}
+
+	// Empty / null values reset the field
+	if (value === null || value === '' || (typeof value === 'object' && !Object.keys(value).length)) {
+		this.reset(item);
+		value = undefined;
+	}
+
+	// If there is a valid value at this point, set it on the field
+	if (typeof value === 'object') {
+		item.set(this.path, value);
+	}
+	utils.defer(callback);
+
 };
 
 /**
@@ -362,6 +445,13 @@ localfiles.prototype.getRequestHandler = function (item, req, paths, callback) {
 		return callback();
 	};
 
+};
+
+/**
+ * Immediately handles a standard form submission for the field (see `getRequestHandler()`)
+ */
+localfiles.prototype.handleRequest = function (item, req, paths, callback) {
+	this.getRequestHandler(item, req, paths, callback)();
 };
 
 

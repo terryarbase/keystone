@@ -48,8 +48,20 @@ var LocalFilesFieldItem = React.createClass({
 			note = <FormInput key="upload-note" noedit className="field-type-localfiles__note field-type-localfiles__note--upload">save to upload</FormInput>;
 		}
 
+		//add preview image
+		let imagePath = '';
+		if(this.props.path !== undefined){
+			imagePath = this.props.path.replace('./public', '');
+		}
+		
+		var imageStyle = {
+			maxHeight: 90, 
+			maxWidth: 90
+		};
+
 		return (
 			<FormField>
+				<img style={imageStyle} src={imagePath + '/' + this.props.filename} />
 				<img key="file-type-icon" className="file-icon" src={Keystone.adminPath + '/images/icons/32/' + iconName + '.png'} />
 				<FormInput key="file-name" noedit className="field-type-localfiles__filename">
 					{filename}
@@ -68,16 +80,37 @@ var tempId = 0;
 module.exports = Field.create({
 
 	getInitialState () {
+		return this.getUpdateStateFromProps(this.props);
+	},
+	getUpdateStateFromProps (props){
 		var items = [];
 		var self = this;
 
-		_.forEach(this.props.value, function (item) {
+		_.forEach(props.value, function (item) {
 			self.pushItem(item, items);
 		});
 
 		return { items: items };
 	},
+	componentWillUpdate(nextProps, nextState){
+		var isSameProps = true;
 
+		if(nextProps.value.length === this.props.value.length){
+			for(var i=0; i<nextProps.value.length; i++){
+				if(nextProps.value[i].filename !== this.props.value[i].filename){
+					isSameProps = false;
+				}
+			}
+		}
+		else{
+			isSameProps = false;
+		}
+
+		if(!isSameProps){
+			this.clearFiles();
+			this.setState(this.getUpdateStateFromProps(nextProps));
+		}
+	},
 	removeItem (id) {
 		var thumbs = [];
 		var self = this;
@@ -105,7 +138,7 @@ module.exports = Field.create({
 	},
 
 	renderFileField () {
-		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" />;
+		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" hidden/>;
 	},
 
 	clearFiles () {
