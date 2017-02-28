@@ -117,6 +117,8 @@ module.exports = Field.create({
 			});
 		}, (err, expanded) => {
 			if (!this.isMounted()) return;
+			//handle unexpected JSON string not parsed
+			expanded = typeof expanded === 'string' ? JSON.parse(expanded) : expanded;
 			this.setState({
 				loading: false,
 				value: this.props.many ? expanded : expanded[0],
@@ -138,6 +140,8 @@ module.exports = Field.create({
 				console.error('Error loading items:', err);
 				return callback(null, []);
 			}
+			//handle unexpected JSON string not parsed
+			data = typeof data === 'string' ? JSON.parse(data) : data;
 			data.results.forEach(this.cacheItem);
 			callback(null, {
 				options: data.results,
