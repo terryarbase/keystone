@@ -18,6 +18,9 @@
     </script>
 <%# Old jQuery, editor and Cloudinary scripts %>
     <script src="<%= adminPath %>/js/lib/jquery/jquery-1.10.2.min.js"></script>
+	<script>
+		jQuery('body').css('overflow', '');
+	</script>
 <% if (fieldTypes.wysiwyg) { -%>
     <script src="<%= adminPath %>/js/lib/tinymce/tinymce.min.js"></script>
 <% if (cloudinaryScript) { -%>
