@@ -6,7 +6,12 @@ TODO:
 
 import Field from '../Field';
 import React, { PropTypes } from 'react';
-import { Button, FormField, FormInput, FormNote } from 'elemental';
+import {
+	Button,
+	FormField,
+	FormInput,
+	FormNote,
+} from '../../../admin/client/App/elemental';
 import FileChangeMessage from '../../components/FileChangeMessage';
 import HiddenFileInput from '../../components/HiddenFileInput';
 import ImageThumbnail from '../../components/ImageThumbnail';
@@ -133,13 +138,13 @@ module.exports = Field.create({
 	renderChangeMessage () {
 		if (this.state.userSelectedFile) {
 			return (
-				<FileChangeMessage type="success">
-					File selected - save to upload
+				<FileChangeMessage color="success">
+					Save to Upload
 				</FileChangeMessage>
 			);
 		} else if (this.state.removeExisting) {
 			return (
-				<FileChangeMessage type="danger">
+				<FileChangeMessage color="danger">
 					File {this.props.autoCleanup ? 'deleted' : 'removed'} - save to confirm
 				</FileChangeMessage>
 			);
@@ -150,7 +155,7 @@ module.exports = Field.create({
 	renderClearButton () {
 		if (this.state.removeExisting) {
 			return (
-				<Button type="link" onClick={this.undoRemove}>
+				<Button variant="link" onClick={this.undoRemove}>
 					Undo Remove
 				</Button>
 			);
@@ -162,7 +167,7 @@ module.exports = Field.create({
 				clearText = (this.props.autoCleanup ? 'Delete File' : 'Remove File');
 			}
 			return (
-				<Button type="link-cancel" onClick={this.handleRemove}>
+				<Button variant="link" color="cancel" onClick={this.handleRemove}>
 					{clearText}
 				</Button>
 			);
@@ -215,6 +220,7 @@ module.exports = Field.create({
 		);
 	},
 	renderUI () {
+		const { label, note, path } = this.props;
 		const buttons = (
 			<div style={this.hasFile() ? { marginTop: '1em' } : null}>
 				<Button onClick={this.triggerFileBrowser}>
@@ -225,8 +231,8 @@ module.exports = Field.create({
 		);
 
 		return (
-			<div data-field-name={this.props.path} data-field-type="file">
-				<FormField label={this.props.label} htmlFor={this.props.path}>
+			<div data-field-name={path} data-field-type="file">
+				<FormField label={label} htmlFor={path}>
 					{this.shouldRenderField() ? (
 						<div>
 							{this.hasFile() && this.isImage() && this.renderImagePreview()}
@@ -247,7 +253,7 @@ module.exports = Field.create({
 								: <FormInput noedit>no file</FormInput>}
 						</div>
 					)}
-					{!!this.props.note && <FormNote note={this.props.note} />}
+					{!!note && <FormNote html={note} />}
 				</FormField>
 			</div>
 		);
