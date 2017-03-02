@@ -23,6 +23,19 @@ module.exports = function (req, res) {
 		try { filters = JSON.parse(req.query.filters); }
 		catch (e) { } // eslint-disable-line no-empty
 	}
+
+	// add showSelfCreatedOnly filter
+	var opts = req.list.getOptions();
+	if(opts.showSelfCreatedOnly){
+		if(!filters){
+			filters = {};
+		}
+		filters.createdBy = {
+			inverted: false,
+			value: [req.user._id],
+		};
+	}
+	
 	if (typeof filters === 'object') {
 		assign(where, req.list.addFiltersToQuery(filters));
 	}
