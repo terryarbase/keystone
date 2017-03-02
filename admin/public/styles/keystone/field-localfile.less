@@ -3,6 +3,10 @@
 // ==============================
 
 .field-type-localfiles {
+	display: table;
+  table-layout: fixed;
+  width: 100%;
+  
 	.sortable-placeholder {
 		border: 1px dashed #777;
 		background: none;
@@ -33,5 +37,15 @@
 		top:50%;
 		margin-left:-13px;
 		margin-top:-44px;
+	}
+	.FormLabel {
+		@media (min-width: 769px){
+	    display: table-cell;
+	    line-height: 2.3em;
+	    margin-bottom: 0px;
+	    padding-right: 5px;
+	    vertical-align: top;
+	    width: 180px;
+		}
 	}
 }
