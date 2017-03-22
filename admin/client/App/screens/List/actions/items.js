@@ -26,7 +26,6 @@ export function loadItems (options = {}) {
 			sort: state.active.sort,
 			columns: state.active.columns,
 			page: state.lists.page,
-			timestamp: new Date().getTime(),
 		}, (err, items) => {
 
 			// Create a new state snapshot and compare the current active list id
