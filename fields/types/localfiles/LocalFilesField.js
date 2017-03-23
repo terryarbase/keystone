@@ -35,7 +35,7 @@ var LocalFilesFieldItem = React.createClass({
 	},
 
 	render () {
-		const { filename } = this.props;
+		const { filename, upload } = this.props;
 		const ext = filename.split('.').pop();
 
 		let iconName = '_blank';
@@ -61,7 +61,7 @@ var LocalFilesFieldItem = React.createClass({
 
 		return (
 			<FormField>
-				<img style={imageStyle} src={imagePath + '/' + this.props.filename} />
+				<img style={imageStyle} src={upload || imagePath + '/' + this.props.filename} />
 				<img key="file-type-icon" className="file-icon" src={Keystone.adminPath + '/images/icons/32/' + iconName + '.png'} />
 				<FormInput key="file-name" noedit className="field-type-localfiles__filename">
 					{filename}
@@ -138,7 +138,7 @@ module.exports = Field.create({
 	},
 
 	renderFileField () {
-		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" hidden/>;
+		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" style={{display:'none'}}/>;
 	},
 
 	clearFiles () {
@@ -150,14 +150,26 @@ module.exports = Field.create({
 			}),
 		});
 	},
-
+	resetFile () {
+		this.setState({
+			items: this.state.items.filter(function (thumb) {
+				return !thumb.props.isQueued;
+			}),
+		});
+	},
 	uploadFile (event) {
 		var self = this;
-
 		var files = event.target.files;
+		if(files.length){
+			self.resetFile();
+		}
 		_.forEach(files, function (f) {
-			self.pushItem({ isQueued: true, filename: f.name });
-			self.forceUpdate();
+			let reader = new FileReader();
+			reader.onloadend = () => {
+				self.pushItem({isQueued: true, filename: f.name, upload: reader.result});
+				self.forceUpdate();
+			}
+			reader.readAsDataURL(f)
 		});
 	},
 
