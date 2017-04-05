@@ -15,6 +15,8 @@ module.exports = function createApp (keystone, express) {
 	}
 
 	var app = keystone.app;
+	//disable etag
+	app.set('etag', false);
 	require('./initLetsEncrypt')(keystone, app);
 	require('./initSslRedirect')(keystone, app);
 
