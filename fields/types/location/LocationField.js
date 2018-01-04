@@ -250,7 +250,7 @@ module.exports = Field.create({
 		if (!note) return null;
 		return (
 			<FormField offsetAbsentLabel>
-				<FormNote note={note} />
+				<FormNote html={note} />
 			</FormField>
 		);
 	},
