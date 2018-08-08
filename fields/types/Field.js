@@ -1,11 +1,18 @@
-var _ = require('underscore');
-var cx = require('classnames');
-var evalDependsOn = require('../utils/evalDependsOn.js');
-var React = require('react');
-var Note = require('../components/Note');
+import classnames from 'classnames';
+import evalDependsOn from '../utils/evalDependsOn.js';
+import React from 'react';
+import { findDOMNode } from 'react-dom';
+import { FormField, FormInput, FormNote } from '../../admin/client/App/elemental';
+import blacklist from 'blacklist';
+import CollapsedFieldLabel from '../components/CollapsedFieldLabel';
 
-function validateSpec(spec) {
-	if (!_.isObject(spec.supports)) {
+function isObject (arg) {
+	return Object.prototype.toString.call(arg) === '[object Object]';
+}
+
+function validateSpec (spec) {
+	if (!spec) spec = {};
+	if (!isObject(spec.supports)) {
 		spec.supports = {};
 	}
 	if (!spec.focusTargetRef) {
@@ -15,150 +22,155 @@ function validateSpec(spec) {
 }
 
 var Base = module.exports.Base = {
-	
-	getInitialState: function() {
+	getInitialState () {
 		return {};
 	},
-	
-	valueChanged: function(event) {
+	getDefaultProps () {
+		return {
+			adminPath: Keystone.adminPath,
+			inputProps: {},
+			labelProps: {},
+			valueProps: {},
+			size: 'full',
+		};
+	},
+	getInputName (path) {
+		// This correctly creates the path for field inputs, and supports the
+		// inputNamePrefix prop that is required for nested fields to work
+		return this.props.inputNamePrefix
+			? `${this.props.inputNamePrefix}[${path}]`
+			: path;
+	},
+	valueChanged (event) {
 		this.props.onChange({
 			path: this.props.path,
-			value: event.target.value
+			value: event.target.value,
 		});
 	},
-		
-	shouldCollapse: function() {
+	shouldCollapse () {
 		return this.props.collapse && !this.props.value;
 	},
-	
-	shouldRenderField: function() {
-		if (!this.props.noedit) return true;
-		if (this.props.mode === 'create' && this.props.initial) return true;
-		return false;
+	shouldRenderField () {
+		if (this.props.mode === 'create') return true;
+		return !this.props.noedit;
 	},
-	
-	focus: function() {
+	focus () {
 		if (!this.refs[this.spec.focusTargetRef]) return;
-		this.refs[this.spec.focusTargetRef].getDOMNode().focus();
+		findDOMNode(this.refs[this.spec.focusTargetRef]).focus();
 	},
-	
-	renderLabel: function() {
-		if (!this.props.label) return null;
-		return <label className="field-label">{this.props.label}</label>;
-	},
-	
-	renderNote: function() {
+	renderNote () {
 		if (!this.props.note) return null;
-		return <Note note={this.props.note} />;
+
+		return <FormNote html={this.props.note} />;
 	},
-	
-	renderField: function() {
-		return <input type="text" ref="focusTarget" name={this.props.path} placeholder={this.props.placeholder} value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
-	},
-	
-	renderValue: function() {
-		return <div className="field-value">{this.props.value}</div>;
-	},
-	
-	renderUI: function(spec) {//eslint-disable-line no-unused-vars
-		var wrapperClassName = cx('field', 'field-type-' + this.props.type, this.props.className, { 'field-has-label': this.props.label });
-		var fieldClassName = cx('field-ui', 'field-size-' + this.props.size);
+	renderField () {
+		const { autoFocus, value, inputProps } = this.props;
 		return (
-			<div className={wrapperClassName}>
-				{this.renderLabel()}
-				<div className={fieldClassName}>
-					{this.shouldRenderField() ? this.renderField() : this.renderValue()}
-					{this.renderNote()}
-				</div>
-			</div>
+			<FormInput {...{
+				...inputProps,
+				autoFocus,
+				autoComplete: 'off',
+				name: this.getInputName(this.props.path),
+				onChange: this.valueChanged,
+				ref: 'focusTarget',
+				value,
+			}} />
 		);
-		
-	}
-	
+	},
+	renderValue () {
+		return <FormInput noedit>{this.props.value}</FormInput>;
+	},
+	renderUI () {
+		var wrapperClassName = classnames(
+			'field-type-' + this.props.type,
+			this.props.className,
+			{ 'field-monospace': this.props.monospace }
+		);
+		return (
+			<FormField htmlFor={this.props.path} label={this.props.label} className={wrapperClassName} cropLabel>
+				<div className={'FormField__inner field-size-' + this.props.size}>
+					{this.shouldRenderField() ? this.renderField() : this.renderValue()}
+				</div>
+				{this.renderNote()}
+			</FormField>
+		);
+	},
 };
 
 var Mixins = module.exports.Mixins = {
-	
 	Collapse: {
-		
-		componentWillMount: function() {
+		componentWillMount () {
 			this.setState({
-				isCollapsed: this.shouldCollapse()
+				isCollapsed: this.shouldCollapse(),
 			});
 		},
-		
-		componentDidUpdate: function(prevProps, prevState) {
+		componentDidUpdate (prevProps, prevState) {
 			if (prevState.isCollapsed && !this.state.isCollapsed) {
 				this.focus();
 			}
 		},
-		
-		uncollapse: function() {
+		uncollapse () {
 			this.setState({
-				isCollapsed: false
+				isCollapsed: false,
 			});
 		},
-		
-		renderCollapse: function() {
-			if (!this.shouldRenderField()) {
-				return null;
-			}
-			/* eslint-disable no-script-url */
+		renderCollapse () {
+			if (!this.shouldRenderField()) return null;
 			return (
-				<div className={'field field-type-' + this.props.type}>
-					<div className="col-sm-12">
-						<label className="uncollapse">
-							<a href="javascript:;" onClick={this.uncollapse}>+ Add {this.props.label.toLowerCase()}</a>
-						</label>
-					</div>
-				</div>
+				<FormField>
+					<CollapsedFieldLabel onClick={this.uncollapse}>+ Add {this.props.label.toLowerCase()}</CollapsedFieldLabel>
+				</FormField>
 			);
-			/* eslint-enable */
-		}
-	}
+		},
+	},
 };
 
-module.exports.create = function(spec) {
-	
-	spec = validateSpec(spec || {});
-	
-	var excludeBaseMethods = [];
-	
+module.exports.create = function (spec) {
+
+	spec = validateSpec(spec);
+
 	var field = {
-		
 		spec: spec,
-		
 		displayName: spec.displayName,
-		
 		mixins: [Mixins.Collapse],
-		
-		render: function() {
+		statics: {
+			getDefaultValue: function (field) {
+				return field.defaultValue || '';
+			},
+		},
+		render () {
 			if (!evalDependsOn(this.props.dependsOn, this.props.values)) {
 				return null;
 			}
 			if (this.state.isCollapsed) {
 				return this.renderCollapse();
 			}
-			return this.renderUI(spec);
-		}
-		
+			return this.renderUI();
+		},
 	};
-	
+
+	if (spec.statics) {
+		Object.assign(field.statics, spec.statics);
+	}
+
+	var excludeBaseMethods = {};
 	if (spec.mixins) {
-		_.each(spec.mixins, function(mixin) {
-			_.each(mixin, function(method, name) {
-				if (Base[name]) excludeBaseMethods.push(name);
+		spec.mixins.forEach(function (mixin) {
+			Object.keys(mixin).forEach(function (name) {
+				if (Base[name]) {
+					excludeBaseMethods[name] = true;
+				}
 			});
 		});
 	}
-	
-	_.extend(field, _.omit(Base, excludeBaseMethods));
-	_.extend(field, _.omit(spec, 'mixins'));
-	
-	if (_.isArray(spec.mixins)) {
+
+	Object.assign(field, blacklist(Base, excludeBaseMethods));
+	Object.assign(field, blacklist(spec, 'mixins', 'statics'));
+
+	if (Array.isArray(spec.mixins)) {
 		field.mixins = field.mixins.concat(spec.mixins);
 	}
-	
+
 	return React.createClass(field);
-	
+
 };

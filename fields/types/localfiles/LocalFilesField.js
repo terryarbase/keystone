@@ -1,178 +1,231 @@
-var _ = require('underscore'),
-	bytes = require('bytes'),
-	React = require('react'),
-	Field = require('../Field');
+/*
+TODO: this file has been left as a reference for the new File type field.
+Some features here, including size formatting and icons, may be ported across.
+*/
 
-var ICON_EXTS = [
+import _ from 'lodash';
+import bytes from 'bytes';
+import Field from '../Field';
+import React from 'react';
+import { Button, FormField, FormInput, FormNote } from 'elemental';
+
+const ICON_EXTS = [
 	'aac', 'ai', 'aiff', 'avi', 'bmp', 'c', 'cpp', 'css', 'dat', 'dmg', 'doc', 'dotx', 'dwg', 'dxf', 'eps', 'exe', 'flv', 'gif', 'h',
 	'hpp', 'html', 'ics', 'iso', 'java', 'jpg', 'js', 'key', 'less', 'mid', 'mp3', 'mp4', 'mpg', 'odf', 'ods', 'odt', 'otp', 'ots',
 	'ott', 'pdf', 'php', 'png', 'ppt', 'psd', 'py', 'qt', 'rar', 'rb', 'rtf', 'sass', 'scss', 'sql', 'tga', 'tgz', 'tiff', 'txt',
-	'wav', 'xls', 'xlsx', 'xml', 'yml', 'zip'
+	'wav', 'xls', 'xlsx', 'xml', 'yml', 'zip',
 ];
 
-var Item = React.createClass({
-	
-	render: function () {
-		var filename = this.props.filename;
-		var ext = filename.split('.').pop();
+var LocalFilesFieldItem = React.createClass({
+	propTypes: {
+		deleted: React.PropTypes.bool,
+		filename: React.PropTypes.string,
+		isQueued: React.PropTypes.bool,
+		size: React.PropTypes.number,
+		toggleDelete: React.PropTypes.func,
+	},
 
-		var iconName = '_blank';
-		if (_.contains(ICON_EXTS, ext)) iconName = ext;
+	renderActionButton () {
+		if (!this.props.shouldRenderActionButton || this.props.isQueued) return null;
 
-		var body = [];
+		var buttonLabel = this.props.deleted ? 'Undo' : 'Remove';
+		var buttonType = this.props.deleted ? 'link' : 'link-cancel';
 
-		var allowedTypes = [
-		'image/jpeg', 'image/png', 'image/gif'
-		];
-		var imgStyle = {
-			maxWidth: '100px'
-		};
-		if(allowedTypes.indexOf(this.props.filetype) >= 0){
-			body.push(<img className='file-preview' src={this.props.webpath + '/' + this.props.filename} style={imgStyle}/>);
-			body.push(<span className='file-filename'>{filename}</span>);
-		}else{
-			body.push(<img className='file-icon' src={'/keystone/images/icons/32/' + iconName + '.png'} />);
-			body.push(<span className='file-filename'>{filename}</span>);
-		}
+		return <Button key="action-button" type={buttonType} onClick={this.props.toggleDelete}>{buttonLabel}</Button>;
+	},
 
-		
-		if (this.props.size) {
-			body.push(<span className='file-size'>{bytes(this.props.size)}</span>);
-		}
+	render () {
+		const { filename, upload } = this.props;
+		const ext = filename.split('.').pop();
 
+		let iconName = '_blank';
+		if (_.includes(ICON_EXTS, ext)) iconName = ext;
+
+		let note;
 		if (this.props.deleted) {
-			body.push(<span className='file-note-delete'>save to delete</span>);
+			note = <FormInput key="delete-note" noedit className="field-type-localfiles__note field-type-localfiles__note--delete">save to delete</FormInput>;
 		} else if (this.props.isQueued) {
-			body.push(<span className='file-note-upload'>save to upload</span>);
+			note = <FormInput key="upload-note" noedit className="field-type-localfiles__note field-type-localfiles__note--upload">save to upload</FormInput>;
 		}
 
-		if (!this.props.isQueued) {
-			var actionLabel = this.props.deleted ? 'undo' : 'remove';
-			body.push(<span className='file-action' onClick={this.props.toggleDelete}>{actionLabel}</span>);
+		//add preview image
+		let imagePath = '';
+		if(this.props.path !== undefined){
+			imagePath = this.props.path.replace('./public', '');
 		}
+		
+		var imageStyle = {
+			maxHeight: 90, 
+			maxWidth: 90
+		};
 
-		var itemClassName = 'file-item';
-		if (this.props.deleted) itemClassName += ' file-item-deleted';
+		return (
+			<FormField>
+				<img style={imageStyle} src={upload || imagePath + '/' + this.props.filename} />
+				<img key="file-type-icon" className="file-icon" src={Keystone.adminPath + '/images/icons/32/' + iconName + '.png'} />
+				<FormInput key="file-name" noedit className="field-type-localfiles__filename">
+					{filename}
+					{this.props.size ? ' (' + bytes(this.props.size) + ')' : null}
+				</FormInput>
+				{note}
+				{this.renderActionButton()}
+			</FormField>
+		);
+	},
 
-		return <div className={itemClassName} key={this.props.key}>{body}</div>;
-	}
-	
 });
+
+var tempId = 0;
 
 module.exports = Field.create({
 
-	getInitialState: function () {
+	getInitialState () {
+		return this.getUpdateStateFromProps(this.props);
+	},
+	getUpdateStateFromProps (props){
 		var items = [];
 		var self = this;
 
-		_.each(this.props.value, function (item) {
+		_.forEach(props.value, function (item) {
 			self.pushItem(item, items);
 		});
 
 		return { items: items };
 	},
+	componentWillUpdate(nextProps, nextState){
+		var isSameProps = true;
 
-	removeItem: function (i) {
-		var thumbs = this.state.items;
-		var thumb = thumbs[i];
-
-		if (thumb.props.isQueued) {
-			thumbs[i] = null;
-		} else {
-			thumb.props.deleted = !thumb.props.deleted;
+		if(nextProps.value.length === this.props.value.length){
+			for(var i=0; i<nextProps.value.length; i++){
+				if(nextProps.value[i].filename !== this.props.value[i].filename){
+					isSameProps = false;
+				}
+			}
 		}
+		else{
+			isSameProps = false;
+		}
+
+		if(!isSameProps){
+			this.clearFiles();
+			this.setState(this.getUpdateStateFromProps(nextProps));
+		}
+	},
+	removeItem (id) {
+		var thumbs = [];
+		var self = this;
+		_.forEach(this.state.items, function (thumb) {
+			var newProps = Object.assign({}, thumb.props);
+			if (thumb.props._id === id) {
+				newProps.deleted = !thumb.props.deleted;
+			}
+			self.pushItem(newProps, thumbs);
+		});
 
 		this.setState({ items: thumbs });
 	},
 
-	pushItem: function (args, thumbs) {
+	pushItem (args, thumbs) {
 		thumbs = thumbs || this.state.items;
-		var i = thumbs.length;
-		args.toggleDelete = this.removeItem.bind(this, i);
-		thumbs.push(<Item key={i} {...args} />);
+		args.toggleDelete = this.removeItem.bind(this, args._id);
+		args.shouldRenderActionButton = this.shouldRenderField();
+		args.adminPath = Keystone.adminPath;
+		thumbs.push(<LocalFilesFieldItem key={args._id || tempId++} {...args} />);
 	},
 
-	fileFieldNode: function () {
-		return this.refs.fileField.getDOMNode();
+	fileFieldNode () {
+		return this.refs.fileField;
 	},
 
-	renderFileField: function () {
-		return <input ref='fileField' type='file' name={this.props.paths.upload} multiple className='field-upload' onChange={this.uploadFile} />;
+	renderFileField () {
+		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" style={{display:'none'}}/>;
 	},
 
-	clearFiles: function () {
+	clearFiles () {
 		this.fileFieldNode().value = '';
 
 		this.setState({
 			items: this.state.items.filter(function (thumb) {
 				return !thumb.props.isQueued;
-			})
+			}),
 		});
 	},
-
-	uploadFile: function (event) {
+	resetFile () {
+		this.setState({
+			items: this.state.items.filter(function (thumb) {
+				return !thumb.props.isQueued;
+			}),
+		});
+	},
+	uploadFile (event) {
 		var self = this;
-
 		var files = event.target.files;
-		_.each(files, function (f) {
-			self.pushItem({ isQueued: true, filename: f.name });
-			self.forceUpdate();
+		if(files.length){
+			self.resetFile();
+		}
+		_.forEach(files, function (f) {
+			let reader = new FileReader();
+			reader.onloadend = () => {
+				self.pushItem({isQueued: true, filename: f.name, upload: reader.result});
+				self.forceUpdate();
+			}
+			reader.readAsDataURL(f)
 		});
 	},
 
-	changeFiles: function () {
+	changeFiles () {
 		this.fileFieldNode().click();
 	},
 
-	hasFiles: function () {
+	hasFiles () {
 		return this.refs.fileField && this.fileFieldNode().value;
 	},
 
-	renderToolbar: function () {
+	renderToolbar () {
+		if (!this.shouldRenderField()) return null;
+
 		var clearFilesButton;
 		if (this.hasFiles()) {
-			clearFilesButton = <button type='button' className='btn btn-default btn-upload' onClick={this.clearFiles}>Clear uploads</button>;
+			clearFilesButton = <Button type="link-cancel" className="ml-5" onClick={this.clearFiles}>Clear Uploads</Button>;
 		}
 
 		return (
-			<div className='files-toolbar row col-sm-3 col-md-12'>
-				<div className='pull-left'>
-					<button type='button' className='btn btn-default btn-upload' onClick={this.changeFiles}>Upload</button>
-					{clearFilesButton}
-				</div>
+			<div className="files-toolbar">
+				<Button onClick={this.changeFiles}>Upload</Button>
+				{clearFilesButton}
 			</div>
 		);
 	},
 
-	renderPlaceholder: function () {
+	renderPlaceholder () {
 		return (
-			<div className='file-field file-upload row col-sm-3 col-md-12' onClick={this.changeFiles}>
-				<div className='file-preview'>
-					<span className='file-thumbnail'>
-						<span className='file-dropzone' />
-						<div className='ion-picture file-uploading' />
+			<div className="file-field file-upload" onClick={this.changeFiles}>
+				<div className="file-preview">
+					<span className="file-thumbnail">
+						<span className="file-dropzone" />
+						<div className="ion-picture file-uploading" />
 					</span>
 				</div>
 
-				<div className='file-details'>
-					<span className='file-message'>Click to upload</span>
+				<div className="file-details">
+					<span className="file-message">Click to upload</span>
 				</div>
 			</div>
 		);
 	},
 
-	renderContainer: function () {
-		return ( 
-			<div className='files-container clearfix'>
+	renderContainer () {
+		return (
+			<div className="files-container clearfix">
 				{this.state.items}
 			</div>
 		);
 	},
 
-	renderFieldAction: function () {
+	renderFieldAction () {
 		var value = '';
 		var remove = [];
-		_.each(this.state.items, function (thumb) {
+		_.forEach(this.state.items, function (thumb) {
 			if (thumb && thumb.props.deleted) remove.push(thumb.props._id);
 		});
 		if (remove.length) value = 'delete:' + remove.join(',');
@@ -180,24 +233,25 @@ module.exports = Field.create({
 		return <input ref="action" className="field-action" type="hidden" value={value} name={this.props.paths.action} />;
 	},
 
-	renderUploadsField: function () {
+	renderUploadsField () {
 		return <input ref="uploads" className="field-uploads" type="hidden" name={this.props.paths.uploads} />;
 	},
 
-	renderUI: function () {
-		return (
-			<div className="field field-type-files">
-				<label className="field-label">{this.props.label}</label>
+	renderNote: function () {
+		if (!this.props.note) return null;
+		return <FormNote html={this.props.note} />;
+	},
 
+	renderUI () {
+		return (
+			<FormField label={this.props.label} className="field-type-localfiles" htmlFor={this.props.path}>
 				{this.renderFieldAction()}
 				{this.renderUploadsField()}
 				{this.renderFileField()}
-
-				<div className="field-ui">
-					{this.renderContainer()}
-					{this.renderToolbar()}
-				</div>
-			</div>
+				{this.renderContainer()}
+				{this.renderToolbar()}
+				{this.renderNote()}
+			</FormField>
 		);
-	}
+	},
 });

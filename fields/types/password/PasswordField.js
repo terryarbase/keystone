@@ -1,72 +1,94 @@
-var _ = require('underscore'),
-	React = require('react'),
-	Field = require('../Field');
+import React from 'react';
+import Field from '../Field';
+import {
+	Button,
+	FormInput,
+	InlineGroup as Group,
+	InlineGroupSection as Section,
+} from '../../../admin/client/App/elemental';
 
 module.exports = Field.create({
-	
-	displayName: 'PasswordField',
 
-	focusTarget: 'password',
-	
-	getInitialState: function() {
+	displayName: 'PasswordField',
+	statics: {
+		type: 'Password',
+	},
+
+	getInitialState () {
 		return {
 			passwordIsSet: this.props.value ? true : false,
 			showChangeUI: this.props.mode === 'create' ? true : false,
 			password: '',
-			confirm: ''
+			confirm: '',
 		};
 	},
-	
-	componentDidUpdate: function() {
-		if (this._focusAfterUpdate) {
-			this._focusAfterUpdate = false;
-			this.focus();
-		}
+
+	valueChanged (which, event) {
+		var newState = {};
+		newState[which] = event.target.value;
+		this.setState(newState);
 	},
-	
-	valueChanged: function(which, event) {
-		this.setState(_.object([which], [event.target.value]));
-		if (which === 'password') {
-			this.props.onChange({
-				path: this.props.path,
-				value: event.target.value
-			});
-		}
-	},
-	
-	showChangeUI: function() {
-		this._focusAfterUpdate = true;
+
+	showChangeUI () {
 		this.setState({
-			showChangeUI: true
-		});
+			showChangeUI: true,
+		}, () => this.focus());
 	},
-	
-	renderValue: function() {
-		return <div className="field-value">{this.props.value ? 'password set' : 'password not set'}</div>;
+
+	onCancel () {
+		this.setState({
+			showChangeUI: false,
+		}, () => this.focus());
 	},
-	
-	renderField: function() {
+
+	renderValue () {
+		return <FormInput noedit>{this.props.value ? 'Password Set' : ''}</FormInput>;
+	},
+
+	renderField () {
 		return this.state.showChangeUI ? this.renderFields() : this.renderChangeButton();
 	},
-	
-	renderFields: function() {
+
+	renderFields () {
 		return (
-			<div className="form-row">
-				<div className="col-sm-6">
-					<input type="password" name={this.props.path} placeholder="New password" ref="password" value={this.state.password} onChange={this.valueChanged.bind(this, 'password')} autoComplete="off" className="form-control" />
-				</div>
-				<div className="col-sm-6">
-					<input type="password" name={this.props.paths.confirm} placeholder="Confirm new password" ref="confirm" value={this.state.confirm} onChange={this.valueChanged.bind(this, 'confirm')} autoComplete="off" className="form-control" />
-				</div>
-			</div>
+			<Group block>
+				<Section grow>
+					<FormInput
+						autoComplete="off"
+						name={this.getInputName(this.props.path)}
+						onChange={this.valueChanged.bind(this, 'password')}
+						placeholder="New password"
+						ref="focusTarget"
+						type="password"
+						value={this.state.password}
+					/>
+				</Section>
+				<Section grow>
+					<FormInput
+						autoComplete="off"
+						name={this.getInputName(this.props.paths.confirm)}
+						onChange={this.valueChanged.bind(this, 'confirm')}
+						placeholder="Confirm new password" value={this.state.confirm}
+						type="password"
+					/>
+				</Section>
+				{this.state.passwordIsSet ? (
+					<Section>
+						<Button onClick={this.onCancel}>Cancel</Button>
+					</Section>
+				) : null}
+			</Group>
 		);
 	},
-	
-	renderChangeButton: function() {
-		var label = this.state.passwordIsSet ? 'Change Password' : 'Set Password';
+
+	renderChangeButton () {
+		var label = this.state.passwordIsSet
+			? 'Change Password'
+			: 'Set Password';
+
 		return (
-			<button type="button" className="btn btn-default" onClick={this.showChangeUI}>{label}</button>
+			<Button ref="focusTarget" onClick={this.showChangeUI}>{label}</Button>
 		);
-	}
-	
+	},
+
 });

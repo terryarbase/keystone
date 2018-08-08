@@ -2,6 +2,26 @@
 
 KeystoneJS is maintained by [@JedWatson](https://github.com/JedWatson) and an amazing team of contributors. All contributions are given credit here except for Jed's.
 
+
+## v0.3.22 / 2016-07-22
+
+* added; support for automatic SSL with Let's Encrypt, thanks [Wout Mertens](https://github.com/wmertens)
+* fixed; Date field formatting, thanks [Jared Collier](https://github.com/autoboxer)
+* fixed; Filtering for related items, thanks [Max Koryukov](https://github.com/maxkoryukov)
+- fixed; Relationship initial value loading
+
+## v0.3.21 / 2016-06-19
+
+* fixed; Issue preventing you from specifying the `pretty` option in the `locals` setting
+
+## v0.3.20 / 2016-06-17
+
+* fixed; Boolean fields with noedit:false and hidden:true do not retain value
+* fixed; Default formatString for Datetime fields didn't show minutes with a leading 0
+* fixed; Date format option works correctly, thanks [Jared Collier](https://github.com/autoboxer)
+* fixed; Datetime format option works correctly, thanks [Jared Collier](https://github.com/autoboxer)
+* fixed; Double password-hashing issue when the Users list inherits from another list, thanks [Jared Collier](https://github.com/autoboxer)
+
 ## v0.3.19 / 2016-05-04
 
 * added; support for Mailgun, thanks [Wolfgang](https://github.com/w01fgang)
@@ -9,8 +29,8 @@ KeystoneJS is maintained by [@JedWatson](https://github.com/JedWatson) and an am
 
 ## v0.3.18 / 2016-04-27
 
-fixed; make localfiles previews properly show up in admin ui column, thanks [Gabor K](https://github.com/krksgbr)
-improved; allow adding headers when sending email, thanks [Joss Mackison](https://github.com/JossMac)
+* fixed; make localfiles previews properly show up in admin ui column, thanks [Gabor K](https://github.com/krksgbr)
+* improved; allow adding headers when sending email, thanks [Joss Mackison](https://github.com/JossMac)
 
 This is a hotfix release to allow for adding headers when sending emails.
 
@@ -27,14 +47,6 @@ This is a hotfix release to allow for adding headers when sending emails.
 * fixed; show validation errors in pre save, thanks [gemng888](https://github.com/gemng888)
 * updated; update tinymce and add the imagetools, thanks [Riyadh Al Nur](https://github.com/riyadhalnur)
 * fixed; show notes in boolean field, thanks [Camille Reynders](https://github.com/creynders)
-
-## v0.3.16 / 2015-12-04
-
-* fixed; issues deleting real files on disk for the `LocalFiles` field type, thanks [Javier Castro](https://github.com/jacargentina)
-* fixed; issue with `filenameAsPublicID` in `CloudinaryImages`, thanks [Jeffrey Priebe](https://github.com/jeffreypriebe)
-* fixed; issue with signin validation, thanks [Greg Meyer](https://github.com/gmmeyer)
-
-Given the nature of the signin issue that was resolved in this release, we strongly recommend updating to this version as soon as possible.
 
 ## v0.3.15 / 2015-10-15
 

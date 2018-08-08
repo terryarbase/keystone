@@ -1,48 +1,60 @@
-var React = require('react'),
-	Field = require('../Field');
+import React from 'react';
+import Field from '../Field';
+import Checkbox from '../../components/Checkbox';
+import { FormField } from '../../../admin/client/App/elemental';
+
+const NOOP = () => {};
 
 module.exports = Field.create({
-	
 	displayName: 'BooleanField',
-	
-	valueChanged: function(event) {
+	statics: {
+		type: 'Boolean',
+	},
+	propTypes: {
+		indent: React.PropTypes.bool,
+		label: React.PropTypes.string,
+		onChange: React.PropTypes.func.isRequired,
+		path: React.PropTypes.string.isRequired,
+		value: React.PropTypes.bool,
+	},
+
+	valueChanged (value) {
 		this.props.onChange({
 			path: this.props.path,
-			value: event.target.checked
+			value: value,
 		});
 	},
-	
-	renderUI: function() {
-		
-		var input, fieldClassName = 'field-ui';
-		
-		if (this.props.indent) {
-			fieldClassName += ' field-indented';
-		}
-		
-		if (this.shouldRenderField()) {
-			input = (
-				<div className={fieldClassName}>
-					<label htmlFor={this.props.path} className="checkbox">
-						<input type='checkbox' name={this.props.path} id={this.props.path} value='true' checked={this.props.value} onChange={this.valueChanged} />
-						{this.props.label}
+	renderFormInput () {
+		if (!this.shouldRenderField()) return;
+
+		return (
+			<input
+				name={this.getInputName(this.props.path)}
+				type="hidden"
+				value={!!this.props.value}
+			/>
+		);
+	},
+	renderUI () {
+		const { indent, value, label, path } = this.props;
+
+		return (
+			<div data-field-name={path} data-field-type="boolean">
+				<FormField offsetAbsentLabel={indent}>
+					<label style={{ height: '2.3em' }}>
+						{this.renderFormInput()}
+						<Checkbox
+							checked={value}
+							onChange={(this.shouldRenderField() && this.valueChanged) || NOOP}
+							readonly={!this.shouldRenderField()}
+						/>
+						<span style={{ marginLeft: '.75em' }}>
+							{label}
+						</span>
 					</label>
 					{this.renderNote()}
-				</div>
-			);
-		} else {
-			var state = this.props.value ? 'checked' : 'unchecked';
-			var imgSrc = '/keystone/images/icons/16/checkbox-' + state + '.png';
-			input = (
-				<div className={fieldClassName}>
-					<img src={imgSrc} width='16' height='16' className={state} style={{ marginRight: 5 }} />
-					<span>{this.props.label}</span>
-					<div>{this.renderNote()}</div>
-				</div>
-			);
-		}
-		
-		return <div className="field field-type-boolean">{input}</div>;
-	}
-	
+				</FormField>
+			</div>
+		);
+	},
 });

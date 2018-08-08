@@ -1,21 +1,37 @@
-var React = require('react'),
-	Field = require('../Field');
+import { FormInput } from '../../../admin/client/App/elemental';
+import Field from '../Field';
+import React, { PropTypes } from 'react';
 
 module.exports = Field.create({
-	
 	displayName: 'MoneyField',
-	
-	valueChanged: function(event) {
+	propTypes: {
+		onChange: PropTypes.func.isRequired,
+		path: PropTypes.string.isRequired,
+		value: PropTypes.number,
+	},
+	statics: {
+		type: 'Money',
+	},
+
+	valueChanged (event) {
 		var newValue = event.target.value.replace(/[^\d\s\,\.\$€£¥]/g, '');
 		if (newValue === this.props.value) return;
+
 		this.props.onChange({
 			path: this.props.path,
-			value: newValue
+			value: newValue,
 		});
 	},
-	
-	renderField: function() {
-		return <input type="text" name={this.props.path} ref="focusTarget" value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
-	}
-	
+	renderField () {
+		return (
+			<FormInput
+				autoComplete="off"
+				name={this.getInputName(this.props.path)}
+				onChange={this.valueChanged}
+				ref="focusTarget"
+				value={this.props.value}
+			/>
+		);
+	},
+
 });

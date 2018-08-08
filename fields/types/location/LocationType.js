@@ -1,32 +1,28 @@
-/*!
- * Module dependencies.
- */
+var _ = require('lodash');
+var FieldType = require('../Type');
+var https = require('https');
+var keystone = require('../../../');
+var querystring = require('querystring');
+var util = require('util');
+var utils = require('keystone-utils');
 
-var _ = require('underscore'),
-	keystone = require('../../../'),
-	querystring = require('querystring'),
-	https = require('https'),
-	util = require('util'),
-	utils = require('keystone-utils'),
-	super_ = require('../Type');
-
-var RADIUS_KM = 6371,
-	RADIUS_MILES = 3959;
+var RADIUS_KM = 6371;
+var RADIUS_MILES = 3959;
 
 /**
  * Location FieldType Constructor
- * @extends Field
- * @api public
  */
-
-function location(list, path, options) {
+function location (list, path, options) {
 
 	this._underscoreMethods = ['format', 'googleLookup', 'kmFrom', 'milesFrom'];
 	this._fixedSize = 'full';
-
-	this.enableMapsAPI = (options.geocodeGoogle===true || (options.geocodeGoogle !== false && keystone.get('google server api key'))) ? true : false;
-
 	this._properties = ['enableMapsAPI'];
+	this.enableMapsAPI = (options.enableImprove === true || (options.enableImprove !== false && keystone.get('google server api key'))) ? true : false;
+
+	// Throw on invalid options in 4.0 (remove for 5.0)
+	if ('geocodeGoogle' in options) {
+		throw new Error('The geocodeGoogle option for Location fields has been renamed to enableImprove');
+	}
 
 	if (!options.defaults) {
 		options.defaults = {};
@@ -36,59 +32,50 @@ function location(list, path, options) {
 		if (Array.isArray(options.required)) {
 			// required can be specified as an array of paths
 			this.requiredPaths = options.required;
-		} else if ('string' === typeof options.required) {
+		} else if (typeof options.required === 'string') {
 			// or it can be specified as a comma-delimited list
 			this.requiredPaths = options.required.replace(/,/g, ' ').split(/\s+/);
 		}
 		// options.required should always be simplified to a boolean
 		options.required = true;
 	}
+
 	// default this.requiredPaths
 	if (!this.requiredPaths) {
 		this.requiredPaths = ['street1', 'suburb'];
 	}
 
 	location.super_.call(this, list, path, options);
-
 }
-
-/*!
- * Inherit from Field
- */
-
-util.inherits(location, super_);
-
+location.properName = 'Location';
+util.inherits(location, FieldType);
 
 /**
  * Registers the field on the List's Mongoose Schema.
- *
- * @api public
  */
+location.prototype.addToSchema = function (schema) {
 
-location.prototype.addToSchema = function() {
-
-	var field = this,
-		schema = this.list.schema,
-		options = this.options;
+	var field = this;
+	var options = this.options;
 
 	var paths = this.paths = {
-		number: this._path.append('.number'),
-		name: this._path.append('.name'),
-		street1: this._path.append('.street1'),
-		street2: this._path.append('.street2'),
-		suburb: this._path.append('.suburb'),
-		state: this._path.append('.state'),
-		postcode: this._path.append('.postcode'),
-		country: this._path.append('.country'),
-		geo: this._path.append('.geo'),
-		geo_lat: this._path.append('.geo_lat'),
-		geo_lng: this._path.append('.geo_lng'),
-		serialised: this._path.append('.serialised'),
-		improve: this._path.append('_improve'),
-		overwrite: this._path.append('_improve_overwrite')
+		number: this.path + '.number',
+		name: this.path + '.name',
+		street1: this.path + '.street1',
+		street2: this.path + '.street2',
+		suburb: this.path + '.suburb',
+		state: this.path + '.state',
+		postcode: this.path + '.postcode',
+		country: this.path + '.country',
+		geo: this.path + '.geo',
+		geo_lat: this.path + '.geo_lat',
+		geo_lng: this.path + '.geo_lng',
+		serialised: this.path + '.serialised',
+		improve: this.path + '_improve',
+		overwrite: this.path + '_improve_overwrite',
 	};
 
-	var getFieldDef = function(type, key) {
+	var getFieldDef = function (type, key) {
 		var def = { type: type };
 		if (options.defaults[key]) {
 			def.default = options.defaults[key];
@@ -107,10 +94,10 @@ location.prototype.addToSchema = function() {
 		state: getFieldDef(String, 'state'),
 		postcode: getFieldDef(String, 'postcode'),
 		country: getFieldDef(String, 'country'),
-		geo: { type: [Number], index: '2dsphere' }
+		geo: { type: [Number], index: '2dsphere' },
 	}, this.path + '.');
 
-	schema.virtual(paths.serialised).get(function() {
+	schema.virtual(paths.serialised).get(function () {
 		return _.compact([
 			this.get(paths.number),
 			this.get(paths.name),
@@ -119,24 +106,43 @@ location.prototype.addToSchema = function() {
 			this.get(paths.suburb),
 			this.get(paths.state),
 			this.get(paths.postcode),
-			this.get(paths.country)
+			this.get(paths.country),
 		]).join(', ');
 	});
 
 	// pre-save hook to fix blank geo fields
 	// see http://stackoverflow.com/questions/16388836/does-applying-a-2dsphere-index-on-a-mongoose-schema-force-the-location-field-to
-	schema.pre('save', function(next) {
+	schema.pre('save', function (next) {
 		var obj = field._path.get(this);
-		if (Array.isArray(obj.geo) && (obj.geo.length !== 2 || (obj.geo[0] === null && obj.geo[1] === null))) {
-			obj.geo = undefined;
-		}
+		var geo = (obj.geo || []).map(Number).filter(_.isFinite);
+		obj.geo = (geo.length === 2) ? geo : undefined;
 		next();
 	});
 
 	this.bindUnderscoreMethods();
-
 };
 
+/**
+ * Add filters to a query
+ */
+var FILTER_PATH_MAP = {
+	street: 'street1',
+	city: 'suburb',
+	state: 'state',
+	code: 'postcode',
+	country: 'country',
+};
+location.prototype.addFilterToQuery = function (filter) {
+	var query = {};
+	var field = this;
+	['street', 'city', 'state', 'code', 'country'].forEach(function (i) {
+		if (!filter[i]) return;
+		var value = utils.escapeRegExp(filter[i]);
+		value = new RegExp(value, 'i');
+		query[field.paths[FILTER_PATH_MAP[i]]] = filter.inverted ? { $not: value } : value;
+	});
+	return query;
+};
 
 /**
  * Formats a list of the values stored by the field. Only paths that
@@ -145,45 +151,86 @@ location.prototype.addToSchema = function() {
  * Optionally provide a space-separated list of values to include.
  *
  * Delimiter defaults to `', '`.
- *
- * @api public
  */
-
-location.prototype.format = function(item, values, delimiter) {
-
+location.prototype.format = function (item, values, delimiter) {
 	if (!values) {
 		return item.get(this.paths.serialised);
 	}
-
 	var paths = this.paths;
-
-	values = values.split(' ').map(function(i) {
+	values = values.split(' ').map(function (i) {
 		return item.get(paths[i]);
 	});
-
 	return _.compact(values).join(delimiter || ', ');
-
 };
-
 
 /**
  * Detects whether the field has been modified
- *
- * @api public
  */
-
-location.prototype.isModified = function(item) {
-	return item.isModified(this.paths.number) ||
-		item.isModified(this.paths.name) ||
-		item.isModified(this.paths.street1) ||
-		item.isModified(this.paths.street2) ||
-		item.isModified(this.paths.suburb) ||
-		item.isModified(this.paths.state) ||
-		item.isModified(this.paths.postcode) ||
-		item.isModified(this.paths.country) ||
-		item.isModified(this.paths.geo);
+location.prototype.isModified = function (item) {
+	return item.isModified(this.paths.number)
+	|| item.isModified(this.paths.name)
+	|| item.isModified(this.paths.street1)
+	|| item.isModified(this.paths.street2)
+	|| item.isModified(this.paths.suburb)
+	|| item.isModified(this.paths.state)
+	|| item.isModified(this.paths.postcode)
+	|| item.isModified(this.paths.country)
+	|| item.isModified(this.paths.geo);
 };
 
+location.prototype.getInputFromData = function (data) {
+	// Allow JSON structured data
+	var input = this.getValueFromData(data);
+
+	// If there is no structured data, look for the flat paths
+	if (!input) {
+		input = {
+			number: data[this.paths.number],
+			name: data[this.paths.name],
+			street1: data[this.paths.street1],
+			street2: data[this.paths.street2],
+			suburb: data[this.paths.suburb],
+			state: data[this.paths.state],
+			postcode: data[this.paths.postcode],
+			country: data[this.paths.country],
+			geo: data[this.paths.geo],
+			geo_lat: data[this.paths.geo],
+			geo_lng: data[this.paths.geo],
+			improve: data[this.paths_improve],
+			overwrite: data[this.paths_improve_overwrite],
+		};
+	}
+
+	return input;
+};
+
+/**
+ * Validates that a value for this field has been provided in a data object
+ */
+location.prototype.validateInput = function (data, callback) {
+	// var input = this.getInputFromData(data);
+	// TODO: We should strictly check for types in input here
+	utils.defer(callback, true);
+};
+
+/**
+ * Validates that input has been provided
+ * TODO: Needs test coverage
+ */
+location.prototype.validateRequiredInput = function (item, data, callback) {
+	var result = true;
+	var input = this.getInputFromData(data);
+	var currentValue = item.get(this.path);
+	this.requiredPaths.forEach(function (path) {
+		// ignore missing values if they already exist in the item
+		if (input[path] === undefined && currentValue[path]) return;
+		// falsy values mean the input is invalid
+		if (!input[path]) {
+			result = false;
+		}
+	});
+	utils.defer(callback, result);
+};
 
 /**
  * Validates that a value for this field has been provided in a data object
@@ -191,22 +238,15 @@ location.prototype.isModified = function(item) {
  * options.required specifies an array or space-delimited list of paths that
  * are required (defaults to street1, suburb)
  *
- * @api public
+ * Deprecated
  */
-
-location.prototype.validateInput = function(data, required, item) {
-
-	if (!required) {
-		return true;
-	}
-
-	var paths = this.paths,
-		nested = this._path.get(data),
-		values = nested || data,
-		valid = true;
-
-	this.requiredPaths.forEach(function(path) {
-
+location.prototype.inputIsValid = function (data, required, item) {
+	if (!required) return true;
+	var paths = this.paths;
+	var nested = this._path.get(data);
+	var values = nested || data;
+	var valid = true;
+	this.requiredPaths.forEach(function (path) {
 		if (nested) {
 			if (!(path in values) && item && item.get(paths[path])) {
 				return;
@@ -222,135 +262,78 @@ location.prototype.validateInput = function(data, required, item) {
 				valid = false;
 			}
 		}
-
 	});
-
 	return valid;
-
 };
-
 
 /**
  * Updates the value for this field in the item from a data object
- *
- * @api public
  */
+location.prototype.updateItem = function (item, data, callback) {
 
-location.prototype.updateItem = function(item, data) {
-
-	var paths = this.paths,
-		fieldKeys = ['number', 'name', 'street1', 'street2', 'suburb', 'state', 'postcode', 'country'],
-		geoKeys = ['geo', 'geo_lat', 'geo_lng'],
-		valueKeys = fieldKeys.concat(geoKeys),
-		valuePaths = valueKeys,
-		values = this._path.get(data);
+	var paths = this.paths;
+	var fieldKeys = ['number', 'name', 'street1', 'street2', 'suburb', 'state', 'postcode', 'country'];
+	var geoKeys = ['geo', 'geo_lat', 'geo_lng'];
+	var valueKeys = fieldKeys.concat(geoKeys);
+	var valuePaths = valueKeys;
+	var values = this._path.get(data);
 
 	if (!values) {
 		// Handle flattened values
-		valuePaths = valueKeys.map(function(i) {
+		valuePaths = valueKeys.map(function (i) {
 			return paths[i];
 		});
 		values = _.pick(data, valuePaths);
 	}
 
 	// convert valuePaths to a map for easier usage
-	valuePaths = _.object(valueKeys, valuePaths);
+	valuePaths = _.zipObject(valueKeys, valuePaths);
 
-	var setValue = function(key) {
+	var setValue = function (key) {
 		if (valuePaths[key] in values && values[valuePaths[key]] !== item.get(paths[key])) {
 			item.set(paths[key], values[valuePaths[key]] || null);
 		}
 	};
 
-	_.each(fieldKeys, setValue);
+	_.forEach(fieldKeys, setValue);
 
 	if (valuePaths.geo in values) {
-
 		var oldGeo = item.get(paths.geo) || [];
 		if (oldGeo.length > 1) {
 			oldGeo[0] = item.get(paths.geo)[1];
 			oldGeo[1] = item.get(paths.geo)[0];
 		}
 		var newGeo = values[valuePaths.geo];
-
 		if (!Array.isArray(newGeo) || newGeo.length !== 2) {
 			newGeo = [];
 		}
-
 		if (newGeo[0] !== oldGeo[0] || newGeo[1] !== oldGeo[1]) {
 			item.set(paths.geo, newGeo);
 		}
-
 	} else if (valuePaths.geo_lat in values && valuePaths.geo_lng in values) {
-
-		var lat = utils.number(values[valuePaths.geo_lat]),
-			lng = utils.number(values[valuePaths.geo_lng]);
-
+		var lat = utils.number(values[valuePaths.geo_lat]);
+		var lng = utils.number(values[valuePaths.geo_lng]);
 		item.set(paths.geo, (lat && lng) ? [lng, lat] : undefined);
-
 	}
 
-};
-
-
-/**
- * Returns a callback that handles a standard form submission for the field
- *
- * Handles:
- * - `field.paths.improve` in `req.body` - improves data via `.googleLookup()`
- * - `field.paths.overwrite` in `req.body` - in conjunction with `improve`, overwrites existing data
- *
- * @api public
- */
-
-location.prototype.getRequestHandler = function(item, req, paths, callback) {
-
-	var field = this;
-
-	if (utils.isFunction(paths)) {
-		callback = paths;
-		paths = field.paths;
-	} else if (!paths) {
-		paths = field.paths;
-	}
-
-	callback = callback || function() {};
-
-	return function() {
-
-		var update = req.body[paths.overwrite] ? 'overwrite' : true;
-
-		if (req.body && req.body[paths.improve]) {
-			field.googleLookup(item, false, update, function() {
-				callback();
-			});
-		} else {
+	var doGoogleLookup = this.getValueFromData(data, '_improve');
+	if (doGoogleLookup) {
+		var googleUpdateMode = this.getValueFromData(data, '_improve_overwrite') ? 'overwrite' : true;
+		this.googleLookup(item, false, googleUpdateMode, function (err, location, result) {
+			// TODO: we are currently discarding the error; it should probably be
+			// sent back in the response, needs consideration
 			callback();
-		}
+		});
+		return;
+	}
 
-	};
-
+	process.nextTick(callback);
 };
-
-
-/**
- * Immediately handles a standard form submission for the field (see `getRequestHandler()`)
- *
- * @api public
- */
-
-location.prototype.handleRequest = function(item, req, paths, callback) {
-	this.getRequestHandler(item, req, paths, callback)();
-};
-
 
 /**
  * Internal Google geocode request method
- *
- * @api private
  */
-
-function doGoogleGeocodeRequest(address, region, callback) {
+function doGoogleGeocodeRequest (address, region, callback) {
 
 	// https://developers.google.com/maps/documentation/geocoding/
 	// Use of the Google Geocoding API is subject to a query limit of 2,500 geolocation requests per day, except with an enterprise license.
@@ -360,10 +343,10 @@ function doGoogleGeocodeRequest(address, region, callback) {
 	var options = {
 		sensor: false,
 		language: 'en',
-		address: address
+		address: address,
 	};
 
-	if (arguments.length === 2 && _.isFunction(region)) {
+	if (arguments.length === 2 && typeof region === 'function') {
 		callback = region;
 		region = null;
 	}
@@ -372,34 +355,37 @@ function doGoogleGeocodeRequest(address, region, callback) {
 		options.region = region;
 	}
 
-	if (keystone.get('google server api key')){
+	if (keystone.get('google server api key')) {
 		options.key = keystone.get('google server api key');
 	}
 
 	var endpoint = 'https://maps.googleapis.com/maps/api/geocode/json?' + querystring.stringify(options);
 
-	https.get(endpoint, function(res) {
+	https.get(endpoint, function (res) {
 		var data = [];
-		res.on('data', function(chunk) {
-				data.push(chunk);
-			})
-			.on('end', function() {
-				var dataBuff = data.join('').trim();
-				var result;
-				try {
-					result = JSON.parse(dataBuff);
-				}
-				catch (exp) {
-					result = { 'status_code': 500, 'status_text': 'JSON Parse Failed', 'status': 'UNKNOWN_ERROR' };
-				}
-				callback(null, result);
-			});
+		res.on('data', function (chunk) {
+			data.push(chunk);
+		})
+		.on('end', function () {
+			var dataBuff = data.join('').trim();
+			var result;
+			try {
+				result = JSON.parse(dataBuff);
+			}
+			catch (exp) {
+				result = {
+					status_code: 500,
+					status_text: 'JSON Parse Failed',
+					status: 'UNKNOWN_ERROR',
+				};
+			}
+			callback(null, result);
+		});
 	})
-	.on('error', function(err) {
+	.on('error', function (err) {
 		callback(err);
 	});
 }
-
 
 /**
  * Autodetect the full address and lat, lng from the stored value.
@@ -409,26 +395,27 @@ function doGoogleGeocodeRequest(address, region, callback) {
  * Please make sure your Keystone app complies with the Google Maps API License.
  *
  * Internal status codes mimic the Google API status codes.
- *
- * @api private
  */
+location.prototype.googleLookup = function (item, region, update, callback) {
 
-location.prototype.googleLookup = function(item, region, update, callback) {
-
-	if (_.isFunction(update)) {
+	if (typeof update === 'function') {
 		callback = update;
 		update = false;
 	}
 
-	var field = this,
-		stored = item.get(this.path),
-		address = item.get(this.paths.serialised);
+	var field = this;
+	var stored = item.get(this.path);
+	var address = item.get(this.paths.serialised);
 
 	if (address.length === 0) {
-		return callback({ 'status_code': 500, 'status_text': 'No address to geocode', 'status': 'NO_ADDRESS' });
+		return callback({
+			status_code: 500,
+			status_text: 'No address to geocode',
+			status: 'NO_ADDRESS',
+		});
 	}
 
-	doGoogleGeocodeRequest(address, region || keystone.get('default region'), function(err, geocode){
+	doGoogleGeocodeRequest(address, region || keystone.get('default region'), function (err, geocode) {
 
 		if (err || geocode.status !== 'OK') {
 			return callback(err || new Error(geocode.status + ': ' + geocode.error_message));
@@ -442,26 +429,25 @@ location.prototype.googleLookup = function(item, region, update, callback) {
 
 		var location = {};
 
-		_.each(result.address_components, function(val){
-			if ( _.indexOf(val.types, 'street_number') >= 0 ) {
-				location.street1 = location.street1 || [];
-				location.street1.push(val.long_name);
+		_.forEach(result.address_components, function (val) {
+			if (_.indexOf(val.types, 'street_number') >= 0) {
+				location.street1 = [val.long_name];
 			}
-			if ( _.indexOf(val.types, 'route') >= 0 ) {
+			if (_.indexOf(val.types, 'route') >= 0) {
 				location.street1 = location.street1 || [];
 				location.street1.push(val.short_name);
 			}
 			// in some cases, you get suburb, city as locality - so only use the first
-			if ( _.indexOf(val.types, 'locality') >= 0 && !location.suburb) {
+			if (_.indexOf(val.types, 'locality') >= 0 && !location.suburb) {
 				location.suburb = val.long_name;
 			}
-			if ( _.indexOf(val.types, 'administrative_area_level_1') >= 0 ) {
+			if (_.indexOf(val.types, 'administrative_area_level_1') >= 0) {
 				location.state = val.short_name;
 			}
-			if ( _.indexOf(val.types, 'country') >= 0 ) {
+			if (_.indexOf(val.types, 'country') >= 0) {
 				location.country = val.long_name;
 			}
-			if ( _.indexOf(val.types, 'postal_code') >= 0 ) {
+			if (_.indexOf(val.types, 'postal_code') >= 0) {
 				location.postcode = val.short_name;
 			}
 		});
@@ -472,18 +458,18 @@ location.prototype.googleLookup = function(item, region, update, callback) {
 
 		location.geo = [
 			result.geometry.location.lng,
-			result.geometry.location.lat
+			result.geometry.location.lat,
 		];
 
-		//console.log('------ Google Geocode Results ------');
-		//console.log(address);
-		//console.log(result);
-		//console.log(location);
+		// console.log('------ Google Geocode Results ------');
+		// console.log(address);
+		// console.log(result);
+		// console.log(location);
 
 		if (update === 'overwrite') {
 			item.set(field.path, location);
 		} else if (update) {
-			_.each(location, function(value, key) {
+			_.forEach(location, function (value, key) {
 				if (key === 'geo') {
 					return;
 				}
@@ -501,55 +487,36 @@ location.prototype.googleLookup = function(item, region, update, callback) {
 	});
 };
 
-
 /**
  * Internal Distance calculation function
  *
  * See http://en.wikipedia.org/wiki/Haversine_formula
- *
- * @api private
  */
-
-function calculateDistance(point1, point2) {
-
+function calculateDistance (point1, point2) {
 	var dLng = (point2[0] - point1[0]) * Math.PI / 180;
 	var dLat = (point2[1] - point1[1]) * Math.PI / 180;
 	var lat1 = (point1[1]) * Math.PI / 180;
 	var lat2 = (point2[1]) * Math.PI / 180;
-
 	/* eslint-disable space-infix-ops */
 	var a = Math.sin(dLat/2) * Math.sin(dLat/2) + Math.sin(dLng/2) * Math.sin(dLng/2) * Math.cos(lat1) * Math.cos(lat2);
 	var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 	/* eslint-enable space-infix-ops */
 	return c;
-
 }
-
 
 /**
  * Returns the distance from a [lat, lng] point in kilometres
- *
- * @api public
  */
-
-location.prototype.kmFrom = function(item, point) {
+location.prototype.kmFrom = function (item, point) {
 	return calculateDistance(this.get(this.paths.geo), point) * RADIUS_KM;
 };
 
-
 /**
  * Returns the distance from a [lat, lng] point in miles
- *
- * @api public
  */
-
-location.prototype.milesFrom = function(item, point) {
+location.prototype.milesFrom = function (item, point) {
 	return calculateDistance(this.get(this.paths.geo), point) * RADIUS_MILES;
 };
 
-
-/*!
- * Export class
- */
-
-exports = module.exports = location;
+/* Export Field Type */
+module.exports = location;
