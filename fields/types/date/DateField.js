@@ -1,92 +1,95 @@
-var React = require('react');
-var Field = require('../Field');
-var Note = require('../../components/Note');
-var DateInput = require('../../components/DateInput');
-var moment = require('moment');
+import DateInput from '../../components/DateInput';
+import Field from '../Field';
+import moment from 'moment';
+import React from 'react';
+import {
+	Button,
+	FormInput,
+	InlineGroup as Group,
+	InlineGroupSection as Section,
+} from '../../../admin/client/App/elemental';
+
+/*
+TODO: Implement yearRange Prop, or deprecate for max / min values (better)
+*/
+
+const DEFAULT_INPUT_FORMAT = 'YYYY-MM-DD';
+const DEFAULT_FORMAT_STRING = 'Do MMM YYYY';
 
 module.exports = Field.create({
-	
 	displayName: 'DateField',
+	statics: {
+		type: 'Date',
+	},
+	propTypes: {
+		formatString: React.PropTypes.string,
+		inputFormat: React.PropTypes.string,
+		label: React.PropTypes.string,
+		note: React.PropTypes.string,
+		onChange: React.PropTypes.func,
+		path: React.PropTypes.string,
+		value: React.PropTypes.string,
+	},
 
-	focusTargetRef: 'dateInput',
-
-	// default input format
-	inputFormat: 'YYYY-MM-DD',
-
-	getInitialState: function() {
-		return { 
-			value: this.props.value ? this.moment(this.props.value).format(this.inputFormat) : ''
+	getDefaultProps () {
+		return {
+			formatString: DEFAULT_FORMAT_STRING,
+			inputFormat: DEFAULT_INPUT_FORMAT,
 		};
 	},
-
-	getDefaultProps: function() {
-		return { 
-			formatString: 'Do MMM YYYY'
-		};
-	},
-
-	moment: function(value) {
-		var m = moment(value);
-		if (this.props.isUTC) m.utc();
-		return m;
-	},
-
-	// TODO: Move isValid() so we can share with server-side code
-	isValid: function(value) {
-		return moment(value, this.inputFormat).isValid();
-	},
-
-	// TODO: Move format() so we can share with server-side code
-	format: function(dateValue, format) {
-		format = format || this.inputFormat;
-		return dateValue ? this.moment(this.props.dateValue).format(format) : '';
-	},
-
-	setDate: function(dateValue) {
-		this.setState({ value: dateValue });
+	valueChanged ({ value }) {
 		this.props.onChange({
 			path: this.props.path,
-			value: this.isValid(dateValue) ? dateValue : null
+			value: value,
 		});
 	},
-
-	setToday: function() {
-		this.setDate(moment().format(this.inputFormat));
-	},
-
-	valueChanged: function(value) {
-		this.setDate(value);
-	},
-
-	renderUI: function() {
-		
-		var input;
-		var fieldClassName = 'field-ui';
-
-		if (this.shouldRenderField()) {
-			input = (
-				<div className={fieldClassName}>
-					<DateInput ref="dateInput" name={this.props.path} format={this.inputFormat} value={this.state.value} onChange={this.valueChanged} yearRange={this.props.yearRange} />
-					<button type="button" className="btn btn-default btn-set-today" onClick={this.setToday}>Today</button>
-				</div>
-			);
+	toMoment (value) {
+		if (this.props.isUTC) {
+			return moment.utc(value);
 		} else {
-			input = (
-				<div className={fieldClassName}>
-					<div className="field-value">{this.format(this.props.value, this.props.formatString)}</div>
-				</div>
-			);
+			return moment(value);
 		}
-		
+	},
+	isValid (value) {
+		return this.toMoment(value, this.inputFormat).isValid();
+	},
+	format (value) {
+		return value ? this.toMoment(value).format(this.props.formatString) : '';
+	},
+	setToday () {
+		this.valueChanged({
+			value: this.toMoment(new Date()).format(this.props.inputFormat),
+		});
+	},
+	renderValue () {
 		return (
-			<div className="field field-type-date">
-				<label htmlFor={this.props.path} className="field-label">{this.props.label}</label>
-				{input}
-				<div className="col-sm-9 col-md-10 col-sm-offset-3 col-md-offset-2 field-note-wrapper">
-					<Note note={this.props.note} />
-				</div>
-			</div>
+			<FormInput noedit>
+				{this.format(this.props.value)}
+			</FormInput>
 		);
-	}
+	},
+	renderField () {
+		var dateAsMoment = this.toMoment(this.props.value);
+		var value = this.props.value && dateAsMoment.isValid()
+			? dateAsMoment.format(this.props.inputFormat)
+			: this.props.value;
+
+		return (
+			<Group>
+				<Section grow>
+					<DateInput
+						format={this.props.inputFormat}
+						name={this.getInputName(this.props.path)}
+						onChange={this.valueChanged}
+						ref="dateInput"
+						value={value}
+					/>
+				</Section>
+				<Section>
+					<Button onClick={this.setToday}>Today</Button>
+				</Section>
+			</Group>
+		);
+	},
 
 });
