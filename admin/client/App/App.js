@@ -47,6 +47,7 @@ const App = (props) => {
 			currentSection = Keystone.nav.by.list[currentList.key];
 		}
 	}
+	// console.log('Keystone: ', Keystone);
 	// Default current section key to dashboard
 	const currentSectionKey = (currentSection && currentSection.key) || 'dashboard';
 	return (

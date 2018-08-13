@@ -76,7 +76,7 @@ var PrimaryNavigation = React.createClass({
 		const className = currentSectionKey === 'dashboard' ? 'primary-navbar__brand primary-navbar__item--active' : 'primary-navbar__brand';
 
 		return (
-			<div>
+			<div className="primary-navbar__container">
 				<Link
 					className="primary-navbar__logo"
 					title={'Dashboard - ' + brand}

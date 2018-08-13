@@ -77,14 +77,24 @@
 			li.primary-navbar__item{
 				float: initial;
 				display: inline-block;
+				> a{
+					padding-top: 5px;
+					padding-bottom: 5px;
+				}
 			}
 		}
 	}
-	.primary-navbar__logo{
-		img {
-			text-align: center;
-		    margin: 15px auto;
-		    display: block;
+	.primary-navbar__container {
+		text-align: center;
+		.primary-navbar__logo{
+			border: 0;
+			display: inline-block;
+    		margin: 25px 0 20px 0;
+			img {
+				text-align: center;
+			    margin: 0 auto;
+			    display: block;
+			}
 		}
 	}
 }
@@ -92,8 +102,8 @@
 .primary-navbar {
 	background-color: @primary-navbar-bg;
 	color: @primary-navbar-color;
-	padding-bottom: .5em;
-	padding-top: .5em;
+	padding-bottom: .8em;
+	padding-top: .8em;
 	display: table;
 	width: 100%;
 }
