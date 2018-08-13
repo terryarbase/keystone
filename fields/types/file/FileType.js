@@ -136,6 +136,12 @@ file.prototype.validateRequiredInput = function (item, data, callback) {
 	utils.defer(callback, result);
 };
 
+file.prototype.getData = function(item){
+	var value = item.get(this.path);
+	value.publicPath = this.storage.adapter.options.publicPath;
+	return value;
+};
+
 /**
  * Updates the value for this field in the item from a data object
  * TODO: It is not possible to remove an existing value and upload a new fiel

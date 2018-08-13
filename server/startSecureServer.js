@@ -60,6 +60,9 @@ module.exports = function (keystone, app, created, callback) {
 	if (keystone.get('ssl passphrase')) {
 		options.passphrase = keystone.get('ssl passphrase');
 	}
+	if (keystone.get('ssl ciphers')){
+		options.ciphers = keystone.get('ssl ciphers').join(':');
+	}
 	sniFunc = keystone.get('ssl sni');
 	if (sniFunc) {
 		options.SNICallback = function (host, cb) {

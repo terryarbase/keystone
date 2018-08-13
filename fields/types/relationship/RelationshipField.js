@@ -87,10 +87,7 @@ module.exports = Field.create({
 	},
 
 	cacheItem (item) {
-		const keystoneList = listsByKey[this.props.refList.key];
-		if (keystoneList && !keystoneList.hidden) {
-			item.href = Keystone.adminPath + '/' + this.props.refList.path + '/' + item.id;
-		}
+		item.href = Keystone.adminPath + '/' + this.props.refList.path + '/' + item.id;
 		this._itemsCache[item.id] = item;
 	},
 
@@ -125,6 +122,8 @@ module.exports = Field.create({
 			});
 		}, (err, expanded) => {
 			if (!this.isMounted()) return;
+			//handle unexpected JSON string not parsed
+			expanded = typeof expanded === 'string' ? JSON.parse(expanded) : expanded;
 			this.setState({
 				loading: false,
 				value: this.props.many ? expanded : expanded[0],
@@ -146,6 +145,8 @@ module.exports = Field.create({
 				console.error('Error loading items:', err);
 				return callback(null, []);
 			}
+			//handle unexpected JSON string not parsed
+			data = typeof data === 'string' ? JSON.parse(data) : data;
 			data.results.forEach(this.cacheItem);
 			callback(null, {
 				options: data.results,
@@ -193,13 +194,8 @@ module.exports = Field.create({
 	},
 
 	renderSelect (noedit) {
-		const inputName = this.getInputName(this.props.path);
-		const emptyValueInput = (this.props.many && (!this.state.value || !this.state.value.length))
-			? <input type="hidden" name={inputName} value="" /> : null;
 		return (
 			<div>
-				{/* This input ensures that an empty value is submitted when no related items are selected */}
-				{emptyValueInput}
 				{/* This input element fools Safari's autocorrect in certain situations that completely break react-select */}
 				<input type="text" style={{ position: 'absolute', width: 1, height: 1, zIndex: -1, opacity: 0 }} tabIndex="-1"/>
 				<Select.Async
@@ -207,7 +203,7 @@ module.exports = Field.create({
 					disabled={noedit}
 					loadOptions={this.loadOptions}
 					labelKey="name"
-					name={inputName}
+					name={this.getInputName(this.props.path)}
 					onChange={this.valueChanged}
 					simpleValue
 					value={this.state.value}
@@ -246,7 +242,7 @@ module.exports = Field.create({
 		const { value } = this.state;
 		const props = {
 			children: value ? value.name : null,
-			component: value && value.href ? 'a' : 'span',
+			component: value ? 'a' : 'span',
 			href: value ? value.href : null,
 			noedit: true,
 		};

@@ -66,14 +66,10 @@ module.exports = function (req, res) {
 			return res.apiError('database error', err);
 		}
 
-		const isBasic = (req.query.basic === '' || req.query.basic === 'true');
-
 		return res.json({
 			results: includeResults
 				? items.map(function (item) {
-					return isBasic ? 
-						req.list.getBasicData(item) : 
-						req.list.getData(item, fields, req.query.expandRelationshipFields);
+					return req.list.getData(item, fields, req.query.expandRelationshipFields);
 				})
 				: undefined,
 			count: includeCount

@@ -79,6 +79,15 @@ module.exports = function createApp (keystone, express) {
 	if (keystone.get('logging middleware')) {
 		app.use(keystone.get('logging middleware'));
 	}
+	
+	// Pre dynamic config
+	if (typeof keystone.get('pre:dynamic') === 'function') {
+		keystone.get('pre:dynamic')(app);
+	}
+	app.use(function (req, res, next) {
+		keystone.callHook('pre:dynamic', req, res, next);
+	});
+
 
 	// unless the headless option is set (which disables the Admin UI),
 	// bind the Admin UI's Dynamic Router

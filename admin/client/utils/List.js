@@ -68,8 +68,8 @@ function buildQueryString (options) {
 	if (options.page && options.page.size) query.limit = options.page.size;
 	if (options.page && options.page.index > 1) query.skip = (options.page.index - 1) * options.page.size;
 	if (options.sort) query.sort = getSortString(options.sort);
-	query.ts = Math.random();
 	query.expandRelationshipFields = true;
+	query.timestamp = new Date().getTime();
 	return '?' + qs.stringify(query);
 };
 
@@ -101,6 +101,8 @@ List.prototype.createItem = function (formData, callback) {
 		body: formData,
 	}, (err, resp, data) => {
 		if (err) callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
 		if (resp.statusCode === 200) {
 			callback(null, data);
 		} else {
@@ -129,6 +131,8 @@ List.prototype.updateItem = function (id, formData, callback) {
 		body: formData,
 	}, (err, resp, data) => {
 		if (err) return callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
 		if (resp.statusCode === 200) {
 			callback(null, data);
 		} else {
@@ -235,6 +239,8 @@ List.prototype.loadItem = function (itemId, options, callback) {
 		responseType: 'json',
 	}, (err, resp, data) => {
 		if (err) return callback(err);
+        // handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
 		// Pass the data as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, data);
@@ -258,6 +264,8 @@ List.prototype.loadItems = function (options, callback) {
 		responseType: 'json',
 	}, (err, resp, data) => {
 		if (err) callback(err);
+        // handle unexpected JSON string not parsed
+        data = typeof data === 'string' ? JSON.parse(data) : data;
 		// Pass the data as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, data);
@@ -317,6 +325,7 @@ List.prototype.deleteItems = function (itemIds, callback) {
 		},
 	}, (err, resp, body) => {
 		if (err) return callback(err);
+        data = typeof data === 'string' ? JSON.parse(data) : data;
 		// Pass the body as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, body);

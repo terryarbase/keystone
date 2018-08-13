@@ -32,7 +32,6 @@ module.exports = Field.create({
 		label: PropTypes.string,
 		note: PropTypes.string,
 		path: PropTypes.string.isRequired,
-		thumb: PropTypes.bool,
 		value: PropTypes.shape({
 			filename: PropTypes.string,
 			// TODO: these are present but not used in the UI,
@@ -74,13 +73,6 @@ module.exports = Field.create({
 		return this.state.userSelectedFile
 			? this.state.userSelectedFile.name
 			: this.props.value.filename;
-	},
-	getFileUrl () {
-		return this.props.value && this.props.value.url;
-	},
-	isImage () {
-		const href = this.props.value ? this.props.value.url : undefined;
-		return href && href.match(/\.(jpeg|jpg|gif|png|svg)$/i) != null;
 	},
 
 	// ==============================
@@ -135,7 +127,7 @@ module.exports = Field.create({
 		return (
 			<div>
 				{(this.hasFile() && !this.state.removeExisting) ? (
-					<FileChangeMessage component={href ? 'a' : 'span'} href={href} target="_blank">
+					<FileChangeMessage href={href} target="_blank">
 						{this.getFilename()}
 					</FileChangeMessage>
 				) : null}
@@ -199,44 +191,52 @@ module.exports = Field.create({
 			return null;
 		}
 	},
+	isImage () {
+		const imageMimeType = [
+			"image/png",
+			"image/jpeg",
+			"image/jpg",
+			"image/gif",
+		];
+		for(var i = 0; i < imageMimeType.length; i++){
+			if(this.props.value.mimetype === imageMimeType[i]){
+				return true;
+			}
+		}
+		return false;
+	},
 	renderImagePreview () {
-		const imageSource = this.getFileUrl();
+		const imageSrc = '/' + this.props.value.publicPath + '/' + this.props.value.filename;
+
 		return (
 			<ImageThumbnail
 				component="a"
-				href={imageSource}
+				href={imageSrc}
 				target="__blank"
-				style={{ float: 'left', marginRight: '1em', maxWidth: '50%' }}
+				style={{ float: 'left', marginRight: '1em' }}
 			>
-				<img src={imageSource} style={{ 'max-height': 100, 'max-width': '100%' }} />
+				<img src={imageSrc} style={{ height: 90 }} />
 			</ImageThumbnail>
 		);
 	},
 	renderUI () {
-		const { label, note, path, thumb } = this.props;
-		const isImage = this.isImage();
-		const hasFile = this.hasFile();
-
-		const previews = (
-			<div style={(isImage && thumb) ? { marginBottom: '1em' } : null}>
-				{isImage && thumb && this.renderImagePreview()}
-				{hasFile && this.renderFileNameAndChangeMessage()}
-			</div>
-		);
+		const { label, note, path } = this.props;
 		const buttons = (
-			<div style={hasFile ? { marginTop: '1em' } : null}>
+			<div style={this.hasFile() ? { marginTop: '1em' } : null}>
 				<Button onClick={this.triggerFileBrowser}>
-					{hasFile ? 'Change' : 'Upload'} File
+					{this.hasFile() ? 'Change' : 'Upload'} File
 				</Button>
-				{hasFile && this.renderClearButton()}
+				{this.hasFile() && this.renderClearButton()}
 			</div>
 		);
+
 		return (
 			<div data-field-name={path} data-field-type="file">
 				<FormField label={label} htmlFor={path}>
 					{this.shouldRenderField() ? (
 						<div>
-							{previews}
+							{this.hasFile() && this.isImage() && this.renderImagePreview()}
+							{this.hasFile() && this.renderFileNameAndChangeMessage()}
 							{buttons}
 							<HiddenFileInput
 								key={this.state.uploadFieldPath}
@@ -248,7 +248,7 @@ module.exports = Field.create({
 						</div>
 					) : (
 						<div>
-							{hasFile
+							{this.hasFile()
 								? this.renderFileNameAndChangeMessage()
 								: <FormInput noedit>no file</FormInput>}
 						</div>

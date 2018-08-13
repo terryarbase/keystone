@@ -57,7 +57,8 @@ module.exports = Field.create({
 	componentWillUpdate (nextProps) {
 		// Reset the action state when the value changes
 		// TODO: We should add a check for a new item ID in the store
-		if (this.props.value.public_id !== nextProps.value.public_id) {
+		// if (this.props.value.public_id !== nextProps.value.public_id) {
+		if (this.props.value && nextProps.value && this.props.value.public_id !== nextProps.value.public_id) {
 			this.setState({
 				removeExisting: false,
 				userSelectedFile: null,
@@ -329,7 +330,7 @@ module.exports = Field.create({
 			<FormField label={label} className="field-type-cloudinaryimage" htmlFor={path}>
 				{imageContainer}
 				{toolbar}
-				{!!note && <FormNote note={note} />}
+				{!!note && <FormNote html={note} />}
 				{this.renderLightbox()}
 				{this.renderFileInput()}
 				{this.renderActionInput()}

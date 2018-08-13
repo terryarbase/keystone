@@ -7,7 +7,7 @@ import _ from 'lodash';
 import bytes from 'bytes';
 import Field from '../Field';
 import React from 'react';
-import { Button, FormField, FormInput, FormNote } from '../../../admin/client/App/elemental';
+import { Button, FormField, FormInput, FormNote } from 'elemental';
 
 const ICON_EXTS = [
 	'aac', 'ai', 'aiff', 'avi', 'bmp', 'c', 'cpp', 'css', 'dat', 'dmg', 'doc', 'dotx', 'dwg', 'dxf', 'eps', 'exe', 'flv', 'gif', 'h',
@@ -35,7 +35,7 @@ var LocalFilesFieldItem = React.createClass({
 	},
 
 	render () {
-		const { filename } = this.props;
+		const { filename, upload } = this.props;
 		const ext = filename.split('.').pop();
 
 		let iconName = '_blank';
@@ -48,8 +48,20 @@ var LocalFilesFieldItem = React.createClass({
 			note = <FormInput key="upload-note" noedit className="field-type-localfiles__note field-type-localfiles__note--upload">save to upload</FormInput>;
 		}
 
+		//add preview image
+		let imagePath = '';
+		if(this.props.path !== undefined){
+			imagePath = this.props.path.replace('./public', '');
+		}
+		
+		var imageStyle = {
+			maxHeight: 90, 
+			maxWidth: 90
+		};
+
 		return (
 			<FormField>
+				<img style={imageStyle} src={upload || imagePath + '/' + this.props.filename} />
 				<img key="file-type-icon" className="file-icon" src={Keystone.adminPath + '/images/icons/32/' + iconName + '.png'} />
 				<FormInput key="file-name" noedit className="field-type-localfiles__filename">
 					{filename}
@@ -68,16 +80,37 @@ var tempId = 0;
 module.exports = Field.create({
 
 	getInitialState () {
+		return this.getUpdateStateFromProps(this.props);
+	},
+	getUpdateStateFromProps (props){
 		var items = [];
 		var self = this;
 
-		_.forEach(this.props.value, function (item) {
+		_.forEach(props.value, function (item) {
 			self.pushItem(item, items);
 		});
 
 		return { items: items };
 	},
+	componentWillUpdate(nextProps, nextState){
+		var isSameProps = true;
 
+		if(nextProps.value.length === this.props.value.length){
+			for(var i=0; i<nextProps.value.length; i++){
+				if(nextProps.value[i].filename !== this.props.value[i].filename){
+					isSameProps = false;
+				}
+			}
+		}
+		else{
+			isSameProps = false;
+		}
+
+		if(!isSameProps){
+			this.clearFiles();
+			this.setState(this.getUpdateStateFromProps(nextProps));
+		}
+	},
 	removeItem (id) {
 		var thumbs = [];
 		var self = this;
@@ -105,7 +138,7 @@ module.exports = Field.create({
 	},
 
 	renderFileField () {
-		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" />;
+		return <input ref="fileField" type="file" name={this.props.paths.upload} multiple className="field-upload" onChange={this.uploadFile} tabIndex="-1" style={{display:'none'}}/>;
 	},
 
 	clearFiles () {
@@ -117,14 +150,26 @@ module.exports = Field.create({
 			}),
 		});
 	},
-
+	resetFile () {
+		this.setState({
+			items: this.state.items.filter(function (thumb) {
+				return !thumb.props.isQueued;
+			}),
+		});
+	},
 	uploadFile (event) {
 		var self = this;
-
 		var files = event.target.files;
+		if(files.length){
+			self.resetFile();
+		}
 		_.forEach(files, function (f) {
-			self.pushItem({ isQueued: true, filename: f.name });
-			self.forceUpdate();
+			let reader = new FileReader();
+			reader.onloadend = () => {
+				self.pushItem({isQueued: true, filename: f.name, upload: reader.result});
+				self.forceUpdate();
+			}
+			reader.readAsDataURL(f)
 		});
 	},
 
@@ -194,6 +239,7 @@ module.exports = Field.create({
 
 	renderNote: function () {
 		if (!this.props.note) return null;
+		// return <FormNote note={this.props.note} />;
 		return <FormNote html={this.props.note} />;
 	},
 

@@ -102,7 +102,8 @@ module.exports = Field.create({
 
 	renderNote () {
 		if (!this.props.note) return null;
-		return <FormNote note={this.props.note} />;
+		// return <FormNote note={this.props.note} />;
+		return <FormNote html={this.props.note} />;
 	},
 
 	renderUI () {

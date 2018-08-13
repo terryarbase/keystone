@@ -4,8 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width">
     <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="-1">
     <title><%= title %></title>
     <link rel="stylesheet" href="<%= codemirrorPath %>/codemirror.css">
+    <link rel="stylesheet" href="/styles/keystone-custom.css">
     <link rel="stylesheet" href="<%= adminPath %>/styles/keystone.min.css">
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
   </head>
@@ -18,6 +22,9 @@
     </script>
 <%# Old jQuery, editor and Cloudinary scripts %>
     <script src="<%= adminPath %>/js/lib/jquery/jquery-1.10.2.min.js"></script>
+    <script>
+      jQuery('body').css('overflow', '');
+    </script>
 <% if (fieldTypes.wysiwyg) { -%>
     <script src="<%= adminPath %>/js/lib/tinymce/tinymce.min.js"></script>
 <% if (cloudinaryScript) { -%>

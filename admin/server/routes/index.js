@@ -117,6 +117,10 @@ module.exports = function IndexRoute (req, res) {
 	};
 
 	ejs.renderFile(templatePath, locals, { delimiter: '%' }, function (err, str) {
+		res.setHeader("x-ua-compatible", "ie=edge");
+		res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1.
+		res.setHeader("Pragma", "no-cache"); // HTTP 1.0.
+		res.setHeader("Expires", "0"); // Proxies.
 		if (err) {
 			console.error('Could not render Admin UI Index Template:', err);
 			return res.status(500).send(keystone.wrapHTMLError('Error Rendering Admin UI', err.message));

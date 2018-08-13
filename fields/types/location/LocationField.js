@@ -248,9 +248,10 @@ module.exports = Field.create({
 	renderNote () {
 		const { note } = this.props;
 		if (!note) return null;
+		// <FormNote note={note} />
 		return (
 			<FormField offsetAbsentLabel>
-				<FormNote note={note} />
+				<FormNote html={note} />
 			</FormField>
 		);
 	},
