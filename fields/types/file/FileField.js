@@ -206,7 +206,7 @@ module.exports = Field.create({
 		return false;
 	},
 	renderImagePreview () {
-		const imageSrc = '/' + this.props.value.publicPath + '/' + this.props.value.filename;
+		const imageSrc = this.props.value.publicPath + this.props.value.filename;
 
 		return (
 			<ImageThumbnail
