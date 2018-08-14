@@ -99,7 +99,6 @@
     "string-to-stream": "1.1.0",
     "utf8": "^3.0.0",
     "vkey": "1.0.1",
-    "keystone": "git://github.com/terryarbase/keystone.git#v4.0.0-beta.8v-merge",
     "watchify": "3.9.0",
     "xhr": "2.4.0",
     "xlsx": "^0.13.3"
