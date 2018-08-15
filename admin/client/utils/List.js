@@ -328,7 +328,7 @@ List.prototype.deleteItems = function (itemIds, callback) {
 	}, (err, resp, body) => {
 		if (err) return callback(err);
 		// handle unexpected JSON string not parsed
-		body = typeof body === 'string' ? JSON.parse(body) : body;
+		// body = typeof body === 'string' ? JSON.parse(body) : body;
 		// Pass the body as result or error, depending on the statusCode
 		if (resp.statusCode === 200) {
 			callback(null, body);
