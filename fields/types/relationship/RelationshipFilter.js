@@ -92,16 +92,23 @@ var RelationshipFilter = React.createClass({
 		this._itemsCache[item.id] = item;
 	},
 	buildFilters () {
-		var filters = {};
+		// var filters = {};
+		// const operators = ['$gt', '$lt', '$lte', '$gte', '$ne', '$eq'];
+		var parts = [];
 		_.forEach(this.props.field.filters, function (value, key) {
 			if (value[0] === ':') return;
-			filters[key] = value;
-		}, this);
+			// if (typeof value === 'object') {
+			// 	if (operators.includes(value)) {
 
-		var parts = [];
-		_.forEach(filters, function (val, key) {
-			parts.push('filters[' + key + '][value]=' + encodeURIComponent(val));
-		});
+			// 	}
+			// }
+			// filters[key] = value;
+			parts.push('filters[' + key + '][value]=' + encodeURIComponent(value));
+		}, this);
+		// var parts = [];
+		// _.forEach(filters, function (val, key) {
+		// 	parts.push('filters[' + key + '][value]=' + encodeURIComponent(val));
+		// });
 
 		return parts.join('&');
 	},
