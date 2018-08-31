@@ -100,6 +100,18 @@ module.exports = function (keystone, app, created, callback) {
 	}
 
 	var server = https.createServer(options, app);
+	const consoleServerConfig = keystone.get('log config');
+	if (consoleServerConfig) {
+		console.log('===========================================================================');
+		console.log('======================== Server Configuration =============================');
+		console.log('===========================================================================');
+		console.log('');
+		console.log(options);
+		console.log('');
+		console.log('===========================================================================');
+		console.log('======================== Server Configuration =============================');
+		console.log('===========================================================================');
+	}
 	created();
 
 	function ready (err) {
