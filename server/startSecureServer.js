@@ -65,12 +65,9 @@ module.exports = function (keystone, app, created, callback) {
 	}
 	if (keystone.get('ssl secureOptions')){
 		options.secureOptions = keystone.get('ssl secureOptions');
-		console.log('Options secureOptions: ', keystone.get('ssl secureOptions'));
 	}
-	console.log('>>>>>>>>>>>>>>>>>>Options secureProtocol: ', keystone.get('ssl secureProtocol'));
 	if (keystone.get('ssl secureProtocol')){
 		options.secureProtocol = keystone.get('ssl secureProtocol');
-		console.log('Options secureProtocol: ', keystone.get('ssl secureProtocol'));
 	}
 
 	sniFunc = keystone.get('ssl sni');
