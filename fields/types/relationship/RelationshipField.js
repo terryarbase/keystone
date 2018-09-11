@@ -113,7 +113,7 @@ module.exports = Field.create({
 		});
 		async.map(values, (value, done) => {
 			xhr({
-				url: Keystone.adminPath + '/api/' + this.props.refList.path + '/' + value + '?basic',
+				url: Keystone.adminPath + '/api/' + this.props.refList.path + '/' + value + `?ts=${Math.random()}&basic`,
 				responseType: 'json',
 			}, (err, resp, data) => {
 				if (err || !data) return done(err);
@@ -138,7 +138,7 @@ module.exports = Field.create({
 		this.loadOptionsCallback = callback;
 		const filters = this.buildFilters();
 		xhr({
-			url: Keystone.adminPath + '/api/' + this.props.refList.path + '?basic&search=' + input + '&' + filters,
+			url: Keystone.adminPath + '/api/' + this.props.refList.path + `?ts=${Math.random()}&basic&search=` + input + '&' + filters,
 			responseType: 'json',
 		}, (err, resp, data) => {
 			if (err) {
