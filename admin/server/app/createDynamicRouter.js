@@ -5,7 +5,7 @@ var multer = require('multer');
 module.exports = function createDynamicRouter (keystone) {
 	// ensure keystone nav has been initialised
 	// TODO: move this elsewhere (on demand generation, or client-side?)
-
+	// console.log('keystone: ', keystone.get('name'), keystone.get('nav style'));
 	// if rbac is enabled, nav will be initialized on demand
 	if (!keystone.get('rbac') && !keystone.nav) {
 		keystone.nav = keystone.initNav();

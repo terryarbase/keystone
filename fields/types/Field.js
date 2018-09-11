@@ -1,6 +1,8 @@
 import classnames from 'classnames';
 import evalDependsOn from '../utils/evalDependsOn.js';
 import React from 'react';
+import _forEach from 'lodash/forEach';
+import _concat from 'lodash/concat';
 import { findDOMNode } from 'react-dom';
 import { FormField, FormInput, FormNote } from '../../admin/client/App/elemental';
 import blacklist from 'blacklist';
@@ -9,6 +11,14 @@ import CollapsedFieldLabel from '../components/CollapsedFieldLabel';
 function isObject (arg) {
 	return Object.prototype.toString.call(arg) === '[object Object]';
 }
+
+// function isBase64 (str) {
+// 	try {
+//         return btoa(atob(str)) == str;
+//     } catch (err) {
+//         return false;
+//     }
+// }
 
 function validateSpec (spec) {
 	if (!spec) spec = {};
@@ -77,7 +87,44 @@ var Base = module.exports.Base = {
 			}} />
 		);
 	},
+	/*
+	** Render individual image block 
+	** Terry Chan@11/09/2018
+	*/
+	renderBaseImageBlock (path) {
+		if (!path) return null;
+		var fullPath = `data:image/jpeg;base64,${path}`;
+		return (
+			<a target="_blank" onClick={() => {
+				const win = window.open('');
+				win.document.write(`<img src='${fullPath}' />`);
+			}}>
+				<img src={fullPath} width="100px" />
+			</a>
+		);
+	},
+	renderBaseImages () {
+		var { value } = this.props;
+		const self = this;
+		var images = [];
+		if (value) {
+			value = value.split(';');
+			if (value.length) {
+				_forEach(value, function(path) {
+					images = _concat([], images, [self.renderBaseImageBlock(path)]);
+				});
+			}
+		}
+		return images;
+	},
 	renderValue () {
+		/*
+		** Will override the original Field type and special handle for base64Image value
+		** Terry Chan@11/09/2018
+		*/
+		if (this.props.base64Image) {
+			return this.renderBaseImages();
+		}
 		return <FormInput noedit>{this.props.value}</FormInput>;
 	},
 	renderUI () {
@@ -86,6 +133,7 @@ var Base = module.exports.Base = {
 			this.props.className,
 			{ 'field-monospace': this.props.monospace }
 		);
+		// console.log(this.props);
 		return (
 			<FormField htmlFor={this.props.path} label={this.props.label} className={wrapperClassName} cropLabel>
 				<div className={'FormField__inner field-size-' + this.props.size}>

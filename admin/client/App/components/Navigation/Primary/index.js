@@ -106,6 +106,7 @@ var PrimaryNavigation = React.createClass({
 					className={className}
 					to={to}
 					href={href}
+					style={this.props.style}
 				>
 					{section.label}
 				</PrimaryNavItem>

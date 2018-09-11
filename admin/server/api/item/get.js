@@ -5,7 +5,6 @@ var listToArray = require('list-to-array');
 module.exports = function (req, res) {
 	var keystone = req.keystone;
 	var query = req.list.model.findById(req.params.id);
-
 	var fields = req.query.fields;
 	if (fields === 'false') {
 		fields = false;
@@ -16,7 +15,6 @@ module.exports = function (req, res) {
 	if (fields && !Array.isArray(fields)) {
 		return res.status(401).json({ error: 'fields must be undefined, a string, or an array' });
 	}
-
 	query.exec(function (err, item) {
 
 		if (err) return res.status(500).json({ err: 'database error', detail: err });

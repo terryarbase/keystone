@@ -38,6 +38,10 @@ var Keystone = function () {
 		'module root': moduleRoot,
 		'frame guard': 'sameorigin',
 		'cache admin bundles': true,
+		'nav style': {
+			fontColor: '#1385e5',
+			fontHover: '#ffffff'
+		},
 	};
 	this._redirects = {};
 

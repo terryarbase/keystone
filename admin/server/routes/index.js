@@ -68,6 +68,9 @@ module.exports = function IndexRoute (req, res) {
 			id: req.user.id,
 			name: UserList.getDocumentName(req.user) || '(no name)',
 		},
+		style: {
+			nav: keystone.get('nav style'),
+		},
 		userList: UserList.key,
 		version: keystone.version,
 		wysiwyg: { options: {

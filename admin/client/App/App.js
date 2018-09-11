@@ -50,6 +50,7 @@ const App = (props) => {
 	// console.log('Keystone: ', Keystone);
 	// Default current section key to dashboard
 	const currentSectionKey = (currentSection && currentSection.key) || 'dashboard';
+	const { style: { nav } } = Keystone;
 	return (
 		<div className={css(classes.wrapper)}>
 			<header>
@@ -59,12 +60,14 @@ const App = (props) => {
 					currentSectionKey={currentSectionKey}
 					sections={Keystone.nav.sections}
 					signoutUrl={Keystone.signoutUrl}
+					style={nav}
 				/>
 				<PrimaryNavigation
 					currentSectionKey={currentSectionKey}
 					brand={Keystone.brand}
 					sections={Keystone.nav.sections}
 					signoutUrl={Keystone.signoutUrl}
+					style={nav}
 				/>
 				{/* If a section is open currently, show the secondary nav */}
 				{(currentSection) ? (
