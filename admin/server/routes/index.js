@@ -24,21 +24,23 @@ module.exports = function IndexRoute (req, res) {
 		keystone.nav = keystone.initNav(keystone.get('nav'), req.user.role);
 		Object.keys(lists).forEach(key => {
 			const listKey = lists[key].key;
-			switch (req.user.role[listKey]) {
-				// view-only
-				case 1: {
-					lists[key].noedit = true;
-					lists[key].nocreate = true;
-					lists[key].nodelete = true;
-					break;
-				}
-				// no permission
-				case 0: {
-					// User list is used in admin client and cannot be deleted
-					if (listKey === UserList.key) {
-						lists[key].hidden = true;
-					} else {
-						delete lists[key];
+			if (req.user.role[listKey]) {
+				switch (req.user.role[listKey]) {
+					// view-only
+					case 1: {
+						lists[key].noedit = true;
+						lists[key].nocreate = true;
+						lists[key].nodelete = true;
+						break;
+					}
+					// no permission
+					case 0: {
+						// User list is used in admin client and cannot be deleted
+						if (listKey === UserList.key) {
+							lists[key].hidden = true;
+						} else {
+							delete lists[key];
+						}
 					}
 				}
 			}
