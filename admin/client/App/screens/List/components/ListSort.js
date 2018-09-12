@@ -96,7 +96,6 @@ var ListSort = React.createClass({
 		// TODO: Handle multiple sort paths
 		const activeSortPath = this.props.activeSort.paths[0];
 		const formFieldStyles = { borderBottom: '1px dashed rgba(0,0,0,0.1)', paddingBottom: '1em' };
-
 		return (
 			<span>
 				{activeSortPath && (

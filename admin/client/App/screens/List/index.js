@@ -245,7 +245,7 @@ const ListView = React.createClass({
 			noscale,
 		} = this.props.currentList;
 
-		console.log(this.props.currentList);
+		// console.log(singular, plural);
 
 		return (
 			<Container style={{ paddingTop: '2em' }}>
@@ -255,7 +255,10 @@ const ListView = React.createClass({
 					handleSortSelect={this.handleSortSelect}
 					title={`
 						${numeral(items.count).format()}
-						${pluralize(items.count, ' ' + singular, ' ' + plural)}
+						${
+							// pluralize(items.count, ' ' + singular, ' ' + plural)
+							plural
+						}
 					`}
 				/>
 				<ListHeaderToolbar
