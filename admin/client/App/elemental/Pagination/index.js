@@ -14,12 +14,13 @@ class Pagination extends Component {
 			let end = Math.min(start + pageSize - 1, total);
 			count = `Showing ${start} to ${end} of ${total}`;
 		} else {
-			count = 'Showing ' + total;
-			if (total > 1 && plural) {
-				count += ' ' + plural;
-			} else if (total === 1 && singular) {
-				count += ' ' + singular;
-			}
+			// count = 'Showing ' + total;
+			count = 'Showing ' + total + ' ' + plural;
+			// if (total > 1 && plural) {
+			//	count += ' ' + plural;
+			// } else if (total === 1 && singular) {
+			// 	count += ' ' + singular;
+			// }
 		}
 		return (
 			<div className={css(classes.count)} data-e2e-pagination-count>{count}</div>
