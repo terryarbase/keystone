@@ -15,6 +15,7 @@ class Pagination extends Component {
 			count = `Showing ${start} to ${end} of ${total}`;
 		} else {
 			// count = 'Showing ' + total;
+			// console.log(plural, singular);
 			count = 'Showing ' + total + ' ' + plural;
 			// if (total > 1 && plural) {
 			//	count += ' ' + plural;
