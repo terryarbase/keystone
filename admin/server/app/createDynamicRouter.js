@@ -64,7 +64,6 @@ module.exports = function createDynamicRouter (keystone) {
 
 	// #3: Home route
 	router.get('/', IndexRoute);
-
 	// #4: Cloudinary and S3 specific APIs
 	// TODO: poor separation of concerns; should / could this happen elsewhere?
 	if (keystone.get('cloudinary config')) {
@@ -88,6 +87,15 @@ module.exports = function createDynamicRouter (keystone) {
 	router.get('/api/:list/:format(export.excel|export.json)', initList, checkPermission(1), require('../api/list/download'));
 	router.post('/api/:list/create', initList, checkPermission(2), require('../api/list/create'));
 	router.post('/api/:list/update', initList, checkPermission(2), require('../api/list/update'));
+	// only refer to the current login user operations
+	router.post('/api/:list/updateMyProfile',
+		initList,
+		checkPermission(2),
+		(req, res) => {
+			const Account = require('../api/account');
+			new Account(req, res).updateMyProfile();
+		}
+	);
 	router.post('/api/:list/delete', initList, checkPermission(2), require('../api/list/delete'));
 	// items
 	router.get('/api/:list/:id', initList, checkPermission(1, { allowBasic: true }), require('../api/item/get'));

@@ -60,6 +60,8 @@ const App = (props) => {
 					currentSectionKey={currentSectionKey}
 					sections={Keystone.nav.sections}
 					signoutUrl={Keystone.signoutUrl}
+					User={Keystone.User}
+					user={Keystone.user}
 					style={nav}
 				/>
 				<PrimaryNavigation
@@ -67,6 +69,8 @@ const App = (props) => {
 					brand={Keystone.brand}
 					sections={Keystone.nav.sections}
 					signoutUrl={Keystone.signoutUrl}
+					User={Keystone.User}
+					user={Keystone.user}
 					style={nav}
 				/>
 				{/* If a section is open currently, show the secondary nav */}

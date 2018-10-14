@@ -124,11 +124,18 @@ const MobileNavigation = React.createClass({
 					<span className="MobileNavigation__bar__label">
 						{this.props.brand}
 					</span>
+					
 					<a
 						href={this.props.signoutUrl}
 						className="MobileNavigation__bar__button MobileNavigation__bar__button--signout"
 					>
 						<span className="MobileNavigation__bar__icon octicon octicon-sign-out" />
+					</a>
+					<a
+						href={''}
+						className="MobileNavigation__bar__button MobileNavigation__bar__button--signout"
+					>
+						<span className="MobileNavigation__bar__icon octicon octicon-tools" />
 					</a>
 				</div>
 				<div className="MobileNavigation__bar--placeholder" />

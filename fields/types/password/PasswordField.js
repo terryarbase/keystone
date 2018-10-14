@@ -60,6 +60,7 @@ module.exports = Field.create({
 						placeholder="New password"
 						ref="focusTarget"
 						type="password"
+						id={0}
 						value={this.state.password}
 					/>
 				</Section>
@@ -70,6 +71,7 @@ module.exports = Field.create({
 						onChange={this.valueChanged.bind(this, 'confirm')}
 						placeholder="Confirm new password" value={this.state.confirm}
 						type="password"
+						id={1}
 					/>
 				</Section>
 				{this.state.passwordIsSet ? (

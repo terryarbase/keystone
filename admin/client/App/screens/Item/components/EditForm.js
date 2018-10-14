@@ -146,7 +146,7 @@ var EditForm = React.createClass({
 		this.setState({
 			loading: true,
 		});
-
+		console.log(list);
 		list.updateItem(data.id, formData, (err, data) => {
 			smoothScrollTop();
 			if (err) {

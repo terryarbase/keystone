@@ -16,6 +16,7 @@ const PrimaryNavItem = React.createClass({
 		label: PropTypes.string,
 		title: PropTypes.string,
 		to: PropTypes.string,
+		onClick: PropTypes.function,
 	},
 	getInitialState () {
 		const { style } = this.props;
@@ -47,7 +48,7 @@ const PrimaryNavItem = React.createClass({
 		});
 	},
 	render () {
-		const { children, className, href, label, title, to, active } = this.props;
+		const { children, className, href, label, title, to, active, onClick } = this.props;
 		const itemClassName = classnames('primary-navbar__item', className);
 		const { currentColor: color } = this.state;
 		const Button = to ? (
@@ -63,7 +64,10 @@ const PrimaryNavItem = React.createClass({
 					color,
 				}}
 				// Block clicks on active link
-				onClick={(evt) => { if (active) evt.preventDefault(); }}
+				onClick={(evt) => { 
+					if (active) evt.preventDefault(); 
+					if (onClick) onClick();
+				}}
 			>
 				{children}
 			</Link>
@@ -79,6 +83,9 @@ const PrimaryNavItem = React.createClass({
 				onMouseOut={this.onMouseOut}
 				tabIndex="-1"
 				title={title}
+				onClick={() => {
+					if (onClick) onClick();
+				}}
 			>
 				{children}
 			</a>

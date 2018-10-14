@@ -4,9 +4,12 @@
  */
 
 import React from 'react';
+import { css } from 'glamor';
 import { Link } from 'react-router';
 import { Container } from '../../../elemental';
+// Components
 import PrimaryNavItem from './NavItem';
+import AccountSetting from '../../Setting';
 
 var PrimaryNavigation = React.createClass({
 	displayName: 'PrimaryNavigation',
@@ -17,7 +20,9 @@ var PrimaryNavigation = React.createClass({
 		signoutUrl: React.PropTypes.string,
 	},
 	getInitialState () {
-		return {};
+		return {
+			accountSettingIsVisible: false,
+		};
 	},
 	// Handle resizing, hide this navigation on mobile (i.e. < 768px) screens
 	componentDidMount () {
@@ -32,6 +37,24 @@ var PrimaryNavigation = React.createClass({
 			navIsVisible: window.innerWidth >= 768,
 		});
 	},
+	/*
+	** on show the popup account setting modal
+	** Terry Chan @ 11/10/2018
+	*/
+	onPopoverSetting () {
+		this.setState({
+			accountSettingIsVisible: true,
+		});
+	},
+	/*
+	** on hide the popup account setting modal
+	** Terry Chan @ 11/10/2018
+	*/
+	onPopoutSetting () {
+		this.setState({
+			accountSettingIsVisible: false,
+		});
+	},
 	// Render the sign out button
 	renderSignout () {
 		if (!this.props.signoutUrl) return null;
@@ -44,6 +67,30 @@ var PrimaryNavigation = React.createClass({
 			>
 				<span className="octicon octicon-sign-out" />
 			</PrimaryNavItem>
+		);
+	},
+	/*
+	** Render the current user account setting button
+	** Terry Chan@11/10/2018
+	*/
+	renderAccountSettingButton () {
+		return (
+			<PrimaryNavItem
+				label="octicon-tools"
+				title={''}
+				onClick={this.onPopoverSetting}
+			>
+				<span className="octicon octicon-tools" />
+			</PrimaryNavItem>
+		);
+	},
+	renderUserBlock () {
+		const { user } = this.props;
+		return (
+			<div className="primary-navbar__currentUser">
+				<b>Welcome:</b> 
+				{user.name}
+			</div>
 		);
 	},
 	// Render the back button
@@ -65,6 +112,7 @@ var PrimaryNavigation = React.createClass({
 		return (
 			<ul className="app-nav app-nav--primary app-nav--right">
 				{this.renderBackButton()}
+				{this.renderAccountSettingButton()}
 				{this.renderSignout()}
 			</ul>
 		);
@@ -76,7 +124,7 @@ var PrimaryNavigation = React.createClass({
 		const className = currentSectionKey === 'dashboard' ? 'primary-navbar__brand primary-navbar__item--active' : 'primary-navbar__brand';
 
 		return (
-			<div className="primary-navbar__container">
+			<div className="primary-navbar__logoContainer">
 				<Link
 					className="primary-navbar__logo"
 					title={'Dashboard - ' + brand}
@@ -115,25 +163,27 @@ var PrimaryNavigation = React.createClass({
 	},
 	render () {
 		if (!this.state.navIsVisible) return null;
-
 		return (
 			<div className="primary-header">
 				<div className="primary-header-tools">
 					<Container clearFloatingChildren>
+						{this.renderBrand()}
 						{this.renderFrontLink()}
+						{this.renderUserBlock()}
 					</Container>
 				</div>
-				{this.renderBrand()}
 				<nav className="primary-navbar">
 					<Container clearFloatingChildren>
 						<ul className="app-nav app-nav--primary app-nav--left">
-							{
-								// this.renderBrand()
-							}
 							{this.renderNavigation()}
 						</ul>
 					</Container>
 				</nav>
+				<AccountSetting
+					isOpen={this.state.accountSettingIsVisible}
+					onCancel={this.onPopoutSetting}
+					{ ...this.props }
+				/>
 			</div>
 		);
 	},

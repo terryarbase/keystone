@@ -53,7 +53,6 @@ module.exports = function IndexRoute (req, res) {
 	var orphanedLists = keystone.getOrphanedLists(req.user.role).map(function (list) {
 		return _.pick(list, ['key', 'label', 'path']);
 	});
-
 	var keystoneData = {
 		adminPath: '/' + keystone.get('admin path'),
 		appversion: keystone.get('appversion'),

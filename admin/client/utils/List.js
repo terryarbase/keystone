@@ -87,6 +87,63 @@ const List = function (options) {
 };
 
 /**
+ * (GET) Execute an item via specific api url
+ *
+ * @param  {String}   url       The url you want to be called
+ * @param  {Function} callback Called after the API call
+ */
+List.prototype.getIt = function (url, callback) {
+	xhr({
+		url: `${Keystone.adminPath}${url}&ts=${Math.random()}`,
+		responseType: 'json',
+		method: 'GET',
+		headers: assign({}, Keystone.csrf.header),
+		body: {},
+	}, (err, resp, data) => {
+		if (err) callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
+		if (resp.statusCode === 200) {
+			callback(null, data);
+		} else {
+			// NOTE: xhr callback will be called with an Error if
+			//  there is an error in the browser that prevents
+			//  sending the request. A HTTP 500 response is not
+			//  going to cause an error to be returned.
+			callback(data, null);
+		}
+	});
+};
+/**
+ * (POST) Execute an item via specific api url
+ *
+ * @param  {String}   url       The url you want to be called
+ * @param  {FormData} formData The submitted form data
+ * @param  {Function} callback Called after the API call
+ */
+List.prototype.postIt = function (url, formData, callback) {
+	xhr({
+		url: `${Keystone.adminPath}${url}?ts=${Math.random()}`,
+		responseType: 'json',
+		method: 'POST',
+		headers: assign({}, Keystone.csrf.header),
+		body: formData,
+	}, (err, resp, data) => {
+		if (err) callback(err);
+		// handle unexpected JSON string not parsed
+		data = typeof data === 'string' ? JSON.parse(data) : data;
+		if (resp.statusCode === 200) {
+			callback(null, data);
+		} else {
+			// NOTE: xhr callback will be called with an Error if
+			//  there is an error in the browser that prevents
+			//  sending the request. A HTTP 500 response is not
+			//  going to cause an error to be returned.
+			callback(data, null);
+		}
+	});
+};
+/**
  * Create an item via the API
  *
  * @param  {FormData} formData The submitted form data

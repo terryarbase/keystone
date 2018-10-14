@@ -13,6 +13,7 @@
 	list-style: none;
 	margin: 0;
 	padding: 0;
+	display: inline-block;
 
 	> li {
 		float: left;
@@ -64,25 +65,54 @@
 	.primary-header-tools{
 		display: block;
 		width: 100%;
-		height: 40px;
-		background-color: @primary-navbar-bg;
+		/*height: 40px;*/
+		padding: 15px 0;
+/*		background-color: @primary-navbar-bg;*/
 
 		.octicon{
-			color: white;
+			color: #666;
 		}
 
 		.app-nav--right{
-			display: block;
+			display: inlin-block;
+			float: right;
 			text-align: right;
 			li.primary-navbar__item{
 				float: initial;
 				display: inline-block;
+				line-height: 30px;
 				> a{
 					padding-top: 5px;
 					padding-bottom: 5px;
 				}
 			}
 		}
+	}
+	.primary-navbar__logoContainer{
+		float: left;
+	}
+	.primary-navbar__currentUser {
+		display: inline-block;
+	    vertical-align: middle;
+	    float: right;
+	    line-height: 40px;
+	    padding-right: 30px;
+	    margin-right: 20px;
+	    position: relative;
+	    b {
+	    	margin-right: 10px;
+	    	color: #666;
+	    }
+	    &:after{
+	    	content: '';
+	    	display: block;
+	    	position: absolute;
+	    	top: 10px;
+	    	right: 0;
+		    background: #ccc;
+		    height: 20px;
+		    width: 1px;
+	    }
 	}
 	.primary-navbar__container {
 		text-align: center;
@@ -269,9 +299,11 @@
 		opacity: .75;
 	}
 }
-.MobileNavigation__bar__button--signout {
+.MobileNavigation__bar__button--signout,
+.MobileNavigation__bar__button--accountSetting {
 	float: right;
 }
+
 .MobileNavigation__bar__icon {
 }
 .MobileNavigation__bar__label {

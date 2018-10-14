@@ -533,6 +533,7 @@ const ListView = React.createClass({
 		);
 	},
 	render () {
+		// console.log('Keystone: ', Keystone);
 		if (!this.props.ready) {
 			return (
 				<Center height="50vh" data-screen-id="list">
