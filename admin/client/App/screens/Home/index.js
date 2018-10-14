@@ -39,9 +39,11 @@ var HomeView = React.createClass({
 		const spinner = this.getSpinner();
 		return (
 			<Container data-screen-id="home">
-				<div className="dashboard-header">
-					<div className="dashboard-heading">{Keystone.brand}</div>
-				</div>
+				{
+					/* <div className="dashboard-header">
+						<div className="dashboard-heading">{Keystone.brand}</div>
+					</div> */
+				}
 				<div className="dashboard-groups">
 					{(this.props.error) && (
 						<AlertMessages

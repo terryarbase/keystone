@@ -25,8 +25,12 @@ const classes = {
 };
 
 const App = (props) => {
+	console.log(props);
 	const listsByPath = require('../utils/lists').listsByPath;
 	let children = props.children;
+	// Determine show the nav, excluding dashboard
+	const { params: { listId } } = props;
+	var isShowNav = !!listId;
 	// If we're on either a list or an item view
 	let currentList, currentSection;
 	if (props.params.listId) {
@@ -72,6 +76,7 @@ const App = (props) => {
 					User={Keystone.User}
 					user={Keystone.user}
 					style={nav}
+					showNav={isShowNav}
 				/>
 				{/* If a section is open currently, show the secondary nav */}
 				{(currentSection) ? (

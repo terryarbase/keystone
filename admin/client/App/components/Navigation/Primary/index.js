@@ -172,13 +172,16 @@ var PrimaryNavigation = React.createClass({
 						{this.renderUserBlock()}
 					</Container>
 				</div>
-				<nav className="primary-navbar">
-					<Container clearFloatingChildren>
-						<ul className="app-nav app-nav--primary app-nav--left">
-							{this.renderNavigation()}
-						</ul>
-					</Container>
-				</nav>
+				{
+					this.props.showNav ? 
+					<nav className="primary-navbar">
+						<Container clearFloatingChildren>
+							<ul className="app-nav app-nav--primary app-nav--left">
+								{this.renderNavigation()}
+							</ul>
+						</Container>
+					</nav> : null
+				}
 				<AccountSetting
 					isOpen={this.state.accountSettingIsVisible}
 					onCancel={this.onPopoutSetting}
