@@ -14,11 +14,11 @@ module.exports = function IndexRoute (req, res) {
 	var UserList = keystone.list(keystone.get('user model'));
 
 	var backUrl = keystone.get('back url');
-	if (backUrl === undefined) {
+	if (backUrl) {
 		// backUrl can be falsy, to disable the link altogether
 		// but if it's undefined, default it to "/"
-		backUrl = '/';
-	} 
+		backUrl = keystone.get('front url') || '/';
+	}
 
 	if (keystone.get('rbac')) {
 		keystone.nav = keystone.initNav(keystone.get('nav'), req.user.role);
