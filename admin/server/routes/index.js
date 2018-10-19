@@ -18,7 +18,7 @@ module.exports = function IndexRoute (req, res) {
 		// backUrl can be falsy, to disable the link altogether
 		// but if it's undefined, default it to "/"
 		backUrl = '/';
-	}
+	} 
 
 	if (keystone.get('rbac')) {
 		keystone.nav = keystone.initNav(keystone.get('nav'), req.user.role);
@@ -57,7 +57,7 @@ module.exports = function IndexRoute (req, res) {
 		adminPath: '/' + keystone.get('admin path'),
 		appversion: keystone.get('appversion'),
 		logo: keystone.get('signin logo'),
-		backUrl: backUrl,
+		backUrl: backUrl || keystone.get('frontendUrl'),
 		brand: keystone.get('brand'),
 		csrf: { header: {} },
 		devMode: !!process.env.KEYSTONE_DEV,
