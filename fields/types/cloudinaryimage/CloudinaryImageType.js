@@ -435,6 +435,18 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 		}
 		this.getFilename(uploadedFile, function (err, filename) {
 			if (err) return callback(err);
+			// compress the image before upload to Cloudnary @resize plugins
+			// the image will be convert to base64 once the compressor property is provided, 
+			// and also the size no matter if the size is over the maxSize
+			if (this.options.compressor) {
+				const { options: { compressor } } = this;
+				compressor.files = uploadedFile;
+				// execute compress image
+				compressor.resizeBase64Images();
+				// getter
+				uploadedFile = compressor.file;
+				console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
+			}
 			// If an undefined filename is returned, Cloudinary will automatically generate a unique
 			//   filename. Therefore undefined is a valid filename value.
 			if (filename !== undefined) {
