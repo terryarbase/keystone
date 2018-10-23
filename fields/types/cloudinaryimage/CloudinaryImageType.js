@@ -416,6 +416,7 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 
 	// If we have a file to upload, we do that and stop here
 	if (uploadedFile) {
+		console.log('> Cloudinary image uploaded file: ', uploadedFile);
 		var tagPrefix = keystone.get('cloudinary prefix') || '';
 		var uploadOptions = {
 			tags: [],
