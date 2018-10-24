@@ -1,6 +1,6 @@
 const resizeBase	= require('resize-base64');
 const { promisify } = require('util');
-const { size } 		= require('gm');
+const gm 			= require('gm');
 const {
 	existsSync,
 	readFileSync,
@@ -54,22 +54,22 @@ class Base64ImageResizer{
     ** Get standard width height of image
     ** @param1: image path
     */
-  //   getStatWdithInfo(image) {
-  //   	return new Promise(resolve => {
-		//     	// console.log('>>>>image>>>>>', image, sizeOf);
-		//     sizeOf(image, (err, size) => {
-		//       	console.log('>>>>>>>>>', err, size);
-		// 	    if(err) {
-		// 	       throw(err);
-		// 	    }
-		// 	    resolve(size);
-		//    	});
-		//     // setTimeout(() => {
-		//     // 	console.log('> getStatWdithInfo');
-		//     // 	resolve();
-		//     // }, 3000);
-		// });
-  //   }
+    getStatWdithInfo(image) {
+    	return new Promise(resolve => {
+		    	// console.log('>>>>image>>>>>', image, sizeOf);
+		    gm(image).size((err, size) => {
+		      	console.log('>>>>>>>>>', err, size);
+			    if(err) {
+			       throw(err);
+			    }
+			    resolve(size);
+		   	});
+		    // setTimeout(() => {
+		    // 	console.log('> getStatWdithInfo');
+		    // 	resolve();
+		    // }, 3000);
+		});
+    }
     /*
 	** calculate proportion of image
 	*/
@@ -108,8 +108,8 @@ class Base64ImageResizer{
 			// if the file is request file stream, the size can be obtained
 			const size = originalSize || statSync(path).size;
 			console.log('> sizessssssss baseFiles: ', size);
-			console.log('>>>>>>>>>!>>>>>>>>', promisify, size);
-			const info = await promisify(size(path));
+			console.log('>>>>>>>>>!>>>>>>>>', this.getStatWdithInfo);
+			const info = await this.getStatWdithInfo(path);
 			console.log('>>>>>>>>asdasdasdasdasfdfdf>');
 			// console.log('> info baseFiles: ', info);
 			// const optimize = this.getProportion(info);
