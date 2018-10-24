@@ -155,8 +155,8 @@ class Base64ImageResizer{
 		if (base64 && optimize && optimize.width && optimize.height) {
 			const { width, height } = optimize;
 			// new Buffer(b64string, 'base64')
-			const resized = await resizeBase(base64, width, height);
-			file = {
+			const resized = await this.resizeFromSharp(base64, width, height);
+			return {
 				...file,
 				path: resized,
 			}
