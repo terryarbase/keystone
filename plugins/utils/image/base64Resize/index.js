@@ -101,33 +101,35 @@ class Base64ImageResizer{
 
 
     async collectImageInfo(file) {
-    	const { path, size: originalSize } = file;
-    	var current = file;
-    	if (path && existsSync(path)) {
-	     	console.log('> start convert to base64 string: ', path);
-			const base64 = readFileSync(path, 'base64');
-			// if the file is request file stream, the size can be obtained
-			const size = originalSize || statSync(path).size;
-			const info = await this.getStatWdithInfo(path);
-			// console.log('> info baseFiles: ', info);
-			const needCompress = this.isCompressedTobe(info, size);
-			var optimize;
-			if (needCompress) {
-				optimize = this.getProportion(info);
+    	if (file) {
+	    	const { path, size: originalSize } = file;
+	    	var current = file;
+	    	if (path && existsSync(path)) {
+		     	console.log('> start convert to base64 string: ', path);
+				const base64 = readFileSync(path, 'base64');
+				// if the file is request file stream, the size can be obtained
+				const size = originalSize || statSync(path).size;
+				const info = await this.getStatWdithInfo(path);
+				// console.log('> info baseFiles: ', info);
+				const needCompress = this.isCompressedTobe(info, size);
+				var optimize;
+				if (needCompress) {
+					optimize = this.getProportion(info);
+				}
+				current = {
+					file,
+					path, 
+				   	base64: needCompress ? base64 : `${this._prefix}${base64}`,		// encoded base64 image string
+				   	info,									// basic image info (e.g. width, height)
+				   	size,									// original size of source image
+				    needCompress,
+				    optimize,								// optimized width and height against this.maxWidth
+				};
+				// console.log('current: ', current.info, current.needCompress);
+				
 			}
-			current = {
-				file,
-				path, 
-			   	base64: needCompress ? base64 : `${this._prefix}${base64}`,		// encoded base64 image string
-			   	info,									// basic image info (e.g. width, height)
-			   	size,									// original size of source image
-			    needCompress,
-			    optimize,								// optimized width and height against this.maxWidth
-			};
-			// console.log('current: ', current.info, current.needCompress);
-			
+			this._baseFiles = [ ...this._baseFiles, current];
 		}
-		this._baseFiles = [ ...this._baseFiles, current];
     }
     /*
     ** Convert all of files stream to base64
