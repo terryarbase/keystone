@@ -368,7 +368,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 			// and also the size no matter if the size is over the maxSize
 			if (field.compressor) {
 				const { compressor } = field;
-				compressor.files = uploadedFile;
+				compressor.files = value;
 				// execute compress image
 				try {
 					await compressor.resizeBase64Images();
