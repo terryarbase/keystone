@@ -115,7 +115,8 @@ class Base64ImageResizer{
 				optimize = this.getProportion(info);
 			}
 			current = {
-				file, 
+				file,
+				path, 
 			   	base64: needCompress ? base64 : `${this._prefix}${base64}`,		// encoded base64 image string
 			   	info,									// basic image info (e.g. width, height)
 			   	size,									// original size of source image
@@ -175,10 +176,7 @@ class Base64ImageResizer{
 			}
 		}
 		// no need to optimize
-		return {
-			...file,
-			path: file.path,
-		};
+		return file;
 	}
 	/*
 	** resize the base64 image with optimized info
