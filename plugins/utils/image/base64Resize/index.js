@@ -103,7 +103,7 @@ class Base64ImageResizer{
     	const { path, size: originalSize } = file;
     	var current = file;
     	if (path && existsSync(path)) {
-	   //  		console.log('> start convert to base64 string: ', path);
+	     	console.log('> start convert to base64 string: ', path);
 			const base64 = readFileSync(path, 'base64');
 			// if the file is request file stream, the size can be obtained
 			const size = originalSize || statSync(path).size;
