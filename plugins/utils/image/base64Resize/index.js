@@ -135,7 +135,7 @@ class Base64ImageResizer{
 	async resizeBase64Images() {
 		if (this._files.length) {
 			// convert binary data to base64 encoded string
-			const infoTasks = _map(this._files, file => () => {  });
+			const infoTasks = _map(this._files, file => () { console.log('dsfsdfs'); });
 			console.log('>>>>>43434>>>>', infoTasks);
 			await Promise.all(infoTasks).catch(err => console.log('> convertToBase64: ', err));
 			if (this._baseFiles.length) {
