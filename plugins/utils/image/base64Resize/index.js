@@ -136,7 +136,9 @@ class Base64ImageResizer{
 		if (this._files.length) {
 			// convert binary data to base64 encoded string
 			var infoTasks;
+			console.log('this._files: ', this._files);
 			this._files.forEach(file => {
+				console.log(file, 'asdasdasd');
 				infoTasks = [...infoTasks, this.collectImageInfo(file)];
 			});
 			console.log('>>>>>43434>>>>', infoTasks);
