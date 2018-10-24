@@ -35,7 +35,7 @@ class Base64ImageResizer{
         this._maxHeight = maxHeight;
         this.resizeBase64Images = this.resizeBase64Images.bind(this);
         // this._maxNo = maxNo;
-        this._prefix = `data:image/${outputType};base64, `;
+        this._prefix = `data:image/${outputType};base64,`;
         // if (maxNo !=== -1 && files.length > maxNo) {
         // 	throw new Error('Invalid Uploaded Number of Image');
         // }

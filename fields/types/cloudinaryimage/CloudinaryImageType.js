@@ -435,7 +435,7 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 		if (folder) {
 			uploadOptions.folder = folder;
 		}
-		this.getFilename(uploadedFile, function (err, filename) {
+		this.getFilename(uploadedFile, async (err, filename) => {
 			if (err) return callback(err);
 			// compress the image before upload to Cloudnary @resize plugins
 			// the image will be convert to base64 once the compressor property is provided, 
