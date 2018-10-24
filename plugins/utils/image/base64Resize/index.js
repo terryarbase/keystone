@@ -1,4 +1,4 @@
-const gm 			= require('gm');
+const sizeOf 		= require('image-size');
 const resizeBase	= require('resize-base64');
 const {
 	existsSync,
@@ -57,7 +57,7 @@ class Base64ImageResizer{
     	return new Promise((resolve, reject) => {
 		    try {
 		    	console.log('>>>>image>>>>>', image);
-		      	gm(image).size((err, size) => {
+		      	sizeOf(image, (err, size) => {
 		      		console.log('>>>>>>>>>', size);
 			        if(err) {
 			        	throw(err);
@@ -66,7 +66,7 @@ class Base64ImageResizer{
 		    	});
 		    } catch (err) {
 		    	console.log('>>>>>err>>>>', err);
-		      reject(err);
+		    	reject(err);
 		    }
 		});
     }
