@@ -349,7 +349,7 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 	});
 	values = _.flatten(values);
 
-	async.map(values, function (value, next) {
+	async.map(values, async (value, next) => {
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
