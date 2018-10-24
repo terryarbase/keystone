@@ -110,7 +110,7 @@ class Base64ImageResizer{
 				const size = originalSize || statSync(path).size;
 				console.log('> sizessssssss baseFiles: ', size);
 				console.log('>>>>>>>>>!>>>>>>>>');
-				onst info = await this.getStatWdithInfo(path);
+				const info = await this.getStatWdithInfo(path);
 				console.log('>>>>>>>>asdasdasdasdasfdfdf>');
 				// console.log('> info baseFiles: ', info);
 				// const optimize = this.getProportion(info);
