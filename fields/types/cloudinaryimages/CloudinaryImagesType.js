@@ -351,6 +351,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 		return value;
 	});
 	values = _.flatten(values);
+	console.log('post value: ', values);
 	// compress the image before upload to Cloudnary @resize plugins
 	// the image will be convert to base64 once the compressor property is provided, 
 	// and also the size no matter if the size is over the maxSize
