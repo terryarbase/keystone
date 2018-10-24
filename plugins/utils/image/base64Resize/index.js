@@ -123,7 +123,7 @@ class Base64ImageResizer{
 			    needCompress,
 			    optimize,								// optimized width and height against this.maxWidth
 			};
-			console.log('current: ', current.info, current.needCompress);
+			// console.log('current: ', current.info, current.needCompress);
 			
 		}
 		this._baseFiles = [ ...this._baseFiles, current];
@@ -131,7 +131,7 @@ class Base64ImageResizer{
     /*
     ** Convert all of files stream to base64
     */
- //    async convertToBase64() {
+ 	//  async convertToBase64() {
 	//     // read binary data
 	//     if (this._files.length) {
 	// 		// convert binary data to base64 encoded string

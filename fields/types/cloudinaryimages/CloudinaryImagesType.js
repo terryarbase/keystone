@@ -373,9 +373,9 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	    // return;
 	    // console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
 	}
-	console.log('>>>>>>>>>>>>>>>>>>>>');
+	// console.log('>>>>>>>>>>>>>>>>>>>>');
 	async.map(values, function(value, next) {
-		console.log(value);
+		console.log(value.public_id);
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
