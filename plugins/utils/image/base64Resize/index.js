@@ -104,9 +104,7 @@ class Base64ImageResizer{
 	isCompressedTobe({ width, height }, size) {
 		return width && height && size && size > this._maxSize;
 	}
-	async test() {
 
-	}
     async collectImageInfo({ path, size: originalSize }) {
     	if (existsSync(path)) {
     		try {
@@ -165,9 +163,11 @@ class Base64ImageResizer{
 	async resizeBase64Images() {
 		if (this._files.length) {
 			// convert binary data to base64 encoded string
-			const infoTasks = _map(this._files, file => this.test(file));
-			console.log('>>>>>43434>>>>', infoTasks);
-			await Promise.all(infoTasks).catch(err => console.log('> convertToBase64: ', err));
+			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
+			console.log('>>>>>43434>>>>', infoTasks[0]);
+			await Promise.all(infoTasks)
+				.then(result => console.log('then', result))
+				.catch(err => console.log('> convertToBase64: ', err));
 			if (this._baseFiles.length) {
 		    	const { _baseFiles: baseFiles } = this;
 				this._baseFiles = _map(baseFiles, file => ({
