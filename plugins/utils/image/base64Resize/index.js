@@ -43,10 +43,10 @@ class Base64ImageResizer{
     set files(files) {
     	this._files = !_isArray(files) ? [files] : files;
     }
-    get files() {
+    getFiles() {
     	return this._baseFiles;
     }
-    get file() {
+    getFile() {
     	console.log('> getter baseFiles: ', this._baseFiles);
     	return this._baseFiles[0];
     }
@@ -111,9 +111,10 @@ class Base64ImageResizer{
 			// console.log('> info baseFiles: ', info);
 			const optimize = this.getProportion(info);
 			console.log('> optimizedddd baseFiles: ', optimize);
-			const needCompress = this.isCompressedTobe(info, size);
-			console.log('> needCompress baseFiles: ', needCompress);
-
+			var optimize;
+			if (needCompress) {
+				optimize = this.getProportion(info);
+			}
 			this._baseFiles = [ ...this._baseFiles, {
 				file, 
 			   	base64: `${this._prefix}${base64}`,		// encoded base64 image string
