@@ -138,7 +138,7 @@ class Base64ImageResizer{
 			var infoTasks;
 			console.log('this._files: ', this._files);
 			this._files.forEach(file => {
-				console.log(file, 'asdasdasd');
+				console.log(file, 'asdasdasd', this.collectImageInfo);
 				infoTasks = [...infoTasks, this.collectImageInfo(file)];
 			});
 			console.log('>>>>>43434>>>>', infoTasks);
