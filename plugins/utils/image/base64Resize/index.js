@@ -175,7 +175,10 @@ class Base64ImageResizer{
 			}
 		}
 		// no need to optimize
-		return file;
+		return {
+			...file,
+			path: file.path,
+		};
 	}
 	/*
 	** resize the base64 image with optimized info
