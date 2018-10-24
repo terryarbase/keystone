@@ -56,7 +56,6 @@ class Base64ImageResizer{
     */
     getStatWdithInfo(image) {
     	return new Promise(resolve => {
-		    try {
 		    	// console.log('>>>>image>>>>>', image, sizeOf);
 		     //  	sizeOf(image, (err, size) => {
 		     //  		console.log('>>>>>>>>>', size);
@@ -68,7 +67,7 @@ class Base64ImageResizer{
 		    setTimeout(() => {
 		    	console.log('> getStatWdithInfo');
 		    	resolve();
-		    })
+		    }, 3000);
 		});
     }
     /*
