@@ -262,7 +262,7 @@ cloudinaryimages.prototype.getOptions = function () {
 /**
  * Updates the value for this field in the item from a data object
  */
-cloudinaryimages.prototype.updateItem = async (item, data, files, callback) => {
+cloudinaryimages.prototype.updateItem = async function(item, data, files, callback) {
 	if (typeof files === 'function') {
 		callback = files;
 		files = {};
