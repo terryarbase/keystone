@@ -142,7 +142,12 @@ class Base64ImageResizer{
 		    sharp(buffer)
 		    	.resize(width, height)
 		    	.toBuffer((err, data, info) => {
-		    		console.log(typeof data, data, info);
+		    		if (err) {
+		    			throw(err);
+		    		}
+		    		if (data) {
+		    			resolve(data.toString('base64'));
+		    		}
 		    	});
 		    // setTimeout(() => {
 		    // 	console.log('> getStatWdithInfo');
@@ -156,9 +161,12 @@ class Base64ImageResizer{
 			const { width, height } = optimize;
 			// new Buffer(b64string, 'base64')
 			const resized = await this.resizeFromSharp(Buffer.from(base64, 'base64'), width, height);
-			return {
-				...file,
-				path: resized,
+			console.log('resized: ', resized);
+			if (resized) {
+				return {
+					...file,
+					path: resized,
+				}
 			}
 		}
 		// no need to optimize
