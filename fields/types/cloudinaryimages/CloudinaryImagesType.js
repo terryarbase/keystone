@@ -321,6 +321,8 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 		return uploadOptions;
 	}
 
+	console.log('pre values: ', values);
+
 	// Preprocess values to deserialise JSON, detect mappings to uploaded files
 	// and flatten out arrays
 	values = values.map(function (value) {
@@ -329,6 +331,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 			&& value.charAt(0) === '{'
 			&& value.charAt(value.length - 1) === '}'
 		) {
+			console.log('>>>> is json');
 			try {
 				return JSON.parse(value);
 			} catch (e) { /* value isn't JSON */ }
@@ -351,7 +354,6 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	// compress the image before upload to Cloudnary @resize plugins
 	// the image will be convert to base64 once the compressor property is provided, 
 	// and also the size no matter if the size is over the maxSize
-	console.log('compressor: ', field.compressor);
 	if (field.compressor) {
 	    const {
 	        compressor
