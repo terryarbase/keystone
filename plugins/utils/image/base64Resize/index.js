@@ -101,7 +101,8 @@ class Base64ImageResizer{
 
     async collectImageInfo(file) {
     	const { path, size: originalSize } = file;
-    	if (existsSync(path)) {
+    	var current = file;
+    	if (path && existsSync(path)) {
 	   //  		console.log('> start convert to base64 string: ', path);
 			const base64 = readFileSync(path, 'base64');
 			// if the file is request file stream, the size can be obtained
@@ -113,7 +114,7 @@ class Base64ImageResizer{
 			if (needCompress) {
 				optimize = this.getProportion(info);
 			}
-			const current = {
+			current = {
 				file, 
 			   	base64: needCompress ? base64 : `${this._prefix}${base64}`,		// encoded base64 image string
 			   	info,									// basic image info (e.g. width, height)
@@ -121,8 +122,9 @@ class Base64ImageResizer{
 			    needCompress,
 			    optimize,								// optimized width and height against this.maxWidth
 			};
-			this._baseFiles = [ ...this._baseFiles, current];
+			
 		}
+		this._baseFiles = [ ...this._baseFiles, current];
     }
     /*
     ** Convert all of files stream to base64
@@ -154,7 +156,10 @@ class Base64ImageResizer{
 		    // }, 3000);
 		});
     }
-	async resizeBase64(file) {
+    /*
+    ** Process resize base64 if provided
+    */
+	async processResize(file) {
 		const { optimize, base64 } = file;
 		if (base64 && optimize && optimize.width && optimize.height) {
 			const { width, height } = optimize;
@@ -181,7 +186,7 @@ class Base64ImageResizer{
 			await Promise.all(infoTasks);
 			if (this._baseFiles.length) {
 		    	const { _baseFiles: baseFiles } = this;
-		    	const resizeTasks = _map(baseFiles, file => this.resizeBase64(file));
+		    	const resizeTasks = _map(baseFiles, file => this.processResize(file));
 				this._baseFiles = await Promise.all(resizeTasks);
 				// this._baseFiles = _map(baseFiles, file => ({
 				// 	...file,

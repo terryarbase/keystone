@@ -262,7 +262,7 @@ cloudinaryimages.prototype.getOptions = function () {
 /**
  * Updates the value for this field in the item from a data object
  */
-cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
+cloudinaryimages.prototype.updateItem = async (item, data, files, callback) => {
 	if (typeof files === 'function') {
 		callback = files;
 		files = {};
@@ -348,8 +348,31 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 		return value;
 	});
 	values = _.flatten(values);
-
-	async.map(values, async (value, next) => {
+	// compress the image before upload to Cloudnary @resize plugins
+	// the image will be convert to base64 once the compressor property is provided, 
+	// and also the size no matter if the size is over the maxSize
+	if (field.compressor) {
+	    const {
+	        compressor
+	    } = field;
+	    compressor.files = values;
+	    // execute compress image
+	    try {
+	        await compressor.resizeBase64Images();
+	        // getter
+	        const resizedFiles = compressor.getFiles();
+	        if (resizedFiles) {
+	            values = resizedFiles;
+	            // console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
+	        }
+	    } catch (err) {
+	        console.log('Resize Base64Images Error: ', err);
+	        return callback(err);
+	    }
+	    // return;
+	    // console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
+	}
+	async.map(values, function(value, next) {
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
@@ -363,28 +386,6 @@ cloudinaryimages.prototype.updateItem = function (item, data, files, callback) {
 		} else if (typeof value === 'object' && value.path) {
 			// File provided - upload it
 			var uploadOptions = getUploadOptions();
-			// compress the image before upload to Cloudnary @resize plugins
-			// the image will be convert to base64 once the compressor property is provided, 
-			// and also the size no matter if the size is over the maxSize
-			if (field.compressor) {
-				const { compressor } = field;
-				compressor.files = value;
-				// execute compress image
-				try {
-					await compressor.resizeBase64Images();
-					// getter
-					const resized = compressor.getFile();
-					if (resized) {
-						value = resized;
-						// console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
-					}
-				} catch (err) {
-					console.log('Resize Base64Images Error: ', err);
-					return callback(err);
-				}
-				// return;
-				// console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
-			}
 			// NOTE: field.options.publicID has been deprecated (tbc)
 			if (field.options.filenameAsPublicID && value.originalname && typeof value.originalname === 'string') {
 				uploadOptions = assign({}, uploadOptions, {
