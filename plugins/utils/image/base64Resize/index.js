@@ -56,6 +56,7 @@ class Base64ImageResizer{
     getStatWdithInfo(image) {
     	return new Promise((resolve, reject) => {
 		    try {
+		    	console.log('>>>>image>>>>>', image);
 		      	gm(image).size((err, size) => {
 		      		console.log('>>>>>>>>>', size);
 			        if(err) {
@@ -105,6 +106,7 @@ class Base64ImageResizer{
 			const base64 = readFileSync(path, 'base64');
 			// if the file is request file stream, the size can be obtained
 			const size = originalSize || statSync(path).size;
+			console.log('> size baseFiles: ', size);
 			const info = await this.getStatWdithInfo(path) || {};
 			console.log('> info baseFiles: ', info);
 			const optimize = this.getProportion(info);
@@ -130,7 +132,7 @@ class Base64ImageResizer{
 	    if (this._files.length) {
 			// convert binary data to base64 encoded string
 			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
-			await Promise.all(infoTasks);
+			await Promise.all(infoTasks).catch(err => console.log('> convertToBase64: ', err));
 		}
 		
 	}
