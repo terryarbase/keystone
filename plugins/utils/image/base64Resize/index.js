@@ -47,6 +47,7 @@ class Base64ImageResizer{
     	return this._baseFiles;
     }
     getFile() {
+    	console.log('> getter baseFiles: ', this._baseFiles);
     	return this._baseFiles[0];
     }
     /*
@@ -108,10 +109,12 @@ class Base64ImageResizer{
 			const size = originalSize || statSync(path).size;
 			const info = await this.getStatWdithInfo(path);
 			// console.log('> info baseFiles: ', info);
+			const needCompress = this.isCompressedTobe(info, size);
 			var optimize;
 			if (needCompress) {
 				optimize = this.getProportion(info);
 			}
+
 			this._baseFiles = [ ...this._baseFiles, {
 				file, 
 			   	base64: `${this._prefix}${base64}`,		// encoded base64 image string
@@ -120,8 +123,7 @@ class Base64ImageResizer{
 			    needCompress,
 			    optimize,								// optimized width and height against this.maxWidth
 			}];
-			console.log('this._baseFiles: ', this._baseFiles);
-			
+			console.log('>>>> this._baseFiles: ', this._baseFiles);
 		}
     }
     /*
@@ -159,7 +161,6 @@ class Base64ImageResizer{
 					...file,
 					path: this.resizeBase64(file),
 				}));
-				console.log('_baseFiles: ', this_baseFiles);
 			}
 
 		}
