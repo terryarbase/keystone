@@ -160,7 +160,7 @@ class Base64ImageResizer{
 	/*
 	** resize the base64 image with optimized info
 	*/
-	resizeBase64Images() {
+	async resizeBase64Images() {
 		if (this._files.length) {
 			// convert binary data to base64 encoded string
 			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
