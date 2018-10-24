@@ -165,9 +165,12 @@ class Base64ImageResizer{
 			// convert binary data to base64 encoded string
 			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
 			console.log('>>>>>43434>>>>', infoTasks[0]);
-			await Promise.all(infoTasks)
-				.then(result => console.log('then', result))
-				.catch(err => console.log('> convertToBase64: ', err));
+			try {
+				const result = await Promise.all(infoTasks);
+				console.log(result);
+			} catch (err) {
+				console.log('>>>>>>', err);
+			}
 			if (this._baseFiles.length) {
 		    	const { _baseFiles: baseFiles } = this;
 				this._baseFiles = _map(baseFiles, file => ({
