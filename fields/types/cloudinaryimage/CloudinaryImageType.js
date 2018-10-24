@@ -446,8 +446,9 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 				// execute compress image
 				compressor.resizeBase64Images();
 				// getter
-				uploadedFile = compressor.file;
-				console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
+				// uploadedFile = compressor.file;
+				return;
+				// console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
 			}
 			// If an undefined filename is returned, Cloudinary will automatically generate a unique
 			//   filename. Therefore undefined is a valid filename value.
