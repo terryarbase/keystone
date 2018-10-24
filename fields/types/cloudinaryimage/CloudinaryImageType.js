@@ -450,13 +450,13 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 					const resized = compressor.getFile();
 					if (resized) {
 						uploadedFile = resized;
-						console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
+						// console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
 					}
 				} catch (err) {
 					console.log('Resize Base64Image Error: ', err);
 					return callback(err);
 				}
-				return;
+				// return;
 				// console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
 			}
 			// If an undefined filename is returned, Cloudinary will automatically generate a unique

@@ -138,7 +138,6 @@ class Base64ImageResizer{
 	// }
 	resizeFromSharp(buffer, width, height) {
 		return new Promise(resolve => {
-		   	console.log('>>>>buffer>>>>>', buffer);
 		    sharp(buffer)
 		    	.resize(width, height)
 		    	.toBuffer((err, data, info) => {
