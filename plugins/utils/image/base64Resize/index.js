@@ -101,7 +101,8 @@ class Base64ImageResizer{
 	}
 
 
-    async collectImageInfo({ path, size: originalSize }) {
+    async collectImageInfo(file) {
+    	const { path, size: originalSize } = file;
     	if (existsSync(path)) {
 	   //  		console.log('> start convert to base64 string: ', path);
 			const base64 = readFileSync(path, 'base64');
@@ -114,15 +115,16 @@ class Base64ImageResizer{
 			if (needCompress) {
 				optimize = this.getProportion(info);
 			}
-
-			this._baseFiles = [ ...this._baseFiles, {
+			const current = {
 				file, 
 			   	base64: `${this._prefix}${base64}`,		// encoded base64 image string
 			   	info,									// basic image info (e.g. width, height)
 			   	size,									// original size of source image
 			    needCompress,
 			    optimize,								// optimized width and height against this.maxWidth
-			}];
+			};
+			console.log('>>>> current: ', current);
+			this._baseFiles = [ ...this._baseFiles, current];
 			console.log('>>>> this._baseFiles: ', this._baseFiles);
 		}
     }
