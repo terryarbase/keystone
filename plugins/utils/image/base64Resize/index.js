@@ -141,7 +141,7 @@ class Base64ImageResizer{
 	resizeBase64({ optimize, base64 }) {
 		if (base64 && optimize && optimize.width && optimize.height) {
 			const { width, height } = optimize;
-			return resizebase64(base64, width, height);
+			return resizeBase(base64, width, height);
 		}
 		// no need to optimize
 		return base64;
