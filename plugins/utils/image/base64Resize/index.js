@@ -1,6 +1,6 @@
 const resizeBase	= require('resize-base64');
 const { promisify } = require('util');
-const gm 			= require('gm');
+const sizeOf 		= require('image-size');
 const {
 	existsSync,
 	readFileSync,
@@ -57,7 +57,7 @@ class Base64ImageResizer{
     getStatWdithInfo(image) {
     	return new Promise(resolve => {
 		    	// console.log('>>>>image>>>>>', image, sizeOf);
-		    gm(image).size((err, size) => {
+		    sizeOf(image, (err, size) => {
 		      	console.log('>>>>>>>>>', err, size);
 			    if(err) {
 			       throw(err);
