@@ -321,7 +321,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 		return uploadOptions;
 	}
 
-	console.log('pre values: ', values);
+	// console.log('pre values: ', values);
 
 	// Preprocess values to deserialise JSON, detect mappings to uploaded files
 	// and flatten out arrays
@@ -351,7 +351,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 		return value;
 	});
 	values = _.compact(_.flatten(values));
-	console.log('post value: ', values);
+	// console.log('post value: ', values);
 	// compress the image before upload to Cloudnary @resize plugins
 	// the image will be convert to base64 once the compressor property is provided, 
 	// and also the size no matter if the size is over the maxSize
@@ -367,7 +367,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	        const resizedFiles = compressor.getFiles();
 	        if (resizedFiles) {
 	            values = resizedFiles;
-	            console.log('>>>> uploadedFiles: ', values.length);
+	            // console.log('>>>> uploadedFiles: ', values.length);
 	        }
 	    } catch (err) {
 	        console.log('Resize Base64Images Error: ', err);
@@ -378,7 +378,6 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	}
 	// console.log('>>>>>>>>>>>>>>>>>>>>');
 	async.map(values, function(value, next) {
-		console.log(value.public_id);
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
