@@ -121,6 +121,7 @@ class Base64ImageResizer{
     async convertToBase64() {
 	    // read binary data
 	    if (this._files.length) {
+	    	console.log('>>>>>>>>>>', this._files);
 			// convert binary data to base64 encoded string
 			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
 			await Promise.all(infoTasks);
