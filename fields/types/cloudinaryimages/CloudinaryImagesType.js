@@ -364,7 +364,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	        const resizedFiles = compressor.getFiles();
 	        if (resizedFiles) {
 	            values = resizedFiles;
-	            // console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
+	            console.log('>>>> uploadedFiles: ', values.length);
 	        }
 	    } catch (err) {
 	        console.log('Resize Base64Images Error: ', err);
@@ -373,6 +373,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	    // return;
 	    // console.log('> Cloudinary image compressed base64 image: ', uploadedFile);
 	}
+	console.log('>>>>>>>>>>>>>>>>>>>>');
 	async.map(values, function(value, next) {
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided

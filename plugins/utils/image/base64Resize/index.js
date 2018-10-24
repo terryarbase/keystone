@@ -122,6 +122,7 @@ class Base64ImageResizer{
 			    needCompress,
 			    optimize,								// optimized width and height against this.maxWidth
 			};
+			console.log('current: ', current.info, current.needCompress);
 			
 		}
 		this._baseFiles = [ ...this._baseFiles, current];
