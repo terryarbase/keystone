@@ -54,6 +54,8 @@ function cloudinaryimage (list, path, options) {
 	options = assign({}, DEFAULT_OPTIONS, options);
 	options.generateFilename = ensureCallback(options.generateFilename);
 
+	this.compressor = options.compressor;
+
 	cloudinaryimage.super_.call(this, list, path, options);
 	// validate cloudinary config
 	if (!keystone.get('cloudinary config')) {
@@ -439,8 +441,8 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 			// compress the image before upload to Cloudnary @resize plugins
 			// the image will be convert to base64 once the compressor property is provided, 
 			// and also the size no matter if the size is over the maxSize
-			if (this.options.compressor) {
-				const { options: { compressor } } = this;
+			if (field.compressor) {
+				const { compressor } = field;
 				compressor.files = uploadedFile;
 				// execute compress image
 				compressor.resizeBase64Images();

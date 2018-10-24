@@ -19,13 +19,14 @@ class Base64ImageResizer{
 	** @param: max number of file to be uploaded (default -1 no limit)
 	** @param: output mine type of image (default jpeg type)
 	*/
-	constructor({
-		maxWidth= 600,
-		maxHeight= 1000,
-		maxSize= 1024000,
-		maxLength= -1,
-		outputType= 'jpeg',
-	}) {
+	constructor(options = {}) {
+		const {
+			maxWidth= 600,
+			maxHeight= 1000,
+			maxSize= 1024000,
+			maxLength= -1,
+			outputType= 'jpeg',
+		} = options;
         this.files = [];
         this._baseFiles = [];
         this._maxWidth = maxWidth;
