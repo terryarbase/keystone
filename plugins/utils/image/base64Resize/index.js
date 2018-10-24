@@ -115,7 +115,7 @@ class Base64ImageResizer{
 			}
 			const current = {
 				file, 
-			   	base64,		// encoded base64 image string
+			   	base64: needCompress ? base64 : `${this._prefix}${base64}`,		// encoded base64 image string
 			   	info,									// basic image info (e.g. width, height)
 			   	size,									// original size of source image
 			    needCompress,
@@ -145,7 +145,7 @@ class Base64ImageResizer{
 		    			throw(err);
 		    		}
 		    		if (data) {
-		    			resolve(data.toString('base64'));
+		    			resolve(`${this._prefix}${data.toString('base64')}`);
 		    		}
 		    	});
 		    // setTimeout(() => {
@@ -160,7 +160,7 @@ class Base64ImageResizer{
 			const { width, height } = optimize;
 			// new Buffer(b64string, 'base64')
 			const resized = await this.resizeFromSharp(Buffer.from(base64, 'base64'), width, height);
-			console.log('resized: ', resized);
+			// console.log('resized: ', resized);
 			if (resized) {
 				return {
 					...file,
