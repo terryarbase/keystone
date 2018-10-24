@@ -101,9 +101,6 @@ class Base64ImageResizer{
 		return width && height && size && size > this._maxSize;
 	}
 
-	test() {
-		new 
-	}
 
     async collectImageInfo({ path, size: originalSize }) {
     	if (existsSync(path)) {
