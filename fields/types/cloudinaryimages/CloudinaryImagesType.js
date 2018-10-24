@@ -375,6 +375,7 @@ cloudinaryimages.prototype.updateItem = async function(item, data, files, callba
 	}
 	console.log('>>>>>>>>>>>>>>>>>>>>');
 	async.map(values, function(value, next) {
+		console.log(value);
 		if (typeof value === 'object' && 'public_id' in value) {
 			// Cloudinary Image data provided
 			if (value.public_id) {
