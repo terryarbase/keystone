@@ -47,7 +47,6 @@ class Base64ImageResizer{
     	return this._baseFiles;
     }
     getFile() {
-    	console.log('> getter baseFiles: ', this._baseFiles);
     	return this._baseFiles[0];
     }
     /*

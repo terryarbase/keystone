@@ -447,8 +447,11 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 				try {
 					await compressor.resizeBase64Images();
 					// getter
-					uploadedFile = compressor.getFile();
-					console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.file : '');
+					const resized = compressor.getFile();
+					if (resized) {
+						uploadedFile = resized;
+						console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.file : '');
+					}
 				} catch (err) {
 					return callback(err);
 				}
