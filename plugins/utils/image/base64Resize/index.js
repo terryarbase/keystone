@@ -46,6 +46,7 @@ class Base64ImageResizer{
     	return this._baseFiles;
     }
     get file() {
+    	console.log('> getter baseFiles: ', this._baseFiles);
     	return this._baseFiles[0];
     }
     /*
@@ -113,6 +114,7 @@ class Base64ImageResizer{
 			    needCompress,
 			    optimize,								// optimized width and height against this.maxWidth
 			}];
+			console.log('> getInfo baseFiles: ', this._baseFiles);
 		}
     }
     /*
@@ -121,7 +123,6 @@ class Base64ImageResizer{
     async convertToBase64() {
 	    // read binary data
 	    if (this._files.length) {
-	    	console.log('>>>>>>>>>>', this._files);
 			// convert binary data to base64 encoded string
 			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
 			await Promise.all(infoTasks);
@@ -147,6 +148,7 @@ class Base64ImageResizer{
 				...file,
 				path: this.resizeBase64(file),
 			}));
+			console.log('> baseFiles: ', this._baseFiles);
 		}
 	}
 }
