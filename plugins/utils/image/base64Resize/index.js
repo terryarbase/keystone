@@ -106,37 +106,7 @@ class Base64ImageResizer{
 	}
 
     async collectImageInfo({ path, size: originalSize }) {
-    	if (existsSync(path)) {
-    		try {
-	   //  		console.log('> start convert to base64 string: ', path);
-				// const base64 = readFileSync(path, 'base64');
-				// // if the file is request file stream, the size can be obtained
-				// const size = originalSize || statSync(path).size;
-				// console.log('> sizessssssss baseFiles: ', size);
-				console.log('>>>>>>>>>!>>>>>>>>');
-				const info = sizeOf(path, function(err, size) {
-					console.log('>>>size>>>>>>', size);
-				});
-				console.log('>>>>>>>>>');
-				// console.log('> info baseFiles: ', info);
-				// const optimize = this.getProportion(info);
-				// console.log('> optimizedddd baseFiles: ', optimize);
-				// const needCompress = this.isCompressedTobe(info, size);
-				// console.log('> needCompress baseFiles: ', needCompress);
-				// this._baseFiles = [ ...this._baseFiles, {
-				// 	file, 
-				//     base64: `${this._prefix}${base64}`,		// encoded base64 image string
-				//    	info,									// basic image info (e.g. width, height)
-				//    	size,									// original size of source image
-				//     needCompress,
-				//     optimize,								// optimized width and height against this.maxWidth
-				// }];
-			} catch (err) {
-				console.log('err: ', err);
-			}
-			
-		}
-		console.log('>>>>>>>>>54fddsf');
+    	
     }
     /*
     ** Convert all of files stream to base64
