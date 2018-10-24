@@ -57,12 +57,14 @@ class Base64ImageResizer{
     	return new Promise((resolve, reject) => {
 		    try {
 		      	gm(image).size((err, size) => {
+		      		console.log('>>>>>>>>>', size);
 			        if(err) {
 			        	throw(err);
 			        }
 			        resolve(size);
 		    	});
 		    } catch (err) {
+		    	console.log('>>>>>err>>>>', err);
 		      reject(err);
 		    }
 		});
@@ -101,10 +103,8 @@ class Base64ImageResizer{
     	if (existsSync(path)) {
     		console.log('> start convert to base64 string: ', path);
 			const base64 = readFileSync(path, 'base64');
-			console.log('> base64 baseFiles: ', base64);
 			// if the file is request file stream, the size can be obtained
 			const size = originalSize || statSync(path).size;
-			console.log('> size baseFiles: ', size);
 			const info = await this.getStatWdithInfo(path) || {};
 			console.log('> info baseFiles: ', info);
 			const optimize = this.getProportion(info);
