@@ -109,12 +109,12 @@ class Base64ImageResizer{
 				// if the file is request file stream, the size can be obtained
 				const size = originalSize || statSync(path).size;
 				console.log('> sizessssssss baseFiles: ', size, sizeOf);
-				const info = await sizeOf(path);
-				console.log('> info baseFiles: ', info);
-				// const optimize = this.getProportion(info);
-				// console.log('> optimizedddd baseFiles: ', optimize);
-				// const needCompress = this.isCompressedTobe(info, size);
-				// console.log('> needCompress baseFiles: ', needCompress);
+				// const info = await sizeOf(path);
+				// console.log('> info baseFiles: ', info);
+				const optimize = this.getProportion(info);
+				console.log('> optimizedddd baseFiles: ', optimize);
+				const needCompress = this.isCompressedTobe(info, size);
+				console.log('> needCompress baseFiles: ', needCompress);
 				// this._baseFiles = [ ...this._baseFiles, {
 				// 	file, 
 				//     base64: `${this._prefix}${base64}`,		// encoded base64 image string
