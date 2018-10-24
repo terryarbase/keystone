@@ -23,7 +23,7 @@ class Base64ImageResizer{
 	constructor(options = {}) {
 		const {
 			maxWidth= 600,
-			maxHeight= 1000,
+			maxHeight= 600,
 			maxSize= 1024000,
 			maxLength= -1,
 			outputType= 'jpeg',
@@ -113,15 +113,15 @@ class Base64ImageResizer{
 			console.log('> optimizedddd baseFiles: ', optimize);
 			const needCompress = this.isCompressedTobe(info, size);
 			console.log('> needCompress baseFiles: ', needCompress);
-			
-			// this._baseFiles = [ ...this._baseFiles, {
-			//		file, 
-			//    	base64: `${this._prefix}${base64}`,		// encoded base64 image string
-			//    	info,									// basic image info (e.g. width, height)
-			//    	size,									// original size of source image
-			//     	needCompress,
-			//     	optimize,								// optimized width and height against this.maxWidth
-			// }];
+
+			this._baseFiles = [ ...this._baseFiles, {
+				file, 
+			   	base64: `${this._prefix}${base64}`,		// encoded base64 image string
+			   	info,									// basic image info (e.g. width, height)
+			   	size,									// original size of source image
+			    needCompress,
+			    optimize,								// optimized width and height against this.maxWidth
+			}];
 			
 		}
     }
@@ -160,7 +160,6 @@ class Base64ImageResizer{
 					...file,
 					path: this.resizeBase64(file),
 				}));
-				console.log('> baseFiles: ', this._baseFiles);
 			}
 
 		}
