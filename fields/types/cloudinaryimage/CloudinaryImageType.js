@@ -453,6 +453,7 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 						console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
 					}
 				} catch (err) {
+					console.log('Resize Base64Image Error: ', err);
 					return callback(err);
 				}
 				return;

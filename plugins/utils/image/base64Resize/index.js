@@ -1,5 +1,4 @@
-const resizeBase	= require('resize-base64');
-const { promisify } = require('util');
+const sharp			= require('sharp');
 const sizeOf 		= require('image-size');
 const {
 	existsSync,
@@ -137,14 +136,33 @@ class Base64ImageResizer{
 	// 	}
 		
 	// }
-
-	resizeBase64({ optimize, base64 }) {
+	resizeFromSharp(buffer, width, height) {
+		return new Promise(resolve => {
+		    	// console.log('>>>>image>>>>>', image, sizeOf);
+		    sharp(buffer)
+		    	.resize(width, height)
+		    	.toBuffer((err, data, info) => {
+		    		console.log(typeof data, data, info);
+		    	});
+		    // setTimeout(() => {
+		    // 	console.log('> getStatWdithInfo');
+		    // 	resolve();
+		    // }, 3000);
+		});
+    }
+	async resizeBase64(file) {
+		const { optimize, base64 } = file;
 		if (base64 && optimize && optimize.width && optimize.height) {
 			const { width, height } = optimize;
-			return resizeBase(base64, width, height);
+			// new Buffer(b64string, 'base64')
+			const resized = await resizeBase(base64, width, height);
+			file = {
+				...file,
+				path: resized,
+			}
 		}
 		// no need to optimize
-		return base64;
+		return file;
 	}
 	/*
 	** resize the base64 image with optimized info
@@ -156,10 +174,12 @@ class Base64ImageResizer{
 			await Promise.all(infoTasks);
 			if (this._baseFiles.length) {
 		    	const { _baseFiles: baseFiles } = this;
-				this._baseFiles = _map(baseFiles, file => ({
-					...file,
-					path: this.resizeBase64(file),
-				}));
+		    	const resizeTasks = _map(baseFiles, file => this.resizeBase64(file));
+				this._baseFiles = await Promise.all(resizeTasks);
+				// this._baseFiles = _map(baseFiles, file => ({
+				// 	...file,
+				// 	path: this.resizeBase64(file),
+				// }));
 			}
 
 		}
