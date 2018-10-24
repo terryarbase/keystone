@@ -50,6 +50,7 @@ function cloudinaryimage (list, path, options) {
 		options.generateFilename = nameFunctions.originalFilename;
 		options.whenExists = 'overwrite';
 	}
+	console.log('> cloudinaryimage type options: ', options);
 	options = assign({}, DEFAULT_OPTIONS, options);
 	options.generateFilename = ensureCallback(options.generateFilename);
 
