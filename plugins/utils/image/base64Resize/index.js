@@ -54,27 +54,23 @@ class Base64ImageResizer{
     ** Get standard width height of image
     ** @param1: image path
     */
-  //   getStatWdithInfo(image) {
-  //   	return new Promise((resolve, reject) => {
-		//     try {
-		//     	// console.log('>>>>image>>>>>', image, sizeOf);
-		//      //  	sizeOf(image, (err, size) => {
-		//      //  		console.log('>>>>>>>>>', size);
-		// 	    //     if(err) {
-		// 	    //     	throw(err);
-		// 	    //     }
-		// 	    //     resolve(size);
-		//     	// });
-		//     	setTimeout(() => {
-		//     		console.log('> getStatWdithInfo');
-		//     		resolve();
-		//     	})
-		//     } catch (err) {
-		//     	console.log('>>>>>err>>>>', err);
-		//     	reject(err);
-		//     }
-		// });
-  //   }
+    getStatWdithInfo(image) {
+    	return new Promise(resolve => {
+		    try {
+		    	// console.log('>>>>image>>>>>', image, sizeOf);
+		     //  	sizeOf(image, (err, size) => {
+		     //  		console.log('>>>>>>>>>', size);
+			    //     if(err) {
+			    //     	throw(err);
+			    //     }
+			    //     resolve(size);
+		    	// });
+		    setTimeout(() => {
+		    	console.log('> getStatWdithInfo');
+		    	resolve();
+		    })
+		});
+    }
     /*
 	** calculate proportion of image
 	*/
@@ -105,6 +101,10 @@ class Base64ImageResizer{
 		return width && height && size && size > this._maxSize;
 	}
 
+	test() {
+		new 
+	}
+
     async collectImageInfo({ path, size: originalSize }) {
     	if (existsSync(path)) {
     		try {
@@ -114,8 +114,8 @@ class Base64ImageResizer{
 				const size = originalSize || statSync(path).size;
 				console.log('> sizessssssss baseFiles: ', size);
 				console.log('>>>>>>>>>!>>>>>>>>');
-				const info = await sizeOf(path);
-				console.log('>>>>>>>>>');
+				onst info = await this.getStatWdithInfo(path);
+				console.log('>>>>>>>>asdasdasdasdasfdfdf>');
 				// console.log('> info baseFiles: ', info);
 				// const optimize = this.getProportion(info);
 				// console.log('> optimizedddd baseFiles: ', optimize);
