@@ -450,7 +450,7 @@ cloudinaryimage.prototype.updateItem = function (item, data, files, callback) {
 					const resized = compressor.getFile();
 					if (resized) {
 						uploadedFile = resized;
-						console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.file : '');
+						console.log('>>>> uploadedFile: ', uploadedFile ? uploadedFile.optimize : '');
 					}
 				} catch (err) {
 					return callback(err);
