@@ -1,6 +1,6 @@
 const resizeBase	= require('resize-base64');
 const { promisify } = require('util');
-const sizeOf 		= promisify(require('image-size'));
+const sizeOf 		= require('image-size');
 const {
 	existsSync,
 	readFileSync,
@@ -114,7 +114,9 @@ class Base64ImageResizer{
 				// const size = originalSize || statSync(path).size;
 				// console.log('> sizessssssss baseFiles: ', size);
 				console.log('>>>>>>>>>!>>>>>>>>');
-				const info = await sizeOf(path);
+				const info = sizeOf(path, function(err, size) {
+					console.log('>>>size>>>>>>', size);
+				});
 				console.log('>>>>>>>>>');
 				// console.log('> info baseFiles: ', info);
 				// const optimize = this.getProportion(info);
@@ -164,7 +166,7 @@ class Base64ImageResizer{
 		if (this._files.length) {
 			// convert binary data to base64 encoded string
 			const infoTasks = _map(this._files, file => this.collectImageInfo(file));
-			console.log('>>>>>43434>>>>');
+			console.log('>>>>>43434>>>>', infoTasks);
 			await Promise.all(infoTasks).catch(err => console.log('> convertToBase64: ', err));
 			if (this._baseFiles.length) {
 		    	const { _baseFiles: baseFiles } = this;
