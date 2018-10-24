@@ -40,6 +40,7 @@ class Base64ImageResizer{
         // }
     }
     set files(files) {
+    	this._baseFiles = [];
     	this._files = !_isArray(files) ? [files] : files;
     }
     getFiles() {
