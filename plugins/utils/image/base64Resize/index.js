@@ -1,6 +1,6 @@
 const resizeBase	= require('resize-base64');
 const { promisify } = require('util');
-const sizeOf 		= require('image-size');
+const { size } 		= require('gm');
 const {
 	existsSync,
 	readFileSync,
@@ -108,8 +108,8 @@ class Base64ImageResizer{
 			// if the file is request file stream, the size can be obtained
 			const size = originalSize || statSync(path).size;
 			console.log('> sizessssssss baseFiles: ', size);
-			console.log('>>>>>>>>>!>>>>>>>>');
-			const info = await promisify(sizeOf(path));
+			console.log('>>>>>>>>>!>>>>>>>>', promisify, size);
+			const info = await promisify(size(path));
 			console.log('>>>>>>>>asdasdasdasdasfdfdf>');
 			// console.log('> info baseFiles: ', info);
 			// const optimize = this.getProportion(info);
