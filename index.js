@@ -164,7 +164,9 @@ keystone.Storage = require('./lib/storage');
 keystone.View = require('./lib/view');
 
 // Customized Plugins
-keystone.ImageCompressor = require('./plugins/utils/image/base64Resize');
+keystone.Plugins = {
+	ImageCompressor: require('./plugins/utils/image/base64Resize'),
+};
 
 keystone.content = require('./lib/content');
 keystone.security = {
