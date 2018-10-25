@@ -39,8 +39,8 @@ var Keystone = function () {
 		'frame guard': 'sameorigin',
 		'cache admin bundles': true,
 		'nav style': {
-			fontColor: '#1385e5',
-			fontHover: '#ffffff'
+			fontColor: '#ffffff',
+			fontHover: '#ffe53d'
 		},
 	};
 	this._redirects = {};
