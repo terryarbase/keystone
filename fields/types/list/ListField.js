@@ -2,7 +2,7 @@
 
 var React = require('react');
 var Field = require('../Field');
-
+var Fields = require('FieldTypes');
 
 var i = 0;
 function generateId () {
@@ -122,7 +122,6 @@ module.exports = Field.create({
 						var onRemove = function(e) {
 							self.removeItem(index);
 						}
-						console.log(this);
 						return (
 							<ItemDom key={id} id={id} name={name} onRemove={onRemove}>
 								{self.renderFieldsForItem(index, value)}
