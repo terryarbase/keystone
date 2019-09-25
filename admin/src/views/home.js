@@ -55,6 +55,7 @@ var View = React.createClass({
 	},
 
 	render: function() {
+		window.console.warn('Keystone v0.3.19_op Version.');
 		return (
 			<div>
 				<div className="page-header"><h1>Manage</h1></div>
