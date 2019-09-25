@@ -160,6 +160,8 @@ var EditForm = React.createClass({
 					}, this);
 				}
 
+				props.FieldTypes = FieldTypes;
+
 				elements[field.path] = React.createElement(Fields[field.type], props);
 				
 			}

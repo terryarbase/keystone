@@ -113,6 +113,8 @@ var Form = React.createClass({
 				fieldProps.ref = focusRef = 'focusTarget';
 			}
 			
+			fieldProps.FieldTypes = FieldTypes;
+				
 			form[field.path] = React.createElement(Fields[field.type], fieldProps);
 			
 		}, this);

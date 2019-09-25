@@ -2,7 +2,6 @@
 
 var React = require('react');
 var Field = require('../Field');
-var Fields = require('FieldTypes');
 
 var i = 0;
 function generateId () {
@@ -76,7 +75,8 @@ module.exports = Field.create({
 		onChange({ path, value });
 	},
 	renderFieldsForItem (index, value) {
-		console.log(Fields);
+		var FieldTypes = this.props.FieldTypes;
+		console.log(FieldTypes);
 		return Object.keys(this.props.fields).map(function(path) {
 			var field = this.props.fields[path];
 			if (typeof Fields[field.type] !== 'function') {
