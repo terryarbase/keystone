@@ -111,6 +111,7 @@ module.exports = Field.create({
 		var value = this.props.value ? this.props.value : [];
 		var path = this.props.path;
 		var onAdd = this.addItem;
+		console.log(this);
 		return (
 			<div>
 				{
