@@ -19,7 +19,7 @@ function ItemDom(props) {
 		}}>
 			{name && <input type="hidden" name={name} value={id} />}
 			
-			{React.Children.map(children, function(child) {
+			{React.Children.map(this.props.children, function(child) {
 				return React.cloneElement(child, {
 					name,
 					id,
