@@ -12,7 +12,6 @@ module.exports = [
 	'react',
 	'react-select',
 	'react-alt-text',
-	'react-domify',
 	'lodash',
 	'react/addons',
 	'superagent'

@@ -4,36 +4,10 @@ var React = require('react');
 var Field = require('../Field');
 var _ = require('lodash');
 
-var Domify = require('react-domify');
-
 
 var i = 0;
 function generateId () {
 	return i++;
-};
-
-function ItemDom(option) {
-	return (
-		<div style={{
-			borderTop: '2px solid #eee',
-			paddingTop: 15,
-		}}>
-			{name && <input type="hidden" name={option.name} value={option.id}/>}
-			
-			{React.Children.map(children, child => {
-				return React.cloneElement(child, {
-					name,
-					id,
-					onRemove,
-					t,
-				});
-			})}
-
-			<div style={{ textAlign: 'right', paddingBottom: 10 }}>
-				<input type="button" onClick={option.onRemove} value="Remove" />
-			</div>
-		</div>
-	);
 };
 
 module.exports = Field.create({
@@ -126,9 +100,24 @@ module.exports = Field.create({
 							onRemove: onRemove,
 						};
 						return (
-							<ItemDom key={id} {props}>
-								{this.renderFieldsForItem(index, value)}
-							</ItemDom>
+							<div key={index} style={{
+								borderTop: '2px solid #eee',
+								paddingTop: 15,
+							}}>
+								{name && <input type="hidden" name={name} value={id}/>}
+								
+								{React.Children.map(children, child => {
+									return React.cloneElement(this.renderFieldsForItem(index, value), {
+										name,
+										id,
+										onRemove,
+									});
+								})}
+
+								<div style={{ textAlign: 'right', paddingBottom: 10 }}>
+									<input type="button" onClick={onRemove} value="Remove" />
+								</div>
+							</div>
 						);
 					})
 				}
@@ -143,11 +132,7 @@ module.exports = Field.create({
 		return (
 			<div>
 				<h3>{label}</h3>
-				{this.shouldRenderField() ? (
-					this.renderItems()
-				) : (
-					<Domify value={value} />
-				)}
+				{this.renderItems()}
 			</div>
 		);
 	},
