@@ -28,9 +28,7 @@ function ItemDom(props) {
 			})}
 
 			<div style={{ textAlign: 'right', paddingBottom: 10 }}>
-				<Button size="xsmall" color="danger" onClick={onRemove}>
-					Remove
-				</Button>
+				<input type="button" value="Remove" onClick={onRemove} />
 			</div>
 		</div>
 	);
