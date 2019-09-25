@@ -29,5 +29,5 @@ module.exports = {
 	textarea:         require('../../fields/types/textarea/TextareaField'),
 	textarray:        require('../../fields/types/textarray/TextArrayField'),
 	url:              require('../../fields/types/url/UrlField'),
-	list:             require('../../fields/types/url/ListField')
+	list:             require('../../fields/types/list/ListField')
 };
