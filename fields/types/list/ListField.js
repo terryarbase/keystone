@@ -9,6 +9,34 @@ function generateId () {
 	return i++;
 };
 
+function ItemDom(props) {
+	var name = props.name;
+	var id = props.id;
+	var onRemove = props;onRemove
+	return (
+		<div style={{
+			borderTop: '2px solid #eee',
+			paddingTop: 15,
+		}}>
+			{name && <input type="hidden" name={name} value={id} />}
+			
+			{React.Children.map(children, function(child) {
+				return React.cloneElement(child, {
+					name,
+					id,
+					onRemove,
+				});
+			})}
+
+			<div style={{ textAlign: 'right', paddingBottom: 10 }}>
+				<Button size="xsmall" color="danger" onClick={onRemove}>
+					Remove
+				</Button>
+			</div>
+		</div>
+	);
+}
+
 module.exports = Field.create({
 	displayName: 'ListField',
 	addItem () {
@@ -93,30 +121,10 @@ module.exports = Field.create({
 						var onRemove = function(e) {
 							this.removeItem(index);
 						}
-						var props = {
-							id: id,
-							name: name,
-							onRemove: onRemove,
-						};
 						return (
-							<div key={index} style={{
-								borderTop: '2px solid #eee',
-								paddingTop: 15,
-							}}>
-								{name && <input type="hidden" name={name} value={id}/>}
-								
-								{React.Children.map(children, child => {
-									return React.cloneElement(this.renderFieldsForItem(index, value), {
-										name,
-										id,
-										onRemove,
-									});
-								})}
-
-								<div style={{ textAlign: 'right', paddingBottom: 10 }}>
-									<input type="button" onClick={onRemove} value="Remove" />
-								</div>
-							</div>
+							<ItemDom key={id} id={id} name={name} onRemove={onRemove}>
+								{this.renderFieldsForItem(index, value)}
+							</ItemDom>
 						);
 					})
 				}
