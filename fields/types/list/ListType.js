@@ -16,7 +16,7 @@ list.properName = 'List';
 util.inherits(list, FieldType);
 
 function validateFieldType (field, path, type) {
-	var Field = field.list.keystone.Field;
+	var Field = keystone.Field;
 	if (!(type.prototype instanceof Field)) {
 		// Convert native field types to their default Keystone counterpart
 		if (type === String) {
@@ -42,13 +42,14 @@ function validateFieldType (field, path, type) {
  *
  * @api public
  */
-list.prototype.addToSchema = function (schema) {
+list.prototype.addToSchema = function () {
 	var field = this;
 	var mongoose = keystone.mongoose;
 	var fields = this.fields = {};
 	var fieldsArray = this.fieldsArray = [];
 	var fieldsSpec = this.options.fields;
 	var itemSchema = new mongoose.Schema();
+	var schema = this.list.schema;
 
 	if (typeof fieldsSpec !== 'object' || !Object.keys(fieldsSpec).length) {
 		throw new Error(
@@ -92,20 +93,14 @@ list.prototype.addToSchema = function (schema) {
 				+ 'Did you misspell the field type?\n'
 			);
 		}
-		if (isReserved(path)) {
-			throw new Error(
-				'Nested schema path ' + path + ' on field '
-				+ field.list.key + '.' + field.path + ' is a reserved path'
-			);
-		}
 		var newField = createField(path, fieldsSpec[path]);
 		fields[path] = newField;
 		fieldsArray.push(newField);
 	});
 
-	if (this.schemaOptions.decorateSchema) {
-		this.schemaOptions.decorateSchema(itemSchema);
-	}
+	// if (this.schemaOptions.decorateSchema) {
+	// 	this.schemaOptions.decorateSchema(itemSchema);
+	// }
 
 	schema.add(this._path.addTo({}, [itemSchema]));
 	this.bindUnderscoreMethods();
