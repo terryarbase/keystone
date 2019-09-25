@@ -47,7 +47,7 @@ list.prototype.addToSchema = function (schema) {
 	var mongoose = keystone.mongoose;
 	var fields = this.fields = {};
 	var fieldsArray = this.fieldsArray = [];
-	var fieldsSpec = this.schemaOptions.fields;
+	var fieldsSpec = this.options.fields;
 	var itemSchema = new mongoose.Schema();
 
 	if (typeof fieldsSpec !== 'object' || !Object.keys(fieldsSpec).length) {
