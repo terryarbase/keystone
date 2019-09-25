@@ -59,6 +59,7 @@ var Form = React.createClass({
 		props.value = this.state.values[field.path];
 		props.values = this.state.values;
 		props.onChange = this.handleChange;
+		props.list = this.props.list;
 		props.mode = 'create';
 		return props;
 	},
