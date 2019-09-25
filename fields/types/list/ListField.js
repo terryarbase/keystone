@@ -111,7 +111,7 @@ module.exports = Field.create({
 		var value = this.props.value ? this.props.value : [];
 		var path = this.props.path;
 		var onAdd = this.addItem;
-		console.log(this);
+		var self = this;
 		return (
 			<div>
 				{
@@ -120,12 +120,12 @@ module.exports = Field.create({
 						var _isNew = value._isNew;
 						var name = !_isNew ? path + '[' + index + '][id]' : null;
 						var onRemove = function(e) {
-							this.removeItem(index);
+							self.removeItem(index);
 						}
 						console.log(this);
 						return (
 							<ItemDom key={id} id={id} name={name} onRemove={onRemove}>
-								{this.renderFieldsForItem(index, value)}
+								{self.renderFieldsForItem(index, value)}
 							</ItemDom>
 						);
 					})
