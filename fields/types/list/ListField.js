@@ -76,6 +76,7 @@ module.exports = Field.create({
 		onChange({ path, value });
 	},
 	renderFieldsForItem (index, value) {
+		console.log(Fields);
 		return Object.keys(this.props.fields).map(function(path) {
 			var field = this.props.fields[path];
 			if (typeof Fields[field.type] !== 'function') {
