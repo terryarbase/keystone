@@ -2,7 +2,6 @@
 
 var React = require('react');
 var Field = require('../Field');
-var _ = require('lodash');
 
 
 var i = 0;
@@ -17,7 +16,7 @@ module.exports = Field.create({
 		var onChange = this.props.onChange;
 		onChange({
 			path: this.props.path,
-			value: _.concat([], value, 
+			value: [].concat(value, 
 				[
 					{
 						id: generateId(),
@@ -42,10 +41,10 @@ module.exports = Field.create({
 		var path = this.props.path;
 		var onChange = this.props.onChange;
 		var head = oldValue.slice(0, index);
-		var item = _.assign({}, oldValue[index]);
-		_.set(item, event.path, event.value)
+		var item = oldValue[index];
+		item[event.path] = event.value;
 		var tail = oldValue.slice(index + 1);
-		var value = _.concat([], head, [item], tail);
+		var value = [].concat(head, item, tail);
 		onChange({ path, value });
 	},
 	renderFieldsForItem (index, value) {
@@ -59,7 +58,7 @@ module.exports = Field.create({
 				});
 			}
 
-			var list = _.cloneDeep(this.props.list);
+			var list = Object.assign({}, this.props.list);
 			list.fields = this.props.list.fields[this.props.path].fields;
 
 			// cant get child state here, so imitate state from parent props data
@@ -67,7 +66,7 @@ module.exports = Field.create({
 				values: this.props.values[this.props.path][index],
 			};
 
-			var props = _.assign({}, field);
+			var props = field;
 			props.list = list;
 			props.path = field.path;
 			props.value = value[field.path];
