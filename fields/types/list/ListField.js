@@ -136,7 +136,7 @@ module.exports = Field.create({
 	},
 	renderUI () {
 		var value = this.props.value;
-		var required = this.props;
+		var required = this.props.required;
 		var label = this.props.label ? this.props.label + '' + (required ? ' *' : '') : null;
 		return (
 			<div>
