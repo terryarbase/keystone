@@ -76,10 +76,9 @@ module.exports = Field.create({
 	},
 	renderFieldsForItem (index, value) {
 		var FieldTypes = this.props.FieldTypes;
-		console.log(FieldTypes);
 		return Object.keys(this.props.fields).map(function(path) {
 			var field = this.props.fields[path];
-			if (typeof Fields[field.type] !== 'function') {
+			if (typeof FieldTypes[field.type] !== 'function') {
 				return React.createElement(InvalidFieldType, {
 					type: field.type,
 					path: field.path,
@@ -105,7 +104,7 @@ module.exports = Field.create({
 			props.inputNamePrefix = this.props.path + '[' + index + ']';
 			props.key = field.path;
 
-			return React.createElement(Fields[field.type], props);
+			return React.createElement(FieldTypes[field.type], props);
 		}, this);
 	},
 	renderItems () {
