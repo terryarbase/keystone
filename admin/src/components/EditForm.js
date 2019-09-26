@@ -34,42 +34,42 @@ var EditForm = React.createClass({
 			values: values
 		});
 	},
-	appendFormdata: (formData, data, name) {
-	    name = name || '';
-	    if (typeof data === 'object'){
-	        Object.keys(data).forEach(function(key, index){
-	          	var value = data[key];
-	            if (name == ''){
-	                appendFormdata(formData, value, key);
-	            } else if (typeof value == 'array') {
-	            	appendFormdata(formData, value, name + '['+key+'][]');
-	            } else {
-	            	appendFormdata(formData, value, name + '['+key+']');
-	            }
-	        })
-	    } else {
-	        formData.append(name, data);
-	    }
-	},
+	// appendFormdata: function(formData, data, name) {
+	//     name = name || '';
+	//     if (typeof data === 'object'){
+	//         Object.keys(data).forEach(function(key, index){
+	//           	var value = data[key];
+	//             if (name == ''){
+	//                 appendFormdata(formData, value, key);
+	//             } else if (typeof value == 'array') {
+	//             	appendFormdata(formData, value, name + '['+key+'][]');
+	//             } else {
+	//             	appendFormdata(formData, value, name + '['+key+']');
+	//             }
+	//         })
+	//     } else {
+	//         formData.append(name, data);
+	//     }
+	// },
 
-	onSubmit: function(e) {
-		e.preventDefault();
-		const values = this.state;
-		const fields = this.props.list.fields;
-		// Object.keys(values).forEach(function(field) {
-		// 	if (fields[field] && fields[field].type === 'list') {
+	// onSubmit: function(e) {
+	// 	e.preventDefault();
+	// 	const values = this.state;
+	// 	const fields = this.props.list.fields;
+	// 	// Object.keys(values).forEach(function(field) {
+	// 	// 	if (fields[field] && fields[field].type === 'list') {
 
-		// 	}
-		// });
-		// console.log(this.state.values);
-		var formData = new FormData(e.target);
-		for (var pair of formData.entries()) {
-			if (fields[field] && fields[field].type === 'list') {
-		    	console.log(pair[1] + ' ' + typeof pair[1]);
-			}
-		}
-		return false;
-	},
+	// 	// 	}
+	// 	// });
+	// 	// console.log(this.state.values);
+	// 	var formData = new FormData(e.target);
+	// 	for (var pair of formData.entries()) {
+	// 		if (fields[field] && fields[field].type === 'list') {
+	// 	    	console.log(pair[1] + ' ' + typeof pair[1]);
+	// 		}
+	// 	}
+	// 	return false;
+	// },
 	
 	renderNameField: function() {
 		
@@ -240,8 +240,6 @@ var EditForm = React.createClass({
 				method="post"
 				encType="multipart/form-data"
 				className="item-details"
-				ref="itemForm"
-				onSubmit={this.onSubmit}
 			>
 				<input type="hidden" name="action" value="updateItem" />
 				<input type="hidden" name={Keystone.csrf.key} value={Keystone.csrf.value} />
