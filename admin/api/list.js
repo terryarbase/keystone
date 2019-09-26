@@ -37,11 +37,11 @@ exports = module.exports = function(req, res) {
 				.sort(req.list.defaultSort);
 
 			if (req.query.context === 'relationship') {
-				var srcList = keystone.list(req.query.list);
-				if (!srcList) return sendError('invalid list provided');
+				// var srcList = keystone.list(req.query.list);
+				// if (!srcList) return sendError('invalid list provided');
 
-				var field = srcList.fields[req.query.field];
-				if (!field) return sendError('invalid field provided');
+				// var field = srcList.fields[req.query.field];
+				// if (!field) return sendError('invalid field provided');
 
 				_.each(req.query.filters, function(value, key) {
 					query.where(key).equals(value ? value : null);

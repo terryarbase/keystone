@@ -128,8 +128,8 @@ module.exports = Field.create({
 						// };
 						return (
 							<div style={{
-								borderTop: '2px solid #eee',
-								paddingTop: 15,
+								borderBottom: '1px solid #eee',
+								margin: '15px 20px 0 20px',
 							}}>
 								{name && <input type="hidden" name={name} value={id} />}
 								
