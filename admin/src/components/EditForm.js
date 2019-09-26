@@ -36,14 +36,13 @@ var EditForm = React.createClass({
 
 	onSubmit: function(e) {
 		e.preventDefault();
-		console.log(this.refs.itemForm);
 		console.log(this.state.values);
 		var formData = new FormData(this.refs.itemForm);
 		for (var pair of formData.entries()) {
 		    console.log(pair[0]+ ', ' + pair[1]); 
 		}
 		return false;
-	}
+	},
 	
 	renderNameField: function() {
 		
