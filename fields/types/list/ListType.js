@@ -205,7 +205,7 @@ list.prototype.updateItem = function (item, data, list) {
 			} else {
 				nestedField.updateItem(newItem, value);
 			}
-			
+			done();
 		}, function (err) {
 			next(err, newItem);
 		});
