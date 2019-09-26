@@ -133,7 +133,7 @@ module.exports = Field.create({
 							}}>
 								{name && <input type="hidden" name={name} value={id} />}
 								
-								{self.renderFieldsForItem(props)}
+								{self.renderFieldsForItem(index, value)}
 
 								<div style={{ textAlign: 'right', paddingBottom: 10 }}>
 									<input type="button" value="Remove" onClick={onRemove} />
@@ -152,7 +152,15 @@ module.exports = Field.create({
 		var label = this.props.label ? this.props.label + '' + (required ? ' *' : '') : null;
 		return (
 			<div>
-				<h3>{label}</h3>
+				<h3 style={{
+					margin: '20px 0',
+					padding: '0 0 15px 0',
+					borderBottom: '1px dashed #ccc',
+					textTransform: 'uppercase',
+					letterSpacing: '3px',
+				}}>
+					{label}
+				</h3>
 				{this.renderItems()}
 			</div>
 		);
