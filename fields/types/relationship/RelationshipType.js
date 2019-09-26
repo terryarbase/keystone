@@ -124,6 +124,7 @@ relationship.prototype.updateItem = function(item, data) {
 	if (item.populated(this.path)) {
 		throw new Error('fieldTypes.relationship.updateItem() Error - You cannot update populated relationships.');
 	}
+	var doc = null;
 	if (this.many) {
 		var arr = item.get(this.path);
 		if (!arr) arr = [];
@@ -138,18 +139,21 @@ relationship.prototype.updateItem = function(item, data) {
 		_new = _.compact(_new);
 		// Only update if the lists aren't the same
 		if (!_.isEqual(_old, _new)) {
-			console.log('> relationship 1: ', this.path, _new);
 			item.set(this.path, _new);
+			doc = _new;
 		}
 	} else {
 		if (data[this.path]) {
 			if (data[this.path] !== item.get(this.path)) {
 				item.set(this.path, data[this.path]);
+				doc = data[this.path];
 			}
 		} else if (item.get(this.path)) {
 			item.set(this.path, null);
 		}
 	}
+
+	return doc;
 };
 
 /**

@@ -195,15 +195,17 @@ list.prototype.updateItem = function (item, data) {
 	async.map(values, function (value, next) {
 		var prevItem = listArray.id(value.id);
 		var newItem = listArray.create(prevItem);
+		var item = {};
 		async.forEach(field.fieldsArray, function (nestedField, done) {
 			if (nestedField.updateItem.length === 4) {
-				nestedField.updateItem(newItem, value, files);
+				item[nestedField.path] = nestedField.updateItem(newItem, value, files);
 			} else {
-				nestedField.updateItem(newItem, value);
+				item[nestedField.path] = nestedField.updateItem(newItem, value);
 			}
-			newItem.save(done);
+
 		}, function (err) {
-			next(err, newItem);
+			console.log(item);
+			next(err, item);
 		});
 	}, function (err, updatedValues) {
 		if (!err) {
