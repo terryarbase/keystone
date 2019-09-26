@@ -121,7 +121,25 @@ module.exports = Field.create({
 						var onRemove = function(e) {
 							self.removeItem(index);
 						}
-						return self.renderFieldsForItem(index, value);
+						// var props = {
+						// 	id: id,
+						// 	name: name,
+						// 	onRemove: onRemove,
+						// };
+						return (
+							<div style={{
+								borderTop: '2px solid #eee',
+								paddingTop: 15,
+							}}>
+								{name && <input type="hidden" name={name} value={id} />}
+								
+								{self.renderFieldsForItem(props)}
+
+								<div style={{ textAlign: 'right', paddingBottom: 10 }}>
+									<input type="button" value="Remove" onClick={onRemove} />
+								</div>
+							</div>
+						);
 					})
 				}
 				<input type="button" value="Add" onClick={onAdd} />
