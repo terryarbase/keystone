@@ -136,22 +136,12 @@ list.prototype.addFilterToQuery = function (filter) { };
 /**
  * Asynchronously confirms that the provided value is valid
  */
-list.prototype.validateInput = function (data, callback) {
+list.prototype.validateInput = function (data, ) {
 	// TODO
 	// var value = this.getValueFromData(data);
-	var result = true;
-	utils.defer(callback, result);
+	return true;
 };
 
-/**
- * Asynchronously confirms that the a value is present
- */
-list.prototype.validateRequiredInput = function (item, data, callback) {
-	// TODO
-	// var value = this.getValueFromData(data);
-	var result = true;
-	utils.defer(callback, result);
-};
 
 list.prototype.getData = function (item) {
 	var items = item.get(this.path);
@@ -169,11 +159,7 @@ list.prototype.getData = function (item) {
  * Updates the value for this field in the item from a data object.
  * If the data object does not contain the value, then the value is set to empty array.
  */
-list.prototype.updateItem = function (item, data, files, callback) {
-	if (typeof files === 'function') {
-		callback = files;
-		files = {};
-	}
+list.prototype.updateItem = function (item, data) {
 
 	var field = this;
 	var values = this.getValueFromData(data);
@@ -203,9 +189,9 @@ list.prototype.updateItem = function (item, data, files, callback) {
 			next(err, newItem);
 		});
 	}, function (err, updatedValues) {
-		if (err) return callback(err);
-		item.set(field.path, updatedValues);
-		callback();
+		if (!err) {
+			item.set(field.path, updatedValues);
+		}
 	});
 };
 
