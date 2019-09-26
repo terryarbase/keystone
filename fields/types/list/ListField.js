@@ -71,7 +71,6 @@ module.exports = Field.create({
 		item[event.path] = event.value;
 		var tail = oldValue.slice(index + 1);
 		var value = [].concat(head, item, tail);
-		console.log(value, path);
 		onChange({
 			path: path,
 			value: value,
@@ -146,7 +145,7 @@ module.exports = Field.create({
 						);
 					})
 				}
-				<input type="button" value="Add" onClick={onAdd} />
+				<input type="button" style={{ margin: '15px 0' }} value="Add" onClick={onAdd} />
 			</div>
 		);
 	},

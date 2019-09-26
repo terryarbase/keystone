@@ -142,6 +142,7 @@ exports = module.exports = function(req, res) {
 	};
 
 	var item;
+	console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 	if ('update' in req.query) {
 
 		if (!checkCSRF()) return renderView();
