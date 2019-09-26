@@ -176,6 +176,7 @@ list.prototype.updateItem = function (item, data) {
 	// can make it more clever in a future release; this is otherwise the most
 	// resiliant update method that can be implemented without a lot of complexity
 	var listArray = item.get(this.path);
+	console.log(listArray, item, data);
 	async.map(values, function (value, next) {
 		var prevItem = listArray.id(value.id);
 		var newItem = listArray.create(prevItem);
