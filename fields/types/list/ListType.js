@@ -186,6 +186,7 @@ list.prototype.updateItem = function (item, data) {
 			} else {
 				nestedField.updateItem(newItem, value);
 			}
+			console.log('> newItem: ', newItem);
 		});
 		items.push(newItem);
 	});

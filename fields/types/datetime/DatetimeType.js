@@ -72,13 +72,15 @@ datetime.prototype.updateItem = function(item, data) {
 	}
 	var m = this.isUTC ? moment.utc : moment;
 	var newValue = m(this.getInputFromData(data), parseFormats);
-	console.log('> datetime 1: ', newValue, newValue.isValid());
+
 	if (newValue.isValid()) {
-		if (!item.get(this.path) || !newValue.isSame(item.get(this.path))) {
+		if (!item.get(this.path) || !newValue.isSame(item.get(this.path))) {	
+			console.log('> datetime 1: ', this.path, newValue, newValue.isValid());
 			item.set(this.path, newValue.toDate());
 		}
 	} else if (item.get(this.path)) {
 		item.set(this.path, null);
+		console.log('> datetime 2: ', this.path, newValue, newValue.isValid());
 	}
 };
 
