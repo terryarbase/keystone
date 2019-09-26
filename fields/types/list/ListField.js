@@ -104,6 +104,7 @@ module.exports = Field.create({
 			props.onChange = this.handleFieldChange.bind(this, index);
 			props.mode = 'edit';
 			props.inputNamePrefix = this.props.path + '[' + index + ']';
+			props.inputNamePostfix = field.type == 'relationship' ? '[]' : '';
 			props.key = field.path;
 
 			return React.createElement(FieldTypes[field.type], props);
