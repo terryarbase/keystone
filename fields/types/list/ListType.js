@@ -203,24 +203,25 @@ list.prototype.updateItem = function (item, data, list) {
 			if (nestedField.updateItem.length === 4) {
 				nestedField.updateItem(newItem, value, files);
 			} else {
-				doc[nestedField.path] = nestedField.updateItem(newItem, value, true);
+				nestedField.updateItem(newItem, value);
 			}
 			
 		}, function (err) {
-			next(err, doc);
+			next(err, newItem);
 		});
 	}, function (err, updatedValues) {
 
 		if (!err) {
-			if (item._id) {
-				var data = {};
-				data[field.path] = updatedValues;
-				list.model.findOneAndUpdate({
-					_id: item._id,
-				}, data, { upsert: true, new: true }, function(err, result) {
-					console.log(err, result);
-				})
-			}
+			item.set(field.path, updatedValues, { strict: false })
+			// if (item._id) {
+			// 	var data = {};
+			// 	data[field.path] = updatedValues;
+			// 	list.model.findOneAndUpdate({
+			// 		_id: item._id,
+			// 	}, data, { upsert: true, new: true }, function(err, result) {
+			// 		console.log(err, result);
+			// 	})
+			// }
 		}
 	});
 };

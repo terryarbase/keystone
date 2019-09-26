@@ -76,14 +76,14 @@ datetime.prototype.updateItem = function(item, data, returnable) {
 	if (newValue.isValid()) {
 		if (!item.get(this.path) || !newValue.isSame(item.get(this.path))) {	
 			if (!returnable) {
-				item.set(this.path, newValue.toDate());
+				item.set(this.path, newValue.toDate(), { strict: false });
 			} else {
 				doc = newValue.toDate();
 			}
 		}
 	} else if (item.get(this.path)) {
 		if (!returnable) {
-			item.set(this.path, null);
+			item.set(this.path, null, { strict: false });
 		}
 	}	
 	return doc;

@@ -140,7 +140,7 @@ relationship.prototype.updateItem = function(item, data, returnable) {
 		// Only update if the lists aren't the same
 		if (!_.isEqual(_old, _new)) {
 			if (!returnable) {
-				item.set(this.path, _new);
+				item.set(this.path, _new, { strict: false });
 			} else {
 				doc = _new;
 			}
@@ -149,14 +149,14 @@ relationship.prototype.updateItem = function(item, data, returnable) {
 		if (data[this.path]) {
 			if (data[this.path] !== item.get(this.path)) {
 				if (!returnable) {
-					item.set(this.path, data[this.path]);
+					item.set(this.path, data[this.path], { strict: false });
 				} else {
 					doc = data[this.path];
 				}
 			}
 		} else if (item.get(this.path)) {
 			if (!returnable) {
-				item.set(this.path, null);
+				item.set(this.path, null, { strict: false });
 			}
 		}
 	}
