@@ -159,7 +159,7 @@ list.prototype.getData = function (item) {
  * Updates the value for this field in the item from a data object.
  * If the data object does not contain the value, then the value is set to empty array.
  */
-list.prototype.updateItem = function (item, data) {
+list.prototype.updateItem = function (item, data, list) {
 
 	var field = this;
 	var values = this.getValueFromData(data);
@@ -177,46 +177,62 @@ list.prototype.updateItem = function (item, data) {
 	// resiliant update method that can be implemented without a lot of complexity
 	var listArray = item.get(this.path);
 	var items = [];
-	// values.map(function(value) {
+	values.map(function(value) {
+		var prevItem = listArray.id(value.id);
+		var newItem = listArray.create(prevItem);
+		var doc = {};
+		field.fieldsArray.forEach(function (nestedField, done) {
+			if (nestedField.updateItem.length === 4) {
+				var newItem = listArray.create(prevItem);
+				nestedField.updateItem(newItem, value, files);
+			} else {
+				doc[nestedField.path] = nestedField.updateItem(newItem, value, true);
+			}
+		});
+		doc._id = prevItem._id;
+		items.push(doc);
+	});
+	// console.log('>>>final>> ', field.path, items);
+	// item.set(field.path, items);
+	if (item._id) {
+		var data = {};
+		data[field.path] = updatedValues;
+		list.model.findOneAndUpdate({
+			_id: item._id,
+		}, data, { upsert: true, new: true }, function(err, result) {
+			console.log(err, result);
+		})
+	}
+
+	// async.map(values, function (value, next) {
 	// 	var prevItem = listArray.id(value.id);
 	// 	var newItem = listArray.create(prevItem);
 	// 	var doc = {};
-	// 	field.fieldsArray.forEach(function (nestedField, done) {
+	// 	async.forEach(field.fieldsArray, function (nestedField, done) {
 	// 		if (nestedField.updateItem.length === 4) {
-	// 			var newItem = listArray.create(prevItem);
 	// 			nestedField.updateItem(newItem, value, files);
 	// 		} else {
 	// 			doc[nestedField.path] = nestedField.updateItem(newItem, value, true);
 	// 		}
-	// 	});
-	// 	doc._id = prevItem._id;
-	// 	items.push(doc);
-	// });
-	// console.log('>>>final>> ', field.path, items);
-	// item.set(field.path, items);
-
-	async.map(values, function (value, next) {
-		var prevItem = listArray.id(value.id);
-		var newItem = listArray.create(prevItem);
-		var item = {};
-		async.forEach(field.fieldsArray, function (nestedField, done) {
-			if (nestedField.updateItem.length === 4) {
-				nestedField.updateItem(newItem, value, files);
-			} else {
-				console.log('>>>>>> ');
-				item[nestedField.path] = nestedField.updateItem(newItem, value, true);
-			}
 			
-		}, function (err) {
-			newItem.save(function(err) {
-				next(err, item);
-			});
-		});
-	}, function (err, updatedValues) {
-		if (!err) {
-			item.set(field.path, updatedValues);
-		}
-	});
+	// 	}, function (err) {
+	// 		next(err, doc);
+	// 	});
+	// }, function (err, updatedValues) {
+
+	// 	if (!err) {
+	// 		if (item._id) {
+	// 			var data = {};
+	// 			data[field.path] = updatedValues;
+	// 			list.model.findOneAndUpdate({
+	// 				_id: item._id,
+	// 			}, data, { upsert: true, new: true }, function(err, result) {
+	// 				console.log(err, result);
+	// 			})
+	// 		}
+	// 		// item.set(field.path, updatedValues);
+	// 	}
+	// });
 };
 
 /* Export Field Type */
