@@ -179,16 +179,17 @@ list.prototype.updateItem = function (item, data) {
 	var items = [];
 	values.map(function(value) {
 		var prevItem = listArray.id(value.id);
-		var newItem = listArray.create(prevItem);
+		// var newItem = listArray.create(prevItem);
 		var doc = {};
 		field.fieldsArray.forEach(function (nestedField, done) {
 			if (nestedField.updateItem.length === 4) {
+				var newItem = listArray.create(prevItem);
 				nestedField.updateItem(newItem, value, files);
 			} else {
-				doc[nestedField.path] = nestedField.updateItem(newItem, value, true);
+				doc[nestedField.path] = nestedField.updateItem({}, value, true);
 			}
 		});
-		doc._id = newItem._id;
+		doc._id = prevItem._id;
 		items.push(doc);
 	});
 	console.log('>>>final>> ', field.path, items);
