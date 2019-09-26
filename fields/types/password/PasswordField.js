@@ -53,10 +53,10 @@ module.exports = Field.create({
 		return (
 			<div className="form-row">
 				<div className="col-sm-6">
-					<input type="password" name={this.props.path} placeholder="New password" ref="password" value={this.state.password} onChange={this.valueChanged.bind(this, 'password')} autoComplete="off" className="form-control" />
+					<input type="password" name={this.getInputName(this.props.path)} placeholder="New password" ref="password" value={this.state.password} onChange={this.valueChanged.bind(this, 'password')} autoComplete="off" className="form-control" />
 				</div>
 				<div className="col-sm-6">
-					<input type="password" name={this.props.paths.confirm} placeholder="Confirm new password" ref="confirm" value={this.state.confirm} onChange={this.valueChanged.bind(this, 'confirm')} autoComplete="off" className="form-control" />
+					<input type="password" name={this.getInputName(this.props.paths.confirm)} placeholder="Confirm new password" ref="confirm" value={this.state.confirm} onChange={this.valueChanged.bind(this, 'confirm')} autoComplete="off" className="form-control" />
 				</div>
 			</div>
 		);

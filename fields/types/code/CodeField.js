@@ -74,7 +74,7 @@ module.exports = Field.create({
 		}
 		return (
 			<div className={className}>
-				<textarea ref="codemirror" name={this.props.path} value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />
+				<textarea ref="codemirror" name={this.getInputName(this.props.path)} value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />
 			</div>
 		);
 	},

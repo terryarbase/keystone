@@ -97,7 +97,7 @@ module.exports = Field.create({
 	},
 
 	renderFileField: function () {
-		return <input ref='fileField' type='file' name={this.props.paths.upload} multiple className='field-upload' onChange={this.uploadFile} />;
+		return <input ref='fileField' type='file' name={this.getInputName(this.props.paths.upload)} multiple className='field-upload' onChange={this.uploadFile} />;
 	},
 
 	clearFiles: function () {
@@ -177,11 +177,11 @@ module.exports = Field.create({
 		});
 		if (remove.length) value = 'delete:' + remove.join(',');
 
-		return <input ref="action" className="field-action" type="hidden" value={value} name={this.props.paths.action} />;
+		return <input ref="action" className="field-action" type="hidden" value={value} name={this.getInputName(this.props.paths.action)} />;
 	},
 
 	renderUploadsField: function () {
-		return <input ref="uploads" className="field-uploads" type="hidden" name={this.props.paths.uploads} />;
+		return <input ref="uploads" className="field-uploads" type="hidden" name={this.getInputName(this.props.paths.uploads)} />;
 	},
 
 	renderUI: function () {

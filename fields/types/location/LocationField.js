@@ -102,7 +102,7 @@ module.exports = Field.create({
 					<label className="text-muted">{label}</label>
 				</div>
 				<div className="col-sm-10 col-md-7 col-lg-6 location-field-controls">
-					<input type="text" name={this.props.path + '.' + path} ref={path} value={this.props.value[path]} onChange={this.fieldChanged.bind(this, path)} className="form-control" />
+					<input type="text" name={this.getInputName(this.props.path + '.' +path)} ref={path} value={this.props.value[path]} onChange={this.fieldChanged.bind(this, path)} className="form-control" />
 				</div>
 			</div>
 		);
@@ -117,10 +117,10 @@ module.exports = Field.create({
 				</div>
 				<div className="col-sm-10 col-md-7 col-lg-6 location-field-controls"><div className="form-row">
 					<div className="col-xs-6">
-						<input type="text" name={this.props.path + '.state'} ref="state" value={this.props.value.state} onChange={this.fieldChanged.bind(this, 'state')} className="form-control" placeholder="State" />
+						<input type="text" name={this.getInputName(this.props.path + '.state')} ref="state" value={this.props.value.state} onChange={this.fieldChanged.bind(this, 'state')} className="form-control" placeholder="State" />
 					</div>
 					<div className="col-xs-6">
-						<input type="text" name={this.props.path + '.postcode'} ref="postcode" value={this.props.value.postcode} onChange={this.fieldChanged.bind(this, 'postcode')} className="form-control" placeholder="Postcode" />
+						<input type="text" name={this.getInputName(this.props.path + '.postcode')} ref="postcode" value={this.props.value.postcode} onChange={this.fieldChanged.bind(this, 'postcode')} className="form-control" placeholder="Postcode" />
 					</div>
 				</div></div>
 			</div>
@@ -140,10 +140,10 @@ module.exports = Field.create({
 				</div>
 				<div className="col-sm-10 col-md-7 col-lg-6 location-field-controls"><div className="form-row">
 					<div className="col-xs-6">
-						<input type="text" name={this.props.paths.geo + '[1]'} ref="geo1" value={this.props.value.geo ? this.props.value.geo[1] : ''} onChange={this.geoChanged.bind(this, 1)} placeholder="Latitude" className="form-control" />
+						<input type="text" name={this.getInputName(this.props.paths.geo + '[1]')} ref="geo1" value={this.props.value.geo ? this.props.value.geo[1] : ''} onChange={this.geoChanged.bind(this, 1)} placeholder="Latitude" className="form-control" />
 					</div>
 					<div className="col-xs-6">
-						<input type="text" name={this.props.paths.geo + '[0]'} ref="geo0" value={this.props.value.geo ? this.props.value.geo[0] : ''} onChange={this.geoChanged.bind(this, 0)} placeholder="Longitude" className="form-control" />
+						<input type="text" name={this.getInputName(this.props.paths.geo + '[0]')} ref="geo0" value={this.props.value.geo ? this.props.value.geo[0] : ''} onChange={this.geoChanged.bind(this, 0)} placeholder="Longitude" className="form-control" />
 					</div>
 				</div></div>
 			</div>
@@ -161,7 +161,7 @@ module.exports = Field.create({
 		if (!this.props.enableMapsAPI) return null;
 		var replace = this.state.improve ? (
 			<label className="checkbox overwrite" htmlFor={this.props.paths.overwrite}>
-				<input type="checkbox" name={this.props.paths.overwrite} id={this.props.paths.overwrite} value="true" onChange={this.updateGoogleOption.bind(this, 'overwrite')} checked={this.state.overwrite} />
+				<input type="checkbox" name={this.getInputName(this.props.paths.overwrite)} id={this.props.paths.overwrite} value="true" onChange={this.updateGoogleOption.bind(this, 'overwrite')} checked={this.state.overwrite} />
 				Replace existing data
 			</label>
 		) : null;
@@ -169,7 +169,7 @@ module.exports = Field.create({
 			<div className="row">
 				<div className="col-sm-9 col-md-10 col-sm-offset-3 col-md-offset-2 improve-options">
 					<label className="checkbox autoimprove" htmlFor={this.props.paths.improve} title="When checked, this will attempt to fill missing fields. It will also get the lat/long">
-						<input type="checkbox" name={this.props.paths.improve} id={this.props.paths.improve} value="true" onChange={this.updateGoogleOption.bind(this, 'improve')} checked={this.state.improve} />
+						<input type="checkbox" name={this.getInputName(this.props.paths.improve)} id={this.props.paths.improve} value="true" onChange={this.updateGoogleOption.bind(this, 'improve')} checked={this.state.improve} />
 						Autodetect and improve location on save
 					</label>
 					{replace}

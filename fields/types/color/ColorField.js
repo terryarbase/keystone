@@ -41,7 +41,7 @@ module.exports = Field.create({
 		
 		return (
 			<div>
-				<input ref='field' type='text' className='form-control' onChange={this.valueChanged} name={this.props.path} value={this.props.value} autoComplete='off' />
+				<input ref='field' type='text' className='form-control' onChange={this.valueChanged} name={this.getInputName(this.props.path)} value={this.props.value} autoComplete='off' />
 				{colorPreview}
 			</div>
 		);

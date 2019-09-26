@@ -9,7 +9,7 @@ module.exports = Field.create({
 		var styles = {
 			height: this.props.height
 		};
-		return <textarea name={this.props.path} styles={styles} ref="focusTarget" value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
+		return <textarea name={this.getInputName(this.props.path)} styles={styles} ref="focusTarget" value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
 	}
 	
 });

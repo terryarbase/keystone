@@ -53,11 +53,27 @@ var Base = module.exports.Base = {
 	},
 	
 	renderField: function() {
-		return <input type="text" ref="focusTarget" name={this.props.path} placeholder={this.props.placeholder} value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
+		return <input type="text"
+			ref="focusTarget"
+			name={this.getInputName(this.props.path)}
+			placeholder={this.props.placeholder}
+			value={this.props.value}
+			onChange={this.valueChanged}
+			autoComplete="off"
+			className="form-control"
+		/>;
 	},
 	
 	renderValue: function() {
 		return <div className="field-value">{this.props.value}</div>;
+	},
+
+	getInputName (path) {
+		// This correctly creates the path for field inputs, and supports the
+		// inputNamePrefix prop that is required for nested fields to work
+		return this.props.inputNamePrefix
+			? `${this.props.inputNamePrefix}[${path}]`
+			: path;
 	},
 	
 	renderUI: function(spec) {//eslint-disable-line no-unused-vars

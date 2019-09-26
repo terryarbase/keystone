@@ -178,11 +178,11 @@ module.exports = Field.create({
 	},
 
 	renderFileField: function() {
-		return <input ref='fileField' type='file' name={this.props.paths.upload} className='field-upload' onChange={this.fileChanged} />;
+		return <input ref='fileField' type='file' name={this.getInputName(this.props.paths.upload)} className='field-upload' onChange={this.fileChanged} />;
 	},
 
 	renderFileAction: function() {
-		return <input type='hidden' name={this.props.paths.action} className='field-action' value={this.state.action} />;
+		return <input type='hidden' name={this.getInputName(this.props.paths.action)} className='field-action' value={this.state.action} />;
 	},
 
 	renderFileToolbar: function() {

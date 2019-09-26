@@ -120,7 +120,7 @@ module.exports = Field.create({
 					value.map(function(value, index) {
 						var id = value.id;
 						var _isNew = value._isNew;
-						var name = !_isNew ? path + '[' + index + '][id]' : null;
+						var name = !_isNew ? path + '[' + index + '][id]' : false;
 						var onRemove = function(e) {
 							self.removeItem(index);
 						}

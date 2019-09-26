@@ -254,11 +254,11 @@ module.exports = Field.create({
 	},
 
 	renderFileField: function() {
-		return <input ref='fileField' type='file' name={this.props.paths.upload} className='field-upload' onChange={this.fileChanged} />;
+		return <input ref='fileField' type='file' name={this.getInputName(this.props.paths.upload)} className='field-upload' onChange={this.fileChanged} />;
 	},
 
 	renderFileAction: function() {
-		return <input type='hidden' name={this.props.paths.action} className='field-action' value={this.state.action} />;
+		return <input type='hidden' name={this.getInputName(this.props.paths.action)} className='field-action' value={this.state.action} />;
 	},
 
 	renderImageToolbar: function() {
@@ -306,7 +306,7 @@ module.exports = Field.create({
 				<Select
 					placeholder='Search for an image from Cloudinary ...'
 					className='ui-select2-cloudinary'
-					name={this.props.paths.select}
+					name={this.getInputName(this.props.paths.select)}
 					id={'field_' + this.props.paths.select}
 					asyncOptions={getOptions}
 				/>

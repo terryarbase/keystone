@@ -184,7 +184,7 @@ module.exports = Field.create({
 		}
 		var body = [];
 
-		body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.props.path} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
+		body.push(<Select multi={this.props.many} onChange={this.updateValue} name={this.getInputName(this.props.path)} asyncOptions={this.getOptions} value={this.state.expandedValues} />);
 		
 		if (!this.props.many && this.props.value) {
 			body.push(

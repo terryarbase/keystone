@@ -16,7 +16,7 @@ module.exports = Field.create({
 	},
 	
 	renderField: function() {
-		return <input type="text" name={this.props.path} ref="focusTarget" value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
+		return <input type="text" name={this.getInputName(this.props.path)} ref="focusTarget" value={this.props.value} onChange={this.valueChanged} autoComplete="off" className="form-control" />;
 	}
 	
 });

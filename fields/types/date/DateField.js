@@ -66,7 +66,7 @@ module.exports = Field.create({
 		if (this.shouldRenderField()) {
 			input = (
 				<div className={fieldClassName}>
-					<DateInput ref="dateInput" name={this.props.path} format={this.inputFormat} value={this.state.value} onChange={this.valueChanged} yearRange={this.props.yearRange} />
+					<DateInput ref="dateInput" name={this.getInputName(this.props.path)} format={this.inputFormat} value={this.state.value} onChange={this.valueChanged} yearRange={this.props.yearRange} />
 					<button type="button" className="btn btn-default btn-set-today" onClick={this.setToday}>Today</button>
 				</div>
 			);
@@ -80,7 +80,7 @@ module.exports = Field.create({
 		
 		return (
 			<div className="field field-type-date">
-				<label htmlFor={this.props.path} className="field-label">{this.props.label}</label>
+				<label htmlFor={this.getInputName(this.props.path)} className="field-label">{this.props.label}</label>
 				{input}
 				<div className="col-sm-9 col-md-10 col-sm-offset-3 col-md-offset-2 field-note-wrapper">
 					<Note note={this.props.note} />
