@@ -11,7 +11,7 @@ function generateId () {
 function ItemDom(props) {
 	var name = props.name;
 	var id = props.id;
-	var onRemove = props;onRemove
+	var onRemove = props.onRemove;
 	return (
 		<div style={{
 			borderTop: '2px solid #eee',
@@ -20,7 +20,7 @@ function ItemDom(props) {
 			{name && <input type="hidden" name={name} value={id} />}
 			
 			{React.Children.map(props.children, function(child) {
-				console.log(child, name, id, onRemove);
+				console.log(child, name, id, on);
 				return React.cloneElement(child, {
 					name,
 					id,
@@ -121,11 +121,7 @@ module.exports = Field.create({
 						var onRemove = function(e) {
 							self.removeItem(index);
 						}
-						return (
-							<ItemDom key={id} id={id} name={name} onRemove={onRemove}>
-								{self.renderFieldsForItem(index, value)}
-							</ItemDom>
-						);
+						return self.renderFieldsForItem(index, value);
 					})
 				}
 				<input type="button" value="Add" onClick={onAdd} />
