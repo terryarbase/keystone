@@ -126,9 +126,10 @@ relationship.prototype.updateItem = function(item, data) {
 	}
 	if (this.many) {
 		var arr = item.get(this.path);
-		if (typeof arr == 'string' && !!arr) {
-			arr = arr.split(',');
-		}
+		if (!arr) arr = [];
+		// if (typeof arr == 'string' && !!arr) {
+		// 	arr = arr.split(',');
+		// }
 		var _old = arr.map(function(i) { return String(i); });
 		var _new = data[this.path];
 		if (!utils.isArray(_new)) {
