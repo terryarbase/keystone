@@ -132,10 +132,12 @@ relationship.prototype.updateItem = function(item, data) {
 		// }
 		var _old = arr.map(function(i) { return String(i); });
 		var _new = data[this.path];
+		console.log('> relationship 1: ', _new, _old);
 		if (!utils.isArray(_new)) {
 			_new = String(_new || '').split(',');
 		}
 		_new = _.compact(_new);
+		console.log('> relationship 2: ', _new);
 		// Only update if the lists aren't the same
 		if (!_.isEqual(_old, _new)) {
 			item.set(this.path, _new);

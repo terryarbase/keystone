@@ -72,6 +72,7 @@ datetime.prototype.updateItem = function(item, data) {
 	}
 	var m = this.isUTC ? moment.utc : moment;
 	var newValue = m(this.getInputFromData(data), parseFormats);
+	console.log('> datetime 1: ', newValue, newValue.isValid());
 	if (newValue.isValid()) {
 		if (!item.get(this.path) || !newValue.isSame(item.get(this.path))) {
 			item.set(this.path, newValue.toDate());
