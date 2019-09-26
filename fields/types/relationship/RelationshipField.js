@@ -117,8 +117,8 @@ module.exports = Field.create({
 	},
 
 	buildOptionQuery: function (input) {
-		console.log(input);
-		return 'context=relationship&q=' + input +
+		var newInput = typeof input === 'object' ? '' : input;
+		return 'context=relationship&q=' + newInput +
 				'&list=' + Keystone.list.path +
 				'&field=' + this.props.path +
 				'&' + this.buildFilters();
