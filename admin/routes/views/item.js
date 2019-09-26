@@ -80,7 +80,6 @@ exports = module.exports = function(req, res) {
 				req.flash('error', 'There was a problem with your request, please try again.');
 				return renderView();
 			}
-			console.log(req.body);
 			item.getUpdateHandler(req).process(req.body, { flashErrors: true, logErrors: true }, function(err) {
 				if (err) {
 					return renderView();

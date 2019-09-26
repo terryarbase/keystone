@@ -176,49 +176,40 @@ list.prototype.updateItem = function (item, data) {
 	// can make it more clever in a future release; this is otherwise the most
 	// resiliant update method that can be implemented without a lot of complexity
 	var listArray = item.get(this.path);
-	var items = [];
-	values.map(function(value) {
+	// var items = [];
+	// values.map(function(value) {
+	// 	var prevItem = listArray.id(value.id);
+	// 	var newItem = listArray.create(prevItem);
+	// 	field.fieldsArray.forEach(function (nestedField, done) {
+	// 		if (nestedField.updateItem.length === 4) {
+	// 			nestedField.updateItem(newItem, value, files);
+	// 		} else {
+	// 			nestedField.updateItem(newItem, value);
+	// 		}
+	// 	});
+	// 	items.push(newItem);
+	// });
+	// console.log('>>>>> ', field.path, items);
+	// item.set(field.path, items);
+
+	async.map(values, function (value, next) {
 		var prevItem = listArray.id(value.id);
 		var newItem = listArray.create(prevItem);
-		field.fieldsArray.forEach(function (nestedField, done) {
+		async.forEach(field.fieldsArray, function (nestedField, done) {
 			if (nestedField.updateItem.length === 4) {
 				nestedField.updateItem(newItem, value, files);
 			} else {
 				nestedField.updateItem(newItem, value);
 			}
-			console.log('> newItem: ', newItem);
+			newItem.save(done);
+		}, function (err) {
+			next(err, newItem);
 		});
-		items.push(newItem);
+	}, function (err, updatedValues) {
+		if (!err) {
+			item.set(field.path, updatedValues);
+		}
 	});
-	console.log('>>>>> ', field.path, items);
-	item.set(field.path, items);
-
-	// async.map(values, function (value, next) {
-	// 	var prevItem = listArray.id(value.id);
-	// 	var newItem = listArray.create(prevItem);
-	// 	field.fieldsArray,.forEach(function (nestedField, done) {
-	// 		if (nestedField.updateItem.length === 4) {
-	// 			nestedField.updateItem(newItem, value, files);
-	// 		} else {
-	// 			nestedField.updateItem(newItem, value);
-	// 		}
-	// 	});
-
-	// 	async.forEach(field.fieldsArray, function (nestedField, done) {
-	// 		if (nestedField.updateItem.length === 4) {
-	// 			nestedField.updateItem(newItem, value, files);
-	// 		} else {
-	// 			nestedField.updateItem(newItem, value);
-	// 		}
-	// 	}, function (err) {
-	// 		console.log('>>>>>>> ', err, );
-	// 		next(err, newItem);
-	// 	});
-	// }, function (err, updatedValues) {
-	// 	if (!err) {
-	// 		item.set(field.path, updatedValues);
-	// 	}
-	// });
 };
 
 /* Export Field Type */
