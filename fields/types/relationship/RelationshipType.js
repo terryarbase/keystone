@@ -117,7 +117,7 @@ relationship.prototype.validateInput = function(data, required, item) {
  * Only updates the value if it has changed.
  * Treats an empty string as a null value.
  */
-relationship.prototype.updateItem = function(item, data) {
+relationship.prototype.updateItem = function(item, data, returnable) {
 	if (!(this.path in data)) {
 		return;
 	}
@@ -139,17 +139,25 @@ relationship.prototype.updateItem = function(item, data) {
 		_new = _.compact(_new);
 		// Only update if the lists aren't the same
 		if (!_.isEqual(_old, _new)) {
-			item.set(this.path, _new);
-			doc = _new;
+			if (!returnable) {
+				item.set(this.path, _new);
+			} else {
+				doc = _new;
+			}
 		}
 	} else {
 		if (data[this.path]) {
 			if (data[this.path] !== item.get(this.path)) {
-				item.set(this.path, data[this.path]);
-				doc = data[this.path];
+				if (!returnable) {
+					item.set(this.path, data[this.path]);
+				} else {
+					doc = data[this.path];
+				}
 			}
 		} else if (item.get(this.path)) {
-			item.set(this.path, null);
+			if (!returnable) {
+				item.set(this.path, null);
+			}
 		}
 	}
 

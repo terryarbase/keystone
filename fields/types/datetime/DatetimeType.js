@@ -66,7 +66,7 @@ datetime.prototype.validateInput = function(data, required, item) {
 /**
  * Updates the value for this field in the item from a data object
  */
-datetime.prototype.updateItem = function(item, data) {
+datetime.prototype.updateItem = function(item, data, returnable) {
 	if (!(this.path in data || (this.paths.date in data && this.paths.time in data))) {
 		return;
 	}
@@ -75,12 +75,16 @@ datetime.prototype.updateItem = function(item, data) {
 	var doc = null;
 	if (newValue.isValid()) {
 		if (!item.get(this.path) || !newValue.isSame(item.get(this.path))) {	
-			item.set(this.path, newValue.toDate());
-			doc = newValue.toDate();
+			if (!returnable) {
+				item.set(this.path, newValue.toDate());
+			} else {
+				doc = newValue.toDate();
+			}
 		}
 	} else if (item.get(this.path)) {
-		item.set(this.path, null);
-
+		if (!returnable) {
+			item.set(this.path, null);
+		}
 	}	
 	return doc;
 };

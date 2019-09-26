@@ -182,16 +182,16 @@ list.prototype.updateItem = function (item, data) {
 		var newItem = listArray.create(prevItem);
 		var doc = {};
 		field.fieldsArray.forEach(function (nestedField, done) {
-			console.log('>>>>> ', nestedField.path);
 			if (nestedField.updateItem.length === 4) {
-				item[nestedField.path] = nestedField.updateItem(newItem, value, files);
+				nestedField.updateItem(newItem, value, files);
 			} else {
-				item[nestedField.path] = nestedField.updateItem(newItem, value);
+				doc[nestedField.path] = nestedField.updateItem(newItem, value, true);
 			}
 		});
+		doc._id = newItem._id;
 		items.push(doc);
 	});
-	console.log('>>>final>> ', items);
+	console.log('>>>final>> ', field.path, items);
 	item.set(field.path, items);
 
 	// async.map(values, function (value, next) {
