@@ -33,6 +33,17 @@ var EditForm = React.createClass({
 			values: values
 		});
 	},
+
+	onSubmit: function(e) {
+		e.preventDefault();
+		console.log(this.refs.itemForm);
+		console.log(this.state.values);
+		var formData = new FormData(this.refs.itemForm);
+		for (var pair of formData.entries()) {
+		    console.log(pair[0]+ ', ' + pair[1]); 
+		}
+		return false;
+	}
 	
 	renderNameField: function() {
 		
@@ -199,7 +210,13 @@ var EditForm = React.createClass({
 	render: function() {
 		
 		return (
-			<form method="post" encType="multipart/form-data" className="item-details">
+			<form
+				method="post"
+				encType="multipart/form-data"
+				className="item-details"
+				ref="itemForm"
+				onSubmit={this.onSubmit}
+			>
 				<input type="hidden" name="action" value="updateItem" />
 				<input type="hidden" name={Keystone.csrf.key} value={Keystone.csrf.value} />
 				{this.renderNameField()}

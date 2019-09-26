@@ -71,7 +71,11 @@ module.exports = Field.create({
 		item[event.path] = event.value;
 		var tail = oldValue.slice(index + 1);
 		var value = [].concat(head, item, tail);
-		onChange({ path, value });
+		console.log(value, path);
+		onChange({
+			path: path,
+			value: value,
+		});
 	},
 	renderFieldsForItem (index, value) {
 		var FieldTypes = this.props.FieldTypes;
