@@ -136,7 +136,7 @@ list.prototype.addFilterToQuery = function (filter) { };
 /**
  * Asynchronously confirms that the provided value is valid
  */
-list.prototype.validateInput = function (data, ) {
+list.prototype.validateInput = function (data) {
 	// TODO
 	// var value = this.getValueFromData(data);
 	return true;
