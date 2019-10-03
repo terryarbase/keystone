@@ -1,6 +1,8 @@
 var keystone = require('../../../');
 var _ = require('underscore');
 var querystring = require('querystring');
+var Role = require(global.__base + '/models/user/Role');
+var async = require("async");
 
 exports = module.exports = function(req, res) {
 
@@ -111,22 +113,76 @@ exports = module.exports = function(req, res) {
 
 			var appName = keystone.get('name') || 'Keystone';
 
-			keystone.render(req, res, 'list', _.extend(viewLocals, {
-				section: keystone.nav.by.list[req.list.key] || {},
-				title: appName + ': ' + req.list.plural,
-				page: 'list',
-				link_to: link_to,
-				download_link: download_link,
-				list: req.list,
-				sort: sort,
-				filters: cleanFilters,
-				search: req.query.search,
-				columns: columns,
-				colPaths: _.pluck(columns, 'path'),
-				items: items,
-				submitted: req.body || {},
-				query: req.query
-			}));
+
+
+
+			async.waterfall([
+			    function(donePermission) {
+
+				/* updated */
+			if(!req.user.isSuperAdmin){
+				// if not superadmin
+				if(req.user.role !== undefined){
+					// if role is set
+					var role = new Role;
+					role.findById(req.user.role,function(err, result){
+			      if (err){
+			        console.log(err);
+			        //if error, denied all action
+			      	viewLocals.editable = false;
+			      }else{
+			        var result = result._doc;
+			        var currentPermission = result.adminPermissions[req.list.path];
+			        console.log("User("+req.user._id+") access "+req.list.path + ":" + currentPermission);
+			      	if(currentPermission == 'editable'){
+			      		//do nothing
+			      		viewLocals.editable = true;
+			      		
+			    	}else if(currentPermission == 'readOnly'){
+				        viewLocals.editable = false;
+			        }else{
+				    	//other status and 'denied' status
+					    viewLocals.editable = false;
+					}
+			      }
+			     donePermission(null);
+			    });
+				}else{
+					// if role is not set
+					viewLocals.editable = false;
+			    	donePermission(null);
+				}
+			}
+			else{
+				viewLocals.editable = true;
+				donePermission(null);
+			}
+	    	/* updated */
+			        
+			    },
+			    function(doneRender) {
+			    	keystone.render(req, res, 'list', _.extend(viewLocals, {
+					section: keystone.nav.by.list[req.list.key] || {},
+					title: appName + ': ' + req.list.plural,
+					page: 'list',
+					link_to: link_to,
+					download_link: download_link,
+					list: req.list,
+					sort: sort,
+					filters: cleanFilters,
+					search: req.query.search,
+					columns: columns,
+					colPaths: _.pluck(columns, 'path'),
+					items: items,
+					submitted: req.body || {},
+					query: req.query
+					}));
+			    	doneRender(null);
+			    }
+			], function (err, result) {
+			    // result now equals 'done'
+			});
+			
 
 		});
 
@@ -142,7 +198,6 @@ exports = module.exports = function(req, res) {
 	};
 
 	var item;
-	console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
 	if ('update' in req.query) {
 
 		if (!checkCSRF()) return renderView();
@@ -171,7 +226,7 @@ exports = module.exports = function(req, res) {
 
 	} else if (!req.list.get('nodelete') && req.query['delete']) { //eslint-disable-line dot-notation
 
-		if (!checkCSRF()) return renderView();
+		// if (!checkCSRF()) return renderView();
 
 		if (req.query['delete'] === req.user.id) { //eslint-disable-line dot-notation
 			req.flash('error', 'You can\'t delete your own ' + req.list.singular + '.');
