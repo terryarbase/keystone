@@ -15,6 +15,11 @@ block js
 	script(src='/keystone/js/fields.js')
 	script(src='/keystone/js/item.js')
 
+	//- custom JS
+	script(src='/js/custom/moment.js')
+	script(src='/js/custom/checkconcurrentediting.js')
+	script(src='/js/custom/languagetab.js')
+	
 block js_codemirror
 	if list.fieldTypes.code
 		script(src="/keystone/js/lib/codemirror/codemirror-compressed.js")
