@@ -156,7 +156,7 @@ var Header = React.createClass({
 	},
 	
 	renderCreateButton: function() {
-		if (this.props.list.nocreate) return null;
+		if (this.props.list.nocreate || !Keystone.editable) return null;
 		/* eslint-disable no-script-url */
 		return (
 			<li>

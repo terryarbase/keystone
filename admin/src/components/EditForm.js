@@ -220,7 +220,7 @@ var EditForm = React.createClass({
 			toolbar.reset = <a href={'/keystone/' + this.props.list.path + '/' + this.props.data.id} className="btn btn-link btn-cancel" data-confirm="Are you sure you want to reset your changes?">reset changes</a>;
 		}
 		
-		if (!this.props.list.noedit && !this.props.list.nodelete) {
+		if (!this.props.list.noedit && !this.props.list.nodelete && Keystone.editable) {
 			// TODO: Confirm: Use React & Modal
 			toolbar.del = <a href={'/keystone/' + this.props.list.path + '?delete=' + this.props.data.id + Keystone.csrf.query} className="btn btn-link btn-cancel delete" data-confirm={'Are you sure you want to delete this?' + this.props.list.singular.toLowerCase()}>delete {this.props.list.singular.toLowerCase()}</a>;
 		}

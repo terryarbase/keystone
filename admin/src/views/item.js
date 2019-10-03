@@ -13,7 +13,8 @@ var View = React.createClass({
 		return {
 			createIsVisible: false,
 			list: Keystone.list,
-			itemData: null
+			itemData: null,
+			editable:Keystone.editable,
 		};
 	},
 

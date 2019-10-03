@@ -46,7 +46,7 @@ var View = React.createClass({
 	},
 	
 	render: function() {
-		if (Keystone.list.nocreate) return null;
+		if (Keystone.list.nocreate || !Keystone.editable ) return null;
 		return (
 			<div className="create-item">
 				{this.renderCreateButton()}

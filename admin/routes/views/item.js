@@ -1,6 +1,7 @@
 var keystone = require('../../../');
 var _ = require('underscore');
 var async = require('async');
+var Role = require(global.__base + '/models/user/Role');
 
 exports = module.exports = function(req, res) {
 
@@ -59,15 +60,70 @@ exports = module.exports = function(req, res) {
 
 				var appName = keystone.get('name') || 'Keystone';
 
-				keystone.render(req, res, 'item', {
-					section: keystone.nav.by.list[req.list.key] || {},
-					title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
-					page: 'item',
-					list: req.list,
-					item: item,
-					relationships: relationships,
-					showRelationships: showRelationships
+				var editable = true;
+				var viewLocals = {
+					editable: true
+				};
+				async.waterfall([
+			    function(donePermission) {
+				    	if(!req.user.isSuperAdmin){
+							// if not superadmin
+							if(req.user.role !== undefined){
+								// if role is set
+								var role = new Role;
+								role.findById(req.user.role,function(err, result){
+						      if (err){
+						        console.log(err);
+						        //if error, denied all action
+						      	viewLocals.editable = false;
+						      }else{
+						        var result = result._doc;
+						        var currentPermission = result.adminPermissions[req.list.path];
+						        console.log("User("+req.user._id+") access "+req.list.path + ":" + currentPermission);
+						      	if(currentPermission == 'editable'){
+						      		//do nothing
+						      		viewLocals.editable = true;
+						      		
+						    	}else if(currentPermission == 'readOnly'){
+							        viewLocals.editable = false;
+						        }else{
+							    	//other status and 'denied' status
+								    viewLocals.editable = false;
+								}
+						      }
+						     donePermission(null);
+						    });
+							}else{
+								// if role is not set
+								viewLocals.editable = false;
+						    	donePermission(null);
+							}
+						}
+						else{
+							// is super admin
+							viewLocals.editable = true;
+						    donePermission(null);
+						}
+				        
+				    },
+				    function(doneRender) {
+
+					   	keystone.render(req, res, 'item', {
+							section: keystone.nav.by.list[req.list.key] || {},
+							title: appName + ': ' + req.list.singular + ': ' + req.list.getDocumentName(item),
+							page: 'item',
+							list: req.list,
+							item: item,
+							relationships: relationships,
+							showRelationships: showRelationships,
+							editable: viewLocals.editable
+						});
+					   	doneRender(null);
+				    }
+				], function (err, result) {
+				    // result now equals 'done'
 				});
+				
 
 			});
 
@@ -80,6 +136,7 @@ exports = module.exports = function(req, res) {
 				req.flash('error', 'There was a problem with your request, please try again.');
 				return renderView();
 			}
+
 			item.getUpdateHandler(req).process(req.body, { flashErrors: true, logErrors: true }, function(err) {
 				if (err) {
 					return renderView();
