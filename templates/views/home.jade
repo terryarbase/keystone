@@ -1,5 +1,6 @@
 extends ../layout/base
 
+
 block js
 	- var getListMeta = function(list) { return _.pick(list, ['key', 'label', 'path']); }
 	script.
@@ -10,4 +11,15 @@ block js
 	script(src='/keystone/js/home.js')
 
 block content
-	#home-view
+	.container: .jumbotron
+		h1 Welcome
+		p Welcome to Ocean Park CMS
+		if User && user
+					|  You are signed in as 
+					//- a(href='/keystone/' + User.path + '/' + user.id)= User.getDocumentName(user)
+					a(href='/admin/user')= User.getDocumentName(user)
+					| .
+		div(style='clear:both;margin-top:10px;')
+		each val in cmsOption
+			div(style='float:left;margin:10px 10px 0 0;')
+				a(class="btn btn-primary", href='/sso?action=redirect&cms='+val)= 'Go To '+val
