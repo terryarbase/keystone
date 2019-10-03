@@ -16,6 +16,9 @@ html
 		link(rel="stylesheet", href="/keystone/styles/keystone.min.css")
 		block css
 
+		//- custom css
+		link(rel="stylesheet", href="/keystone/styles/custom.css")
+
 		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
 		block head
 
@@ -30,7 +33,7 @@ html
 						span.icon-bar
 						span.icon-bar
 						span.icon-bar
-					a(href='/keystone', class=(section == 'home' ? 'active' : null)).navbar-brand= brand
+					a(href='/keystone', class=(section == 'home' ? 'active' : null)).navbar-brand=brand
 				.collapse.navbar-collapse.navbar-headernav-collapse
 					if signout
 						ul.nav.navbar-nav.navbar-right
@@ -66,16 +69,19 @@ html
 									
 								li(class=navList.key == list.key ? 'active' : null): a(href=path)= navList.label
 			#body: .container
+				div.custom_logo
+					img(src='/keystone/images/logo.png', width='160')
 				block intro
 				+flash-messages(messages)
 				block content
 
 		#footer: .container
 			p 	#{brand} #{appversion} 
-				| Powered by <a href="http://keystonejs.com" target="_blank">KeystoneJS</a> version #{version}.
+				| Powered by <a href="http://www.4d.com.hk" target="_blank">Four Directions</a>.
 				if User && user
 					|  Signed in as 
-					a(href='/keystone/' + User.path + '/' + user.id)= User.getDocumentName(user)
+					//- a(href='/keystone/' + User.path + '/' + user.id)= User.getDocumentName(user)
+					a(href='/admin/user')= User.getDocumentName(user)
 					| .
 
 		//- Common

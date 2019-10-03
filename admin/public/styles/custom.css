@@ -1,0 +1,118 @@
+#list-filters button.btn.btn-default.btn-filter {
+    display: none;
+}
+.Select-control .Select-loading{
+    display: none;
+}
+.required-field label:after {
+    content: "*";
+    color: red;
+}
+.language-tab a {
+    margin: 1px;
+    padding: 5px 10px;
+    border: 1px solid #0080BF;
+}
+.language-tab a.current {
+    background: #0080BF;
+    color: white;
+}
+.language-tab{
+    height: 35px;
+}
+.preview{
+    display:none;
+    border: 1px solid #eee;
+    margin-bottom: 20px;
+    padding: 6px 15px;
+
+}
+.preview-btn{
+    height: 30px;
+}
+.preview-btn > a 
+.close-preview-btn{
+    cursor: pointer;
+}
+.lang-title{
+    color: #0080BF;
+}
+
+.items-list .control .control-copy{
+    background: url('/keystone/images/icons/copy.png') top left no-repeat;
+}
+
+.custom_logo{
+    text-align:right;
+}
+
+span[data-reactid*='isValid'],label[data-reactid*='timeslot']{
+    display:none;
+}
+input[data-reactid*='sunday']:after{ content:'Sunday'; }
+input[data-reactid*='monday']:after{ content:'Monday'; }
+input[data-reactid*='tueday']:after{ content:'Tueday'; }
+input[data-reactid*='wednesday']:after{ content:'Wednesday'; }
+input[data-reactid*='thursday']:after{ content:'Thursday'; }
+input[data-reactid*='friday']:after{ content:'Friday'; }
+input[data-reactid*='saturday']:after{ content:'Saturday'; }
+
+input[data-reactid*='isValid']:after{
+    line-height: 10px;
+    padding-left: 16px;
+}
+input[data-reactid*='isValid']{
+    margin-left:0px;
+    margin-top: 11px;
+}
+
+.field[data-reactid*='isValid']:after,
+.field[data-reactid*='timeslot']:after{
+    clear:none;
+}
+.field[data-reactid*='timeslot2'][data-reactid*='to']:after{
+    clear:both;
+}
+.field-ui[data-reactid*='isValid']{
+    width: 100px;
+    padding-bottom: 10px;
+}
+input.form-control[data-reactid*='timeslot']{
+    width: 70px;
+    float: left;
+    margin: 0px 4px;
+}
+.field-ui[data-reactid*='timeslot']{
+    width: auto;
+}
+.field[data-reactid*='timeslot']{
+    margin-top:0px;
+}
+.field-ui[data-reactid*='timeslot'][data-reactid*='to']{
+    padding-left: 0px;
+}
+.field-ui[data-reactid*='timeslot1'][data-reactid*='from']:before{
+    content:'Timeslot 1:';
+    line-height: 34px;
+    float: left;
+    padding-right: 10px;
+}
+.field-ui[data-reactid*='timeslot1'][data-reactid*='to']:before,
+.field-ui[data-reactid*='timeslot2'][data-reactid*='to']:before{
+    content:'to';
+    padding-right: 16px;
+    line-height: 34px;
+    float: left;
+}
+.field-ui[data-reactid*='timeslot2'][data-reactid*='from']:before{
+    content:'Timeslot 2:';
+    line-height: 34px;
+    float: left;
+    padding-right: 10px;    
+}
+@media (max-width: 991px){
+    .field[data-reactid*='timeslot1'][data-reactid*='to']:after,
+    .field[data-reactid*='isValid']:after{
+    clear:both;
+    }
+}
