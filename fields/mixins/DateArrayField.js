@@ -20,6 +20,10 @@ module.exports = {
 	},
 
 	getInitialState: function() {
+		var value = this.props;
+		if (!value) {
+			value = [];
+		}
 		return {
 			values: this.props.value.map(newItem)
 		};
