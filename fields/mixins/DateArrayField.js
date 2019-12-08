@@ -20,7 +20,7 @@ module.exports = {
 	},
 
 	getInitialState: function() {
-		var value = this.props.value;
+		var value = this.props;
 		if (!value) {
 			value = [];
 		}
@@ -30,23 +30,15 @@ module.exports = {
 	},
 	
 	componentWillReceiveProps: function(nextProps) {
-		var value = nextProps.value;
-		if (!value) {
-			value = [];
-		}
-		if (value.join('|') !== _.pluck(this.state.values, 'value').join('|')) {
+		if (nextProps.value.join('|') !== _.pluck(this.state.values, 'value').join('|')) {
 			this.setState({
-				values: value.map(newItem)
+				values: nextProps.value.map(newItem)
 			});
 		}
 	},
 
 	componentWillUpdate: function() {
-		var value = this.props.value;
-		if (!value) {
-			value = [];
-		}
-		value.forEach(function (val, i) {
+		this.props.value.forEach(function (val, i) {
 			// Destroy each of our datepickers
 			if (this.props.pickers[i]) {
 				this.props.pickers[i].destroy();
@@ -55,11 +47,7 @@ module.exports = {
 	},
 
 	componentDidUpdate: function() {
-		var value = this.props.value;
-		if (!value) {
-			value = [];
-		}
-		value.forEach(function (val, i) {
+		this.props.value.forEach(function (val, i) {
 			var dateInput = this.getDOMNode().getElementsByClassName('datepicker_' + this.state.values[i].key)[0];
 			// Add a date picker to each updated field
 			this.props.pickers[i] = new Pikaday({
@@ -76,11 +64,7 @@ module.exports = {
 	},
 
 	componentDidMount: function() {
-		var value = this.props.value;
-		if (!value) {
-			value = [];
-		}
-		value.forEach(function (val, i) {
+		this.props.value.forEach(function (val, i) {
 			var dateInput = this.getDOMNode().getElementsByClassName('datepicker_' + this.state.values[i].key)[0];
 			if (this.props.pickers[i]) this.props.pickers[i].destroy();
 			this.props.pickers[i] = new Pikaday({
