@@ -2,7 +2,7 @@
 var _ = require('underscore'),
 	React = require('react'),
 	moment = require('moment'),
-	MultipleDatePicker = require('react-calendar-multiday'),
+	DayPicker = require('react-day-picker'),
 	Field = require('../Field');
 
 module.exports = Field.create({
@@ -124,6 +124,20 @@ module.exports = Field.create({
 		updatedValues[updateIndex].value = this.cleanInput ? this.cleanInput(event.target.value) : event.target.value;
 		this.valueChanged(_.pluck(updatedValues, 'value'));
 	},
+
+	handleDayClick(day, op) {
+		var selected = op.selected;
+		var selectedDays = this.props.value;
+		if (selected) {
+		  const selectedIndex = selectedDays.findIndex(selectedDay =>
+		    moment(day).isSame(moment(selectedDay), 'day')
+		  );
+		  selectedDays.splice(selectedIndex, 1);
+		} else {
+		  selectedDays.push(day);
+		}
+		this.valueChanged(selectedDays);
+	}
 	
 	valueChanged: function(value) {
 		this.props.onChange({
@@ -157,10 +171,9 @@ module.exports = Field.create({
 		value = value.map(i => moment(i));
 		return (
 			<div>
-				<Calendar
-		            isMultiple={true}
-		            selected={value}
-		            onChange={this.valueChanged}
+				<DayPicker
+		          selectedDays={value}
+		          onDayClick={this.handleDayClick}
 		        />
 	        </div>
 		);
