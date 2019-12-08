@@ -2,8 +2,15 @@
 var _ = require('underscore'),
 	React = require('react'),
 	moment = require('moment'),
-	Calendar = require('react-calendar-multiday'),
+	MultipleDatePicker = require('react-multiple-datepicker'),
 	Field = require('../Field');
+
+var lastId = 0;
+
+function newItem(value) {
+	lastId++;
+	return { key: 'i' + lastId, value: value, picker: null };
+}
 
 module.exports = Field.create({
 	displayName: 'DateArrayField',
@@ -110,39 +117,28 @@ module.exports = Field.create({
 	// 	this.valueChanged(_.pluck(newValues, 'value'));
 	// },
 	
-	removeItem: function(i) {
-		var newValues = _.without(this.state.values, i);
-		// this.setState({
-		// 	values: newValues
-		// });
-		this.valueChanged(_.pluck(newValues, 'value'));
-	},
+	// removeItem: function(i) {
+	// 	var newValues = _.without(this.state.values, i);
+	// 	this.setState({
+	// 		values: newValues
+	// 	});
+	// 	this.valueChanged(_.pluck(newValues, 'value'));
+	// },
 	
-	updateItem: function(i, event) {
-		var updatedValues = this.state.values;
-		var updateIndex = updatedValues.indexOf(i);
-		updatedValues[updateIndex].value = this.cleanInput ? this.cleanInput(event.target.value) : event.target.value;
-		this.valueChanged(_.pluck(updatedValues, 'value'));
-	},
-
-	handleDayClick(day, op) {
-		var selected = op.selected;
-		var selectedDays = this.props.value;
-		if (selected) {
-		  const selectedIndex = selectedDays.findIndex(selectedDay =>
-		    moment(day).isSame(moment(selectedDay), 'day')
-		  );
-		  selectedDays.splice(selectedIndex, 1);
-		} else {
-		  selectedDays.push(day);
-		}
-		this.valueChanged(selectedDays);
-	}
+	// updateItem: function(i, event) {
+	// 	var updatedValues = this.state.values;
+	// 	var updateIndex = updatedValues.indexOf(i);
+	// 	updatedValues[updateIndex].value = this.cleanInput ? this.cleanInput(event.target.value) : event.target.value;
+	// 	this.setState({
+	// 		values: updatedValues
+	// 	});
+	// 	this.valueChanged(_.pluck(updatedValues, 'value'));
+	// },
 	
-	valueChanged: function(value) {
+	valueChanged: function(values) {
 		this.props.onChange({
 			path: this.props.path,
-			value,
+			value: values
 		});
 	},
 
@@ -151,15 +147,16 @@ module.exports = Field.create({
 	// 	this.picker.setMoment(moment(this.state.value, this.props.format));
 	// },
 	
-	renderItem: function(i) {
-		/* eslint-disable no-script-url */
-		return (
-			<div key={i.key} className='field-item'>
-				<a href="javascript:;" className='field-item-button btn-cancel' onClick={this.removeItem.bind(this, i)}>&times;</a>
-				<input className={'form-control multi datepicker_' + i.key} type='text' name={this.getInputName(this.props.path)} value={i.value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
-			</div>
-		);
-	},
+	// renderItem: function(i) {
+	// 	/* eslint-disable no-script-url */
+	// 	return (
+	// 		<div key={i.key} className='field-item'>
+	// 			<a href="javascript:;" className='field-item-button btn-cancel' onClick={this.removeItem.bind(this, i)}>&times;</a>
+	// 			<input ref={'input_' + i.key} className={'form-control multi datepicker_' + i.key} type='text' name={this.getInputName(this.props.path)} value={i.value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
+	// 		</div>
+	// 	);
+	// 	/* eslint-enable */
+	// },
 	
 	renderField: function () {
 		var value = this.props.value;
@@ -170,12 +167,7 @@ module.exports = Field.create({
 		}
 		value = value.map(i => moment(i));
 		return (
-			<div>
-				<DayPicker
-		          selectedDays={value}
-		          onDayClick={this.handleDayClick}
-		        />
-	        </div>
+			<MultipleDatePicker selectedDates={value} onSubmit={this.valueChanged}　/>
 		);
 	}
 });
