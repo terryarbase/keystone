@@ -16,7 +16,7 @@ module.exports = Field.create({
 	},
 
 	// getInitialState: function() {
-	// 	var value = this.props;
+	// 	var value = this.props.value;
 	// 	if (!value) {
 	// 		value = [];
 	// 	} else if (!Array.isArray(value)) {
@@ -28,7 +28,7 @@ module.exports = Field.create({
 	// },
 	
 	addItem: function() {
-		var value = this.props;
+		var value = this.props.value;
 		if (!value) {
 			value = [];
 		} else if (!Array.isArray(value)) {
@@ -39,7 +39,7 @@ module.exports = Field.create({
 	},
 	
 	removeItem: function(i) {
-		var value = this.props;
+		var value = this.props.value;
 		if (!value) {
 			value = [];
 		} else if (!Array.isArray(value)) {
@@ -50,7 +50,7 @@ module.exports = Field.create({
 	},
 	
 	updateItem: function(i, event) {
-		var value = this.props;
+		var value = this.props.value;
 		if (!value) {
 			value = [];
 		} else if (!Array.isArray(value)) {
@@ -69,7 +69,6 @@ module.exports = Field.create({
 		});
 	},
 	renderItem: function(i) {
-		console.log(i);
 		/* eslint-disable no-script-url */
 		return (
 			<div key={i} className='field-item'>
@@ -81,7 +80,7 @@ module.exports = Field.create({
 	},
 	
 	renderField: function () {
-		var value = this.props;
+		var value = this.props.value;
 		const dates = [];
 		if (!value) {
 			value = [];

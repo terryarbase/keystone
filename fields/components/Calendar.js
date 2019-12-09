@@ -38,7 +38,7 @@ module.exports = React.createClass({
 
     for (let i = 0; i < 7; i++) {
       var dayStr = dateFns.format(dateFns.addDays(startDate, i), dateFormat);
-      dayStr = dayStr.substr(0, 3);
+      // dayStr = dayStr.substr(0, 3);
       days.push(
         <div className="col col-center" key={i}>
           {dayStr}
