@@ -1,6 +1,6 @@
 var React = require('react'),
 	moment = require('moment'),
-	_ = require('lodash'),
+	_ = require('underscore'),
 	Field = require('../Field'),
 	ArrayFieldMixin = require('../../mixins/DateArrayField'),
 	Calendar = require('../../components/Calendar');

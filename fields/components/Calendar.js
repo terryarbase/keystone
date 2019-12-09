@@ -5,19 +5,9 @@ var dateFns = require('date-fns');
 
 module.exports = React.createClass({
   displayName: 'Calendar',
-  // getInitialState: function() {
-  //   var selected = this.props.selectedDates;
-  //   if (!selected) {
-  //     selected = [];
-  //   } else if (!Array.isArray(selected)) {
-  //     selected = [ selected ];
-  //   }
-  //   var currentMonth = !!selected.length ? moment(selected[0]) : new Date();
-  //  return {
-  //     currentMonth: currentMonth,
-  //     selectedDate: selected,
-  //   };
-  // },
+  getInitialState: function() {
+    return this.getData();
+  },
 
   getData: function() {
     var selected = this.props.selectedDates;
@@ -27,7 +17,7 @@ module.exports = React.createClass({
       selected = [ selected ];
     }
     var currentMonth = !!selected.length ? moment(selected[0]) : new Date();
-    return {
+   return {
       currentMonth: currentMonth,
       selectedDate: selected,
     };
