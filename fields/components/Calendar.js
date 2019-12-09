@@ -2,6 +2,7 @@ var React = require('react');
 var dateFns = require('date-fns');
 
 module.exports = React.createClass({
+  displayName: 'Calendar',
   getInitialState: function() {
    return {
       currentMonth: new Date(),

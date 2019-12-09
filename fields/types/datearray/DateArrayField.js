@@ -1,4 +1,5 @@
-var Field = require('../Field'),
+var React = require('react'),
+	Field = require('../Field'),
 	ArrayFieldMixin = require('../../mixins/DateArrayField'),
 	Calendar = require('../../components/Calendar');
 
@@ -70,9 +71,9 @@ module.exports = Field.create({
 	renderItem: function(i) {
 		/* eslint-disable no-script-url */
 		return (
-			<div key={i.key} className='field-item'>
+			<div key={i} className='field-item'>
 				<a href="javascript:;" className='field-item-button btn-cancel' onClick={this.removeItem.bind(this, i)}>&times;</a>
-				<input className={'form-control multi datepicker_' + i.key} type='text' name={this.getInputName(this.props.path)} value={i.value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
+				<input className={'form-control multi datepicker_' + i} type='text' name={this.getInputName(this.props.path)} value={i} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
 			</div>
 		);
 		/* eslint-enable */
@@ -80,13 +81,14 @@ module.exports = Field.create({
 	
 	renderField: function () {
 		var value = this.props;
+		const dates = [];
 		if (!value) {
 			value = [];
 		} else if (!Array.isArray(value)) {
 			value = [ value ];
 		}
-		value = value.map(function(v) {
-			return moment(v);
+		value.forEach(function(v) {
+			dates.push(moment(v));
 		});
 		return (
 			<div>
