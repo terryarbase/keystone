@@ -28,17 +28,7 @@ module.exports = Field.create({
 	// 		values: value.map(newItem)
 	// 	};
 	// },
-	
-	addItem: function() {
-		var value = this.props.value;
-		if (!value) {
-			value = [];
-		} else if (!Array.isArray(value)) {
-			value = [ value ];
-		}
-		var newValues = value.concat(newItem(''));
-		this.valueChanged(_.pluck(newValues, 'value'));
-	},
+
 	
 	removeItem: function(i) {
 		var value = this.props.value;
@@ -47,21 +37,10 @@ module.exports = Field.create({
 		} else if (!Array.isArray(value)) {
 			value = [ value ];
 		}
-		var newValues = _.without(value, i);
-		this.valueChanged(_.pluck(newValues, 'value'));
-	},
-	
-	updateItem: function(i, event) {
-		var value = this.props.value;
-		if (!value) {
-			value = [];
-		} else if (!Array.isArray(value)) {
-			value = [ value ];
-		}
-		var updatedValues = value;
-		var updateIndex = updatedValues.indexOf(i);
-		updatedValues[updateIndex].value = this.cleanInput ? this.cleanInput(event.target.value) : event.target.value;
-		this.valueChanged(_.pluck(updatedValues, 'value'));
+		var newValues = _.filter(value, function(d) {
+       		return moment(d).format('YYYY-MM-DD') !== moment(i).format('YYYY-MM-DD');
+      	});
+		this.valueChanged(newValues);
 	},
 	
 	valueChanged: function(values) {
@@ -76,7 +55,7 @@ module.exports = Field.create({
 		return (
 			<div key={value} className='field-item'>
 				<a href="javascript:;" className='field-item-button btn-cancel' onClick={this.removeItem.bind(this, i)}>&times;</a>
-				<input readOnly='readOnly' className={'form-control multi datepicker_' + value} type='text' name={this.getInputName(this.props.path)} value={value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
+				<input readOnly='readOnly' className={'form-control multi datepicker_' + value} type='text' name={this.getInputName(this.props.path)} value={value} autoComplete='off' />
 			</div>
 		);
 		/* eslint-enable */
@@ -95,7 +74,7 @@ module.exports = Field.create({
 		});
 		return (
 			<div>
-				<Calendar selectedDates={dates} />
+				<Calendar selectedDates={dates} valueChanged={this.valueChanged} />
 				{value.map(this.renderItem)}
 			</div>
 		);

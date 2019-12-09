@@ -28,7 +28,7 @@ module.exports = React.createClass({
     var selected = this.state.selectedDate;
     if (isSelected) {
       selected = _.filter(selected, function(d) {
-        return moment(d).isSame(moment(day), 'day');
+        return moment(d).format('YYYY-MM-DD') !== moment(day).format('YYYY-MM-DD');
       });
     } else {
       selected.push(day);
@@ -37,10 +37,14 @@ module.exports = React.createClass({
     selected = _.sortBy(selected, function(s) {
       return moment(s);
     });
+    selected = _.uniq(selected, function(s) {
+      return moment(s);
+    });
     this.setState({
-      currentMonth: this.getFirstMonth(selected),
+      // currentMonth: this.getFirstMonth(selected),
       selectedDate: selected,
     });
+    this.props.valueChanged(selected);
   },
 
   nextMonth: function() {
