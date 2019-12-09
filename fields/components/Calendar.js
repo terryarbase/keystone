@@ -42,7 +42,7 @@ module.exports = React.createClass({
   },
 
   renderHeader: function() {
-    const dateFormat = "MMMM yyyy";
+    const dateFormat = "MMMM YYYY";
 
     return (
       <div className="header row flex-middle">
@@ -64,7 +64,7 @@ module.exports = React.createClass({
   },
 
   renderDays: function() {
-    const dateFormat = "dddd";
+    const dateFormat = "DDDD";
     const days = [];
 
     let startDate = moment(this.state.currentMonth).startOf('week');
@@ -105,7 +105,6 @@ module.exports = React.createClass({
 
   renderCells: function() {
     const currentMonth = this.state.currentMonth;
-    const selectedDate = this.state.selectedDate;
     const monthStart = moment(currentMonth).startOf('month');
     // dateFns.startOfMonth(currentMonth);
     const monthEnd = moment(currentMonth).endOf('month');
@@ -115,14 +114,14 @@ module.exports = React.createClass({
     const endDate = moment(monthEnd).endOf('week');
     // dateFns.endOfWeek(monthEnd);
 
-    const dateFormat = "d";
+    const dateFormat = "DD";
     const rows = [];
 
     let days = [];
     let day = startDate;
     let formattedDate = "";
     const onDateClick = this.onDateClick;
-    while (day <= endDate) {
+    while (moment(day).isSameOrBefore(moment(endDate))) {
       for (let i = 0; i < 7; i++) {
         formattedDate = moment(day).format(dateFormat);
         // dateFns.format(day, dateFormat);
@@ -143,7 +142,7 @@ module.exports = React.createClass({
             <span className="bg">{formattedDate}</span>
           </div>
         );
-        day = dateFns.addDays(day, 1);
+        day = day.add(day, 1);
       }
       rows.push(
         <div className="row" key={day}>

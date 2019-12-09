@@ -12,7 +12,7 @@ module.exports = Field.create({
 	// mixins: [ArrayFieldMixin]
 	getDefaultProps: function() {
 		return {
-			format: 'yyyy-MM-dd',
+			format: 'YYYY-MM-DD',
 			pickers: []
 		};
 	},
