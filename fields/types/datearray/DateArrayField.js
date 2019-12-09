@@ -92,7 +92,7 @@ module.exports = Field.create({
 		});
 		return (
 			<div>
-
+				<Calendar selectedDates={dates} />
 				{value.map(this.renderItem)}
 			</div>
 		);
