@@ -124,7 +124,7 @@ module.exports = React.createClass({
       'FR',
       'SA',
     ];
-    for (let i = 0; i < weeks.length; i++) {
+    for (let i = 0; i <= weeks.length; i++) {
       // var dayStr = dateFns.format(dateFns.addDays(startDate, i), dateFormat);
       // dayStr = dayStr.substr(0, 3);
       days.push(
