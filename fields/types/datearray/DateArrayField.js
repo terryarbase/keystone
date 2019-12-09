@@ -72,7 +72,6 @@ module.exports = Field.create({
 		value.forEach(function(v) {
 			dates.push(moment(v));
 		});
-		console.log(value);
 		return (
 			<div>
 				<Calendar selectedDates={dates} valueChanged={this.valueChanged} />

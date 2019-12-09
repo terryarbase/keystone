@@ -203,7 +203,7 @@ module.exports = React.createClass({
   },
 
   render: function() {
-    var buttonText = "Select All Dates ("+moment(this.currentMonth.format('MMMM'))+")";
+    var buttonText = "Select All Dates ("+moment(this.state.currentMonth).format('MMMM')+")";
     return (
       <div className="calendar_container">
         <div className="calendar">
