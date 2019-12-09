@@ -108,7 +108,7 @@ module.exports = React.createClass({
     return !!_.find(selected, function(s) {
       return moment(s).isSame(moment(date), 'day');
     });
-  }
+  },
 
   renderCells: function() {
     const currentMonth = this.state.currentMonth;
