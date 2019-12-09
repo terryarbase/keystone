@@ -1,6 +1,6 @@
 var React = require('react');
 var moment = require('moment');
-var _ = require('lodash');
+var _ = require('underscore');
 var dateFns = require('date-fns');
 
 module.exports = React.createClass({
