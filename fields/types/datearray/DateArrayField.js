@@ -10,7 +10,7 @@ module.exports = Field.create({
 	// mixins: [ArrayFieldMixin]
 	getDefaultProps: function() {
 		return {
-			format: 'YYYY-MM-DD',
+			format: 'yyyy-MM-dd',
 			pickers: []
 		};
 	},
@@ -69,6 +69,7 @@ module.exports = Field.create({
 		});
 	},
 	renderItem: function(i) {
+		console.log(i);
 		/* eslint-disable no-script-url */
 		return (
 			<div key={i} className='field-item'>

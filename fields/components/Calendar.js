@@ -11,7 +11,7 @@ module.exports = React.createClass({
   },
 
   renderHeader: function() {
-    const dateFormat = "MMMM YYYY";
+    const dateFormat = "MMMM yyyy";
 
     return (
       <div className="header row flex-middle">
@@ -57,13 +57,13 @@ module.exports = React.createClass({
     const startDate = dateFns.startOfWeek(monthStart);
     const endDate = dateFns.endOfWeek(monthEnd);
 
-    const dateFormat = "D";
+    const dateFormat = "d";
     const rows = [];
 
     let days = [];
     let day = startDate;
     let formattedDate = "";
-
+    const onDateClick = this.onDateClick;
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
         formattedDate = dateFns.format(day, dateFormat);
@@ -77,7 +77,7 @@ module.exports = React.createClass({
             }`}
             key={day}
             onClick={function() {
-              this.onDateClick(dateFns.parse(cloneDay));
+              onDateClick(dateFns.parse(cloneDay));
             }}
           >
             <span className="number">{formattedDate}</span>
