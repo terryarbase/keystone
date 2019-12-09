@@ -16,7 +16,7 @@ module.exports = React.createClass({
     } else if (!Array.isArray(selected)) {
       selected = [ selected ];
     }
-    var currentMonth = !!selected.length ? moment(selected[0]) : new Date();
+    var currentMonth = !!selected.length ? moment(selected[0]) : moment();
    return {
       currentMonth: currentMonth,
       selectedDate: selected,
@@ -31,13 +31,13 @@ module.exports = React.createClass({
 
   nextMonth: function() {
     this.setState({
-      currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
+      currentMonth: moment(this.state.currentMonth).add(1, 'months'),
     });
   },
 
   prevMonth: function() {
     this.setState({
-      currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
+      currentMonth: moment(this.state.currentMonth).add(1, 'months'),
     });
   },
 
@@ -52,7 +52,9 @@ module.exports = React.createClass({
           </div>
         </div>
         <div className="col col-center">
-          <span>{dateFns.format(this.state.currentMonth, dateFormat)}</span>
+          <span>{
+            moment(this.state.currentMonth).format(dateFormat)
+          }</span>
         </div>
         <div className="col col-end" onClick={this.nextMonth}>
           <div className="icon">chevron_right</div>
@@ -65,7 +67,8 @@ module.exports = React.createClass({
     const dateFormat = "dddd";
     const days = [];
 
-    let startDate = dateFns.startOfWeek(this.state.currentMonth);
+    let startDate = moment(this.state.currentMonth).startOf('week');
+    // dateFns.startOfWeek(this.state.currentMonth);
     const weeks = [
       'SU',
       'MO',
@@ -103,10 +106,14 @@ module.exports = React.createClass({
   renderCells: function() {
     const currentMonth = this.state.currentMonth;
     const selectedDate = this.state.selectedDate;
-    const monthStart = dateFns.startOfMonth(currentMonth);
-    const monthEnd = dateFns.endOfMonth(monthStart);
-    const startDate = dateFns.startOfWeek(monthStart);
-    const endDate = dateFns.endOfWeek(monthEnd);
+    const monthStart = moment(currentMonth).startOf('month');
+    // dateFns.startOfMonth(currentMonth);
+    const monthEnd = moment(currentMonth).endOf('month');
+    // dateFns.endOfMonth(monthStart);
+    const startDate = moment(monthStart).startOf('week');
+    // dateFns.startOfWeek(monthStart);
+    const endDate = moment(monthEnd).endOf('week');
+    // dateFns.endOfWeek(monthEnd);
 
     const dateFormat = "d";
     const rows = [];
@@ -117,18 +124,19 @@ module.exports = React.createClass({
     const onDateClick = this.onDateClick;
     while (day <= endDate) {
       for (let i = 0; i < 7; i++) {
-        formattedDate = dateFns.format(day, dateFormat);
+        formattedDate = moment(day).format(dateFormat);
+        // dateFns.format(day, dateFormat);
         const cloneDay = day;
         days.push(
           <div
             className={`col cell ${
-              !dateFns.isSameMonth(day, monthStart)
+              !moment(day).isSame(monthStart, 'month')
                 ? "disabled"
                 : this.isSelected(day) ? "selected" : ""
             }`}
             key={day}
             onClick={function() {
-              onDateClick(dateFns.parse(cloneDay));
+              onDateClick(moment(cloneDay));
             }}
           >
             <span className="number">{formattedDate}</span>
