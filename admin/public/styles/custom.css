@@ -189,7 +189,7 @@ input.form-control[data-reactid*='timeslot']{
 .calendar {
   display: block;
   position: relative;
-  width: 375px;
+  width: 555px;
   margin-bottom: 15px;
   background: var(--neutral-color);
   border: 1px solid var(--border-color);

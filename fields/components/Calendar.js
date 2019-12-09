@@ -8,7 +8,9 @@ module.exports = React.createClass({
   getInitialState: function() {
     return this.getData();
   },
-
+  getFirstMonth: function(dates) {
+    return !!dates.length ? moment(dates[0]) : moment();
+  },
   getData: function() {
     var selected = this.props.selectedDates;
     if (!selected) {
@@ -16,16 +18,28 @@ module.exports = React.createClass({
     } else if (!Array.isArray(selected)) {
       selected = [ selected ];
     }
-    var currentMonth = !!selected.length ? moment(selected[0]) : moment();
    return {
-      currentMonth: currentMonth,
+      currentMonth: this.getFirstMonth(selected),
       selectedDate: selected,
     };
   },
 
-  onDateClick: function(day) {
+  onDateClick: function(day, isSelected) {
+    var selected = this.state.selectedDate;
+    if (isSelected) {
+      selected = _.filter(selected, function(d) {
+        return moment(d).isSame(moment(day), 'day');
+      });
+    } else {
+      selected.push(day);
+    }
+
+    selected = _.sortBy(selected, function(s) {
+      return moment(s);
+    });
     this.setState({
-      selectedDate: day
+      currentMonth: this.getFirstMonth(selected),
+      selectedDate: selected,
     });
   },
 
@@ -37,13 +51,12 @@ module.exports = React.createClass({
 
   prevMonth: function() {
     this.setState({
-      currentMonth: moment(this.state.currentMonth).add(1, 'months'),
+      currentMonth: moment(this.state.currentMonth).add(-1, 'months'),
     });
   },
 
   renderHeader: function() {
     const dateFormat = "MMMM YYYY";
-
     return (
       <div className="header row flex-middle">
         <div className="col col-start">
@@ -117,32 +130,34 @@ module.exports = React.createClass({
     const dateFormat = "DD";
     const rows = [];
 
-    let days = [];
-    let day = startDate;
-    let formattedDate = "";
+    var days = [];
+    var day = startDate;
+    var formattedDate = "";
     const onDateClick = this.onDateClick;
-    while (moment(day).isSameOrBefore(moment(endDate))) {
-      for (let i = 0; i < 7; i++) {
-        formattedDate = moment(day).format(dateFormat);
+    while (day.isSame(endDate) && day.isBefore(endDate)) {
+      for (var i = 0; i < 7; i++) {
+        formattedDate = day.format(dateFormat);
+
         // dateFns.format(day, dateFormat);
         const cloneDay = day;
+        const isSelected = this.isSelected(day);
         days.push(
           <div
             className={`col cell ${
               !moment(day).isSame(monthStart, 'month')
                 ? "disabled"
-                : this.isSelected(day) ? "selected" : ""
+                : isSelected ? "selected" : ""
             }`}
             key={day}
             onClick={function() {
-              onDateClick(moment(cloneDay));
+              onDateClick(cloneDay, isSelected);
             }}
           >
             <span className="number">{formattedDate}</span>
             <span className="bg">{formattedDate}</span>
           </div>
         );
-        day = day.add(day, 1);
+        day = day.add(1, 'day');
       }
       rows.push(
         <div className="row" key={day}>

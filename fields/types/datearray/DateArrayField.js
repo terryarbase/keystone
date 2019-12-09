@@ -76,7 +76,7 @@ module.exports = Field.create({
 		return (
 			<div key={value} className='field-item'>
 				<a href="javascript:;" className='field-item-button btn-cancel' onClick={this.removeItem.bind(this, i)}>&times;</a>
-				<input className={'form-control multi datepicker_' + value} type='text' name={this.getInputName(this.props.path)} value={value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
+				<input readOnly='readOnly' className={'form-control multi datepicker_' + value} type='text' name={this.getInputName(this.props.path)} value={value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
 			</div>
 		);
 		/* eslint-enable */
