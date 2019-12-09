@@ -2,10 +2,16 @@ import React from "react";
 import dateFns from "date-fns";
 
 class Calendar extends React.Component {
-  state = {
-    currentMonth: new Date(),
-    selectedDate: new Date()
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      currentMonth: new Date(),
+      selectedDate: new Date()
+    };
+    this.nextMonth = this.nextMonth.bind(this);
+    this.onDateClick = this.onDateClick.bind(this);
+    this.prevMonth = this.prevMonth.bind(this);
+  }
 
   renderHeader() {
     const dateFormat = "MMMM YYYY";
@@ -73,7 +79,9 @@ class Calendar extends React.Component {
                 : dateFns.isSameDay(day, selectedDate) ? "selected" : ""
             }`}
             key={day}
-            onClick={() => this.onDateClick(dateFns.parse(cloneDay))}
+            onClick={function() {
+              this.onDateClick(dateFns.parse(cloneDay));
+            }}
           >
             <span className="number">{formattedDate}</span>
             <span className="bg">{formattedDate}</span>
@@ -91,19 +99,19 @@ class Calendar extends React.Component {
     return <div className="body">{rows}</div>;
   }
 
-  onDateClick = day => {
+  onDateClick(day) {
     this.setState({
       selectedDate: day
     });
   };
 
-  nextMonth = () => {
+  nextMonth() {
     this.setState({
       currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
     });
   };
 
-  prevMonth = () => {
+  prevMonth() {
     this.setState({
       currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
     });
