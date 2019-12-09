@@ -1,4 +1,5 @@
 var React = require('react'),
+	moment = require('moment'),
 	Field = require('../Field'),
 	ArrayFieldMixin = require('../../mixins/DateArrayField'),
 	Calendar = require('../../components/Calendar');
@@ -69,11 +70,12 @@ module.exports = Field.create({
 		});
 	},
 	renderItem: function(i) {
+		const value = moment(i).format(this.state.format);
 		/* eslint-disable no-script-url */
 		return (
-			<div key={i} className='field-item'>
+			<div key={value} className='field-item'>
 				<a href="javascript:;" className='field-item-button btn-cancel' onClick={this.removeItem.bind(this, i)}>&times;</a>
-				<input className={'form-control multi datepicker_' + i} type='text' name={this.getInputName(this.props.path)} value={i} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
+				<input className={'form-control multi datepicker_' + value} type='text' name={this.getInputName(this.props.path)} value={value} onChange={this.updateItem.bind(this, i)} autoComplete='off' />
 			</div>
 		);
 		/* eslint-enable */
