@@ -1,19 +1,15 @@
-import React from "react";
-import dateFns from "date-fns";
+var React = require('react');
+var dateFns = require('date-fns');
 
-class Calendar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+var Calendar = React.createClass({
+  getInitialState: function() {
+   return {
       currentMonth: new Date(),
       selectedDate: new Date()
     };
-    this.nextMonth = this.nextMonth.bind(this);
-    this.onDateClick = this.onDateClick.bind(this);
-    this.prevMonth = this.prevMonth.bind(this);
-  }
+  },
 
-  renderHeader() {
+  renderHeader: function() {
     const dateFormat = "MMMM YYYY";
 
     return (
@@ -31,9 +27,9 @@ class Calendar extends React.Component {
         </div>
       </div>
     );
-  }
+  },
 
-  renderDays() {
+  renderDays: function() {
     const dateFormat = "dddd";
     const days = [];
 
@@ -50,9 +46,9 @@ class Calendar extends React.Component {
     }
 
     return <div className="days row">{days}</div>;
-  }
+  },
 
-  renderCells() {
+  renderCells: function() {
     const currentMonth = this.state.currentMonth;
     const selectedDate = this.state.selectedDate;
     const monthStart = dateFns.startOfMonth(currentMonth);
@@ -97,27 +93,27 @@ class Calendar extends React.Component {
       days = [];
     }
     return <div className="body">{rows}</div>;
-  }
+  },
 
-  onDateClick(day) {
+  onDateClick: function(day) {
     this.setState({
       selectedDate: day
     });
-  };
+  },
 
-  nextMonth() {
+  nextMonth: function() {
     this.setState({
       currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
     });
-  };
+  },
 
-  prevMonth() {
+  prevMonth: function() {
     this.setState({
       currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
     });
-  };
+  },
 
-  render() {
+  render: function() {
     return (
       <div className="calendar">
         {this.renderHeader()}
@@ -128,4 +124,4 @@ class Calendar extends React.Component {
   }
 }
 
-export default Calendar;
+module.exports = Calendar;
