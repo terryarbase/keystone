@@ -1,5 +1,6 @@
 var React = require('react'),
 	moment = require('moment'),
+	_ = require('lodash'),
 	Field = require('../Field'),
 	ArrayFieldMixin = require('../../mixins/DateArrayField'),
 	Calendar = require('../../components/Calendar');
@@ -70,7 +71,7 @@ module.exports = Field.create({
 		});
 	},
 	renderItem: function(i) {
-		const value = moment(i).format(this.state.format);
+		const value = moment(i).format(this.props.format);
 		/* eslint-disable no-script-url */
 		return (
 			<div key={value} className='field-item'>

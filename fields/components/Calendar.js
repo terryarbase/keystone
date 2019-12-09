@@ -1,13 +1,54 @@
 var React = require('react');
+var moment = require('moment');
+var _ = require('lodash');
 var dateFns = require('date-fns');
 
 module.exports = React.createClass({
   displayName: 'Calendar',
-  getInitialState: function() {
-   return {
-      currentMonth: new Date(),
-      selectedDate: new Date()
+  // getInitialState: function() {
+  //   var selected = this.props.selectedDates;
+  //   if (!selected) {
+  //     selected = [];
+  //   } else if (!Array.isArray(selected)) {
+  //     selected = [ selected ];
+  //   }
+  //   var currentMonth = !!selected.length ? moment(selected[0]) : new Date();
+  //  return {
+  //     currentMonth: currentMonth,
+  //     selectedDate: selected,
+  //   };
+  // },
+
+  getData: function() {
+    var selected = this.props.selectedDates;
+    if (!selected) {
+      selected = [];
+    } else if (!Array.isArray(selected)) {
+      selected = [ selected ];
+    }
+    var currentMonth = !!selected.length ? moment(selected[0]) : new Date();
+    return {
+      currentMonth: currentMonth,
+      selectedDate: selected,
     };
+  },
+
+  onDateClick: function(day) {
+    this.setState({
+      selectedDate: day
+    });
+  },
+
+  nextMonth: function() {
+    this.setState({
+      currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
+    });
+  },
+
+  prevMonth: function() {
+    this.setState({
+      currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
+    });
   },
 
   renderHeader: function() {
@@ -57,6 +98,18 @@ module.exports = React.createClass({
     return <div className="days row">{days}</div>;
   },
 
+  isSelected: function(date) {
+    var selected = this.props.selectedDates;
+    if (!selected) {
+      selected = [];
+    } else if (!Array.isArray(selected)) {
+      selected = [ selected ];
+    }
+    return !!_.find(selected, function(s) {
+      return moment(s).isSame(moment(date), 'day');
+    });
+  }
+
   renderCells: function() {
     const currentMonth = this.state.currentMonth;
     const selectedDate = this.state.selectedDate;
@@ -81,7 +134,7 @@ module.exports = React.createClass({
             className={`col cell ${
               !dateFns.isSameMonth(day, monthStart)
                 ? "disabled"
-                : dateFns.isSameDay(day, selectedDate) ? "selected" : ""
+                : this.isSelected(day) ? "selected" : ""
             }`}
             key={day}
             onClick={function() {
@@ -102,24 +155,6 @@ module.exports = React.createClass({
       days = [];
     }
     return <div className="body">{rows}</div>;
-  },
-
-  onDateClick: function(day) {
-    this.setState({
-      selectedDate: day
-    });
-  },
-
-  nextMonth: function() {
-    this.setState({
-      currentMonth: dateFns.addMonths(this.state.currentMonth, 1)
-    });
-  },
-
-  prevMonth: function() {
-    this.setState({
-      currentMonth: dateFns.subMonths(this.state.currentMonth, 1)
-    });
   },
 
   render: function() {
