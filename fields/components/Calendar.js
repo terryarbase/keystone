@@ -8,6 +8,15 @@ module.exports = React.createClass({
   getInitialState: function() {
     return this.getData();
   },
+  componentWillReceiveProps: function(nextProps) {
+    const selectedDates = nextProps.selectedDates;
+    const currentDates = this.props.selectedDates;
+    if (selectedDates.length !== currentDates.length) {
+      this.setState({
+        selectedDate: selectedDates,
+      });
+    }
+  },
   getFirstMonth: function(dates) {
     return !!dates.length ? moment(dates[0]) : moment();
   },
@@ -23,7 +32,16 @@ module.exports = React.createClass({
       selectedDate: selected,
     };
   },
+  normalize: function(selected) {
+    var newSelected = _.sortBy(selected, function(s) {
+      return moment(s);
+    });
+    newSelected = _.uniq(newSelected, function(s) {
+      return moment(s);
+    });
 
+    return newSelected;
+  }
   onDateClick: function(day, isSelected) {
     var selected = this.state.selectedDate;
     if (isSelected) {
@@ -34,19 +52,30 @@ module.exports = React.createClass({
       selected.push(day);
     }
 
-    selected = _.sortBy(selected, function(s) {
-      return moment(s);
-    });
-    selected = _.uniq(selected, function(s) {
-      return moment(s);
-    });
+    selected = this.normalize(selected);
     this.setState({
       // currentMonth: this.getFirstMonth(selected),
       selectedDate: selected,
     });
     this.props.valueChanged(selected);
   },
-
+  onMonthClick: function() {
+    var selected = this.state.selectedDate;
+    const monthEnd = moment(this.state.currentMonth).endOf('month');
+    const currentDate = moment();
+    const diff = monthEnd.diff(currentDate, 'days');
+    for(var i = 0 ; i < diff ; i++) {
+      var cloned = currentDate.clone();
+      selected.push(cloned);
+      currentDate.add(1, 'day');
+    }
+    selected = this.normalize(selected);
+    this.setState({
+      // currentMonth: this.getFirstMonth(selected),
+      selectedDate: selected,
+    });
+    this.props.valueChanged(selected);
+  },
   nextMonth: function() {
     this.setState({
       currentMonth: moment(this.state.currentMonth).add(1, 'months'),
@@ -175,10 +204,13 @@ module.exports = React.createClass({
 
   render: function() {
     return (
-      <div className="calendar">
-        {this.renderHeader()}
-        {this.renderDays()}
-        {this.renderCells()}
+      <div className="calendar_container">
+        <div className="calendar">
+          {this.renderHeader()}
+          {this.renderDays()}
+          {this.renderCells()}
+        </div>
+        <input type="button" value="Select Current Month" onClick={this.onMonthClick} />
       </div>
     );
   }
