@@ -105,14 +105,14 @@ module.exports = React.createClass({
   },
 
   isSelected: function(date) {
-    var selected = this.props.selectedDates;
+    var selected = this.state.selectedDate;
     if (!selected) {
       selected = [];
     } else if (!Array.isArray(selected)) {
       selected = [ selected ];
     }
     return !!_.find(selected, function(s) {
-      return moment(s).isSame(moment(date), 'day');
+      return moment(s).format('YYYY-MM-DD') == moment(date).format('YYYY-MM-DD');
     });
   },
 
@@ -134,12 +134,12 @@ module.exports = React.createClass({
     var day = startDate;
     var formattedDate = "";
     const onDateClick = this.onDateClick;
-    while (day.isSame(endDate) && day.isBefore(endDate)) {
+    while (day.isSame(endDate) || day.isBefore(endDate)) {
       for (var i = 0; i < 7; i++) {
         formattedDate = day.format(dateFormat);
 
         // dateFns.format(day, dateFormat);
-        const cloneDay = day;
+        const cloneDay = day.clone();
         const isSelected = this.isSelected(day);
         days.push(
           <div
