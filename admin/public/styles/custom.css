@@ -185,11 +185,21 @@ input.form-control[data-reactid*='timeslot']{
 }
 
 /* Calendar */
-
+.calendar_container {
+  margin-bottom: 15px;
+}
+.calendar_selectAll {
+  background-image: linear-gradient(to bottom, #3fcc4b 0, #30b23b 100%);
+    border: 0;
+    border-radius: 5px;
+    color: white;
+    padding: 10px;
+    outline: none;
+}
 .calendar {
   display: block;
   position: relative;
-  width: 555px;
+  width: 100%;
   margin-bottom: 15px;
   background: var(--neutral-color);
   border: 1px solid var(--border-color);

@@ -41,7 +41,7 @@ module.exports = React.createClass({
     });
 
     return newSelected;
-  }
+  },
   onDateClick: function(day, isSelected) {
     var selected = this.state.selectedDate;
     if (isSelected) {
@@ -203,6 +203,7 @@ module.exports = React.createClass({
   },
 
   render: function() {
+    var buttonText = "Select All Dates ("+moment(this.currentMonth.format('MMMM'))+")";
     return (
       <div className="calendar_container">
         <div className="calendar">
@@ -210,7 +211,11 @@ module.exports = React.createClass({
           {this.renderDays()}
           {this.renderCells()}
         </div>
-        <input type="button" value="Select Current Month" onClick={this.onMonthClick} />
+        <input type="button"
+          value={buttonText}
+          className="calendar_selectAll"
+          onClick={this.onMonthClick}
+        />
       </div>
     );
   }
