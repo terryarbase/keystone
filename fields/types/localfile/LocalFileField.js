@@ -101,7 +101,7 @@ module.exports = Field.create({
 		if (this.hasLocal()) {
 			return '';
 		} else {
-			return this.props.value.webpath;
+			return this.props.value.path.replace('./media', '');
 		}
 	},
 

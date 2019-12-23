@@ -28,7 +28,7 @@ var Item = React.createClass({
 			maxWidth: '100px'
 		};
 		if(allowedTypes.indexOf(this.props.filetype) >= 0){
-			body.push(<img className='file-preview' src={this.props.webpath + '/' + this.props.filename} style={imgStyle}/>);
+			body.push(<img className='file-preview' src={this.props.path.replace('./media', '') + '/' + this.props.filename} style={imgStyle}/>);
 			body.push(<span className='file-filename'>{filename}</span>);
 		}else{
 			body.push(<img className='file-icon' src={'/keystone/images/icons/32/' + iconName + '.png'} />);
