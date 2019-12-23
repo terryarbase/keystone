@@ -12,7 +12,6 @@ block js
 		Keystone.wysiwyg = { options: !{JSON.stringify(wysiwygOptions)} };
 		
 		// Support for the POST-based create process
-		Keystone.editable = !{JSON.stringify(editable)};
 		Keystone.showCreateForm = !{JSON.stringify(showCreateForm)};
 		Keystone.createFormData = !{JSON.stringify(submitted)};
 		Keystone.createFormErrors = !{JSON.stringify(createErrors || null)};
@@ -29,9 +28,6 @@ block js
 	script(src='/keystone/js/packages.js')
 	script(src='/keystone/js/fields.js')
 	script(src='/keystone/js/list.js')
-
-	//- custom JS
-	script(src='/js/custom/confirmcopy.js')
 			
 block content
 	//- New React View
@@ -396,14 +392,10 @@ block content
 		- var sortable = list.get('sortable') && !list.get('sortContext') && sort.by == 'sortOrder'
 		- var firstColspan = 1;
 		.items-list-wrapper: table(cellpadding=0, cellspacing=0, class=sortable ? 'sortable' : false, data-list-path=list.path).table.items-list
-			if !list.get('nodelete') && editable
+			if !list.get('nodelete')
 				- firstColspan++;
 				col(width=26)
-			if !list.get('noedit') && !list.get('nocreate') && list.get('copyable') && editable
-				- firstColspan++;
-				col(width=26)
-			//- if sortable && !xFilters
-			if sortable 
+			if sortable && !xFilters
 				- firstColspan++;
 				col(width=26)
 			each col in columns
