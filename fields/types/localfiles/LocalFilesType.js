@@ -311,7 +311,7 @@ localfiles.prototype.uploadFiles = function(item, files, update, callback) {
 					filename: filename,
 					originalname: file.originalname,
 					path: field.options.dest,
-					webpath: field.options.prefix ? field.options.prefix : field.options.dest,
+					webpath: field.options.prefix ? field.options.prefix : (field.options.dest ? field.options.dest : file.path),
 					size: file.size,
 					filetype: filetype
 				};
