@@ -426,7 +426,7 @@ exports = module.exports = function(req, res) {
 				download_link: download_link,
 				list: req.list,
 				sort: sort,
-				editable: true,
+				// editable: true,
 				filters: cleanFilters,
 				search: req.query.search,
 				columns: columns,
