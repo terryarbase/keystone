@@ -139,25 +139,25 @@ relationship.prototype.updateItem = function(item, data, returnable) {
 		_new = _.compact(_new);
 		// Only update if the lists aren't the same
 		if (!_.isEqual(_old, _new)) {
-			if (!returnable) {
+			// if (!returnable) {
 				item.set(this.path, _new, { strict: false });
-			} else {
+			// } else {
 				doc = _new;
-			}
+			// }
 		}
 	} else {
 		if (data[this.path]) {
 			if (data[this.path] !== item.get(this.path)) {
-				if (!returnable) {
+				// if (!returnable) {
 					item.set(this.path, data[this.path], { strict: false });
-				} else {
+				// } else {
 					doc = data[this.path];
-				}
+				// }
 			}
 		} else if (item.get(this.path)) {
-			if (!returnable) {
+			// if (!returnable) {
 				item.set(this.path, null, { strict: false });
-			}
+			// }
 		}
 	}
 
