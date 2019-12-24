@@ -8,9 +8,9 @@ block css
 
 block js
 	script.
-		Keystone.list = !{JSON.stringify(list.getOptions())};
-		Keystone.wysiwyg = { options: !{JSON.stringify(wysiwygOptions)} };
-		Keystone.itemId = '!{item.id}';
+		window.Keystone.list = !{JSON.stringify(list.getOptions())};
+		window.Keystone.wysiwyg = { options: !{JSON.stringify(wysiwygOptions)} };
+		window.Keystone.itemId = '!{item.id}';
 	script(src='/keystone/js/packages.js')
 	script(src='/keystone/js/fields.js')
 	script(src='/keystone/js/item.js')

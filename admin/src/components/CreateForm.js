@@ -126,7 +126,7 @@ var Form = React.createClass({
 					<div className="modal-dialog">
 						<form className="modal-content" encType="multipart/form-data" method="post" action={formAction}>
 							<input type="hidden" name="action" value="create" />
-							<input type="hidden" name={Keystone.csrf.key} value={Keystone.csrf.value} />
+							<input type="hidden" name={window.Keystone.csrf.key} value={window.Keystone.csrf.value} />
 							<div className="modal-header">
 								<button type="button" className="modal-close" onClick={this.props.onCancel}></button>
 								<div className="modal-title">Create a new {list.singular}</div>

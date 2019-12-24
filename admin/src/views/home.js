@@ -5,7 +5,7 @@ var View = React.createClass({
 	displayName: 'HomeView',
 	
 	renderFlatNav: function() {
-		return Keystone.lists.map((list) => {
+		return window.Keystone.lists.map((list) => {
 			var href = list.external ? list.path : '/keystone/' + list.path;
 			return (
 				<h3 key={list.path}>
@@ -18,7 +18,7 @@ var View = React.createClass({
 	renderGroupedNav: function() {
 		return (
 			<div>
-				{Keystone.nav.sections.map((navSection) => {
+				{window.Keystone.nav.sections.map((navSection) => {
 					return (
 						<div className="nav-section" key={navSection.key}>
 							<h4>{navSection.label}</h4>
@@ -34,12 +34,12 @@ var View = React.createClass({
 					);
 				})}
 				{(() => {
-					if (!Keystone.orphanedLists.length) return;
+					if (!window.Keystone.orphanedLists.length) return;
 					return (
 						<div className="nav-section">
 							<h4>Other</h4>
 							<ul>
-								{Keystone.orphanedLists.map((list) => {
+								{window.Keystone.orphanedLists.map((list) => {
 									return (
 										<li key={list.path}>
 											<a href={'/keystone/' + list.path}>{list.label}</a>
@@ -58,7 +58,7 @@ var View = React.createClass({
 		return (
 			<div>
 				<div className="page-header"><h1>Manage</h1></div>
-				<div className="keystone-lists">{Keystone.nav.flat ? this.renderFlatNav() : this.renderGroupedNav()}</div>
+				<div className="keystone-lists">{window.Keystone.nav.flat ? this.renderFlatNav() : this.renderGroupedNav()}</div>
 			</div>
 		);
 	}

@@ -7,7 +7,7 @@ var View = React.createClass({
 	
 	getInitialState: function() {
 		return {
-			createIsVisible: Keystone.showCreateForm,
+			createIsVisible: window.Keystone.showCreateForm,
 			animateCreateForm: false
 		};
 	},
@@ -20,12 +20,12 @@ var View = React.createClass({
 	},
 	
 	renderCreateButton: function() {
-		if (Keystone.list.autocreate) {
+		if (window.Keystone.list.autocreate) {
 			return (
 				<div className="toolbar">
-					<a href={'?new' + Keystone.csrf.query} className="btn btn-default btn-create btn-create-item">
+					<a href={'?new' + window.Keystone.csrf.query} className="btn btn-default btn-create btn-create-item">
 						<span className="ion-plus-round mr-5" />
-						Create {Keystone.list.singular}
+						Create {window.Keystone.list.singular}
 					</a>
 				</div>
 			);
@@ -34,7 +34,7 @@ var View = React.createClass({
 			<div className="toolbar">
 				<button type="button" className="btn btn-default btn-create btn-create-item" onClick={this.toggleCreate.bind(this, true)}>
 					<span className="ion-plus-round mr-5" />
-					Create {Keystone.list.singular}
+					Create {window.Keystone.list.singular}
 				</button>
 			</div>
 		);
@@ -42,11 +42,11 @@ var View = React.createClass({
 	
 	renderCreateForm: function() {
 		if (!this.state.createIsVisible) return null;
-		return <CreateForm list={Keystone.list} animate={this.state.animateCreateForm} onCancel={this.toggleCreate.bind(this, false)} values={Keystone.createFormData} err={Keystone.createFormErrors} />;
+		return <CreateForm list={window.Keystone.list} animate={this.state.animateCreateForm} onCancel={this.toggleCreate.bind(this, false)} values={window.Keystone.createFormData} err={window.Keystone.createFormErrors} />;
 	},
 	
 	render: function() {
-		if (!Keystone.list.nocreate) return null;
+		if (!window.Keystone.list.nocreate) return null;
 		return (
 			<div className="create-item">
 				{this.renderCreateButton()}
