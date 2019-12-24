@@ -46,8 +46,7 @@ var View = React.createClass({
 	},
 	
 	render: function() {
-		console.log(Keystone);
-		if (!Keystone.list.nocreate) return null;
+		if (Keystone.list.nocreate) return null;
 		return (
 			<div className="create-item">
 				{this.renderCreateButton()}
