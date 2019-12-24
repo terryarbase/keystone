@@ -107,14 +107,14 @@ html
 
 		//- App
 		script.
-			window.Keystone = {};
-			window.Keystone.csrf = function(obj) {
+			var Keystone = {};
+			Keystone.csrf = function(obj) {
 				obj['#{csrf_token_key}'] = "#{csrf_token_value}";
 				return obj;
 			};
-			window.Keystone.csrf.key = "#{csrf_token_key}";
-			window.Keystone.csrf.value = "#{csrf_token_value}";
-			window.Keystone.csrf.query = "!{csrf_query}";
+			Keystone.csrf.key = "#{csrf_token_key}";
+			Keystone.csrf.value = "#{csrf_token_value}";
+			Keystone.csrf.query = "!{csrf_query}";
 		//- Page Scripts
 		block js
 
@@ -125,7 +125,7 @@ html
 			script(src='/keystone/js/lib/cloudinary/jquery.cloudinary.js')
 			| !{cloudinary_js_config}
 			script.
-				window.Keystone.cloudinary = {
+				Keystone.cloudinary = {
 					cloud_name: "#{cloudinary.cloud_name}",
 					api_key: "#{cloudinary.api_key}",
 					timestamp: "#{cloudinary.timestamp}",

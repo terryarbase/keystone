@@ -220,9 +220,9 @@ var EditForm = React.createClass({
 			toolbar.reset = <a href={'/keystone/' + this.props.list.path + '/' + this.props.data.id} className="btn btn-link btn-cancel" data-confirm="Are you sure you want to reset your changes?">reset changes</a>;
 		}
 		
-		if (!this.props.list.noedit && !this.props.list.nodelete && window.Keystone.editable) {
+		if (!this.props.list.noedit && !this.props.list.nodelete && Keystone.editable) {
 			// TODO: Confirm: Use React & Modal
-			toolbar.del = <a href={'/keystone/' + this.props.list.path + '?delete=' + this.props.data.id + window.Keystone.csrf.query} className="btn btn-link btn-cancel delete" data-confirm={'Are you sure you want to delete this?' + this.props.list.singular.toLowerCase()}>delete {this.props.list.singular.toLowerCase()}</a>;
+			toolbar.del = <a href={'/keystone/' + this.props.list.path + '?delete=' + this.props.data.id + Keystone.csrf.query} className="btn btn-link btn-cancel delete" data-confirm={'Are you sure you want to delete this?' + this.props.list.singular.toLowerCase()}>delete {this.props.list.singular.toLowerCase()}</a>;
 		}
 		
 		return (
@@ -242,7 +242,7 @@ var EditForm = React.createClass({
 				className="item-details"
 			>
 				<input type="hidden" name="action" value="updateItem" />
-				<input type="hidden" name={window.Keystone.csrf.key} value={window.Keystone.csrf.value} />
+				<input type="hidden" name={Keystone.csrf.key} value={Keystone.csrf.value} />
 				{this.renderNameField()}
 				{this.renderTrackingMeta()}
 				{this.renderFormElements()}

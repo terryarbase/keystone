@@ -12,9 +12,9 @@ var View = React.createClass({
 	getInitialState: function() {
 		return {
 			createIsVisible: false,
-			list: window.Keystone.list,
+			list: Keystone.list,
 			itemData: null,
-			editable:window.Keystone.editable,
+			editable:Keystone.editable,
 		};
 	},
 
@@ -23,7 +23,7 @@ var View = React.createClass({
 	},
 
 	loadItemData: function() {
-		request.get('/keystone/api/' + window.Keystone.list.path + '/' + this.props.itemId + '?drilldown=true')
+		request.get('/keystone/api/' + Keystone.list.path + '/' + this.props.itemId + '?drilldown=true')
 			.set('Accept', 'application/json')
 			.end((err, res) => {
 				if (err || !res.ok) {
@@ -46,7 +46,7 @@ var View = React.createClass({
 	
 	renderCreateForm: function() {
 		if (!this.state.createIsVisible) return null;
-		return <CreateForm list={window.Keystone.list} animate onCancel={this.toggleCreate.bind(this, false)} />;
+		return <CreateForm list={Keystone.list} animate onCancel={this.toggleCreate.bind(this, false)} />;
 	},
 	
 	render: function() {
@@ -62,4 +62,4 @@ var View = React.createClass({
 	
 });
 
-React.render(<View itemId={window.Keystone.itemId} />, document.getElementById('item-view'));
+React.render(<View itemId={Keystone.itemId} />, document.getElementById('item-view'));
