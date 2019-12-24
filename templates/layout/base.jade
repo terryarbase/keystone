@@ -20,9 +20,23 @@ html
 		link(rel="stylesheet", href="/keystone/styles/custom.css")
 
 		link(rel="shortcut icon", href="/favicon.ico", type="image/x-icon")
+		//- App
+		script.
+			var Keystone = {};
+			Keystone.csrf = function(obj) {
+				obj['#{csrf_token_key}'] = "#{csrf_token_value}";
+				return obj;
+			};
+			Keystone.csrf.key = "#{csrf_token_key}";
+			Keystone.csrf.value = "#{csrf_token_value}";
+			Keystone.csrf.query = "!{csrf_query}";
+		//- Page Scripts
+		block js
+		
 		block head
 
 	body(id='page-' + page)
+		
 		#wrap
 			nav(role='navigation')#header.navbar.navbar-default.navbar-static-top: .container
 				a(href=backUrl).navbar-backtobrand-trigger.hidden-xs: span.ion-arrow-left-c
@@ -105,16 +119,6 @@ html
 		script(src="/keystone/js/lib/tinymce/tinymce.min.js")
 		block js_codemirror
 
-		//- App
-		script.
-			var Keystone = {};
-			Keystone.csrf = function(obj) {
-				obj['#{csrf_token_key}'] = "#{csrf_token_value}";
-				return obj;
-			};
-			Keystone.csrf.key = "#{csrf_token_key}";
-			Keystone.csrf.value = "#{csrf_token_value}";
-			Keystone.csrf.query = "!{csrf_query}";
 		if cloudinary
 			script(src='/keystone/js/lib/jqueryfileupload/vendor/jquery.ui.widget.js')
 			script(src='/keystone/js/lib/jqueryfileupload/jquery.iframe-transport.js')
@@ -135,8 +139,6 @@ html
 		script(src="/keystone/js/common/ui-alt-text.js")
 		script(src="/keystone/js/common/ui-sortable.js")
 		
-		//- Page Scripts
-		block js
 
 		//- Google Analytics
 		if env == 'production' && ga.property && ga.domain
