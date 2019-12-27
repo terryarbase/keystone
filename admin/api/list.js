@@ -1,9 +1,8 @@
 var _ = require('underscore');
 var async = require('async');
-var keystone = require('../../');
-var jade = require('jade');
+var keystone = require('../../../');
 
-exports = module.exports = function(req, res) {
+module.exports = function(req, res) {
 
 	var sendResponse = function(status) {
 		res.json(status);
@@ -12,7 +11,7 @@ exports = module.exports = function(req, res) {
 	var sendError = function(key, err, msg) {
 		msg = msg || 'API Error';
 		key = key || 'unknown error';
-		msg += ' (' + key + ')';
+		msg += ` (${key})`;
 		console.log(msg + (err ? ':' : ''));
 		if (err) {
 			console.log(err);
@@ -27,36 +26,28 @@ exports = module.exports = function(req, res) {
 			var limit = req.query.limit || 50;
 			var page = req.query.page || 1;
 			var skip = limit * (page - 1);
-				
 			var filters = req.list.getSearchFilters(req.query.q);
-
 			var count = req.list.model.count(filters);
 			var query = req.list.model.find(filters)
 				.limit(limit)
 				.skip(skip)
 				.sort(req.list.defaultSort);
-
 			if (req.query.context === 'relationship') {
-				// var srcList = keystone.list(req.query.list);
-				// if (!srcList) return sendError('invalid list provided');
+				var srcList = keystone.list(req.query.list);
+				if (!srcList) return sendError('invalid list provided');
 
-				// var field = srcList.fields[req.query.field];
-				// if (!field) return sendError('invalid field provided');
+				var field = srcList.fields[req.query.field];
+				if (!field) return sendError('invalid field provided');
 
 				_.each(req.query.filters, function(value, key) {
 					query.where(key).equals(value ? value : null);
 					count.where(key).equals(value ? value : null);
 				});
 			}
-			
 			count.exec(function(err, total) {
-
 				if (err) return sendError('database error', err);
-
 				query.exec(function(err, items) {
-
 					if (err) return sendError('database error', err);
-
 					sendResponse({
 						total: total,
 						items: items.map(function(i) {
@@ -66,15 +57,13 @@ exports = module.exports = function(req, res) {
 							};
 						})
 					});
-
 				});
-
 			});
-
 
 		break;
 
 		case 'order':
+			case 'order':
 
 			if (!keystone.security.csrf.validate(req)) {
 				return sendError('invalid csrf');
@@ -89,9 +78,74 @@ exports = module.exports = function(req, res) {
 
 			_.each(order, function(id, i) {
 				queue.push(function(done) {
-					req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
+					//original
+					//req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
+
+					//console.log("_id:"+id + "&sortOrder:" + i);
+					/* updated */
+					var langKey;
+					switch(req.list.key){
+				        case 'Tour':{
+				            langKey = 'tourLang';
+				            break;
+				        }
+				        case 'Zone':{
+				            langKey = 'zoneLang';
+				            break;
+				        }
+				        case 'PointOfInterest':{
+				            langKey = 'pointOfInterestLang';
+				            break;
+				        }
+				        /* OP Master CMS */
+				        case 'MenuLocation':
+				        case 'News':
+				        case 'Shop':
+				        case 'TopBanner':
+				        case 'Banner':
+				        case 'Tutorial':
+				        case 'Attraction':
+						case 'Show':
+						case 'ConservationMatterIssue':
+						case 'ConservationMatterTopic':
+						case 'ConservationMatterPost':
+						case 'AnimalCollection':
+						case 'GuestService':
+						case 'GuestServicePost':
+						case 'Transportation':
+						case 'GetCloserToTheAnimals':
+						case 'GetCloserToAnimalsPass':
+						case 'TicketInformation':
+						case 'TicketInformationPass':
+						case 'TicketInformationGeneralAdmission':
+						case 'TicketInformationOceanFasTrack':
+						case 'AnimalCollectionGame': {
+				        	langKey ='parentLang';
+				        	break;
+				        }
+				        default:{
+				            break;
+				        }
+			    	}
+			    if(langKey){
+				    var condition = {};
+						req.list.model.findOne({ _id: id }).exec(function(err, result){		           
+					        var condition = {};
+					        condition[langKey] = result[langKey];
+					        req.list.model.update(
+					           	condition, 
+					            { $set: { sortOrder: i }},
+					            {upsert:false, multi: true},
+					            done
+					        );
+					    });
+			    }else{
+			    	req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
+			    }
+				    /* updated end*/
 				});
 			});
+			
 
 			async.parallel(queue, function(err) {
 
@@ -102,27 +156,22 @@ exports = module.exports = function(req, res) {
 				});
 
 			});
-
 		break;
 
 		case 'create':
-
 			if (!keystone.security.csrf.validate(req)) {
 				return sendError('invalid csrf');
 			}
-
 			var item = new req.list.model();
 			var updateHandler = item.getUpdateHandler(req);
 			var data = (req.method === 'POST') ? req.body : req.query;
-
 			if (req.list.nameIsInitial) {
-				if (req.list.nameField.validateInput(data)) {
+				if (req.list.nameField.inputIsValid(data)) {
 					req.list.nameField.updateItem(item, data);
 				} else {
 					updateHandler.addValidationError(req.list.nameField.path, 'Name is required.');
 				}
 			}
-
 			updateHandler.process(data, {
 				flashErrors: true,
 				logErrors: true,
@@ -141,62 +190,6 @@ exports = module.exports = function(req, res) {
 					});
 				}
 			});
-
-		break;
-
-		case 'fetch':
-		
-			if (!keystone.security.csrf.validate(req)) {
-				return sendError('invalid csrf');
-			}
-			
-			(function() {
-
-				var queryFilters = req.list.getSearchFilters(req.query.search, req.query.filters);
-				var skip = parseInt(req.query.items.last) - 1;
-				var querystring = require('querystring');
-				var link_to = function(params) {
-						var p = params.page || '';
-						delete params.page;
-						var queryParams = _.clone(req.query.q);
-						for (var i in params) {
-							if (params[i] === undefined) {
-								delete params[i];
-								delete queryParams[i];
-							}
-						}
-						params = querystring.stringify(_.defaults(params, queryParams));
-						return '/keystone/' + req.list.path + (p ? '/' + p : '') + (params ? '?' + params : '');
-					};
-
-				var query = req.list.model.find(queryFilters).sort(req.query.sort).skip(skip).limit(1);
-				var columns = req.list.expandColumns(req.query.cols);
-
-				req.list.selectColumns(query, columns);
-
-				query.exec(function(err, items) {
-					if (err) return sendError('database error', err);
-					if (!items) return sendError('not found');
-
-					var locals, row, pagination;
-
-					req.list.getPages(req.query.items, req.list.pagination.maxPages);
-
-					locals = { list: req.list, columns: columns, item: items[0], csrf_query: req.query.csrf_query, _:_ };
-					row = jade.renderFile(__dirname + '/../../templates/partials/row.jade', locals);
-					pagination = jade.renderFile(__dirname + '/../../templates/partials/pagination.jade', { items: req.query.items, link_to: link_to });
-
-					return sendResponse({
-						item: items[0],
-						row: row,
-						pagination: pagination,
-						success: true,
-						count: 1
-					});
-				});
-			
-			})();
-
 		break;
 
 	}
