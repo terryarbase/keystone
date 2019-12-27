@@ -63,98 +63,24 @@ module.exports = function(req, res) {
 		break;
 
 		case 'order':
-			case 'order':
-
 			if (!keystone.security.csrf.validate(req)) {
 				return sendError('invalid csrf');
 			}
-
 			var order = req.query.order || req.body.order;
 			var queue = [];
-
 			if ('string' === typeof order) {
 				order = order.split(',');
 			}
-
 			_.each(order, function(id, i) {
 				queue.push(function(done) {
-					//original
-					//req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
-
-					//console.log("_id:"+id + "&sortOrder:" + i);
-					/* updated */
-					var langKey;
-					switch(req.list.key){
-				        case 'Tour':{
-				            langKey = 'tourLang';
-				            break;
-				        }
-				        case 'Zone':{
-				            langKey = 'zoneLang';
-				            break;
-				        }
-				        case 'PointOfInterest':{
-				            langKey = 'pointOfInterestLang';
-				            break;
-				        }
-				        /* OP Master CMS */
-				        case 'MenuLocation':
-				        case 'News':
-				        case 'Shop':
-				        case 'TopBanner':
-				        case 'Banner':
-				        case 'Tutorial':
-				        case 'Attraction':
-						case 'Show':
-						case 'ConservationMatterIssue':
-						case 'ConservationMatterTopic':
-						case 'ConservationMatterPost':
-						case 'AnimalCollection':
-						case 'GuestService':
-						case 'GuestServicePost':
-						case 'Transportation':
-						case 'GetCloserToTheAnimals':
-						case 'GetCloserToAnimalsPass':
-						case 'TicketInformation':
-						case 'TicketInformationPass':
-						case 'TicketInformationGeneralAdmission':
-						case 'TicketInformationOceanFasTrack':
-						case 'AnimalCollectionGame': {
-				        	langKey ='parentLang';
-				        	break;
-				        }
-				        default:{
-				            break;
-				        }
-			    	}
-			    if(langKey){
-				    var condition = {};
-						req.list.model.findOne({ _id: id }).exec(function(err, result){		           
-					        var condition = {};
-					        condition[langKey] = result[langKey];
-					        req.list.model.update(
-					           	condition, 
-					            { $set: { sortOrder: i }},
-					            {upsert:false, multi: true},
-					            done
-					        );
-					    });
-			    }else{
-			    	req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
-			    }
-				    /* updated end*/
+					req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
 				});
 			});
-			
-
 			async.parallel(queue, function(err) {
-
 				if (err) return sendError('database error', err);
-
 				return sendResponse({
 					success: true
 				});
-
 			});
 		break;
 
