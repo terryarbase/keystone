@@ -1,246 +1,269 @@
 var _ = require('underscore');
-var express = require('express');
-var fs = require('fs');
-var grappling = require('grappling-hook');
-var path = require('path');
-var utils = require('keystone-utils');
+var async = require('async');
+var keystone = require('../../');
+var jade = require('jade');
 
-/**
- * Don't use process.cwd() as it breaks module encapsulation
- * Instead, let's use module.parent if it's present, or the module itself if there is no parent (probably testing keystone directly if that's the case)
- * This way, the consuming app/module can be an embedded node_module and path resolutions will still work
- * (process.cwd() breaks module encapsulation if the consuming app/module is itself a node_module)
- */
-var moduleRoot = (function(_rootPath) {
-	var parts = _rootPath.split(path.sep);
-	parts.pop(); //get rid of /node_modules from the end of the path
-	return parts.join(path.sep);
-})(module.parent ? module.parent.paths[0] : module.paths[0]);
+exports = module.exports = function(req, res) {
 
-
-/**
- * Keystone Class
- *
- * @api public
- */
-var Keystone = function() {
-	grappling.mixin(this).allowHooks('pre:static', 'pre:bodyparser', 'pre:session', 'pre:routes', 'pre:render', 'updates', 'signout', 'signin', 'pre:logger');
-	this.lists = {};
-	this.paths = {};
-	this._options = {
-		'name': 'Keystone',
-		'brand': 'Keystone',
-		'compress': true,
-		'headless': false,
-		'logger': ':method :url :status :response-time ms',
-		'auto update': false,
-		'model prefix': null,
-		'module root': moduleRoot,
-		'frame guard': 'sameorigin'
+	var sendResponse = function(status) {
+		res.json(status);
 	};
-	this._redirects = {};
 
-	// expose express
-	this.express = express;
-
-	// init environment defaults
-	this.set('env', process.env.NODE_ENV || 'development');
-
-	this.set('port', process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT);
-	this.set('host', process.env.HOST || process.env.IP || process.env.OPENSHIFT_NODEJS_IP);
-	this.set('listen', process.env.LISTEN);
-
-	this.set('ssl', process.env.SSL);
-	this.set('ssl port', process.env.SSL_PORT);
-	this.set('ssl host', process.env.SSL_HOST || process.env.SSL_IP);
-	this.set('ssl key', process.env.SSL_KEY);
-	this.set('ssl cert', process.env.SSL_CERT);
-
-	this.set('cookie secret', process.env.COOKIE_SECRET);
-	this.set('cookie signin', (this.get('env') === 'development') ? true : false);
-
-	this.set('embedly api key', process.env.EMBEDLY_API_KEY || process.env.EMBEDLY_APIKEY);
-	this.set('mandrill api key', process.env.MANDRILL_API_KEY || process.env.MANDRILL_APIKEY);
-	this.set('mandrill username', process.env.MANDRILL_USERNAME);
-	this.set('google api key', process.env.GOOGLE_BROWSER_KEY);
-	this.set('google server api key', process.env.GOOGLE_SERVER_KEY);
-	this.set('ga property', process.env.GA_PROPERTY);
-	this.set('ga domain', process.env.GA_DOMAIN);
-	this.set('chartbeat property', process.env.CHARTBEAT_PROPERTY);
-	this.set('chartbeat domain', process.env.CHARTBEAT_DOMAIN);
-	this.set('allowed ip ranges', process.env.ALLOWED_IP_RANGES);
-
-	if (process.env.S3_BUCKET && process.env.S3_KEY && process.env.S3_SECRET) {
-		this.set('s3 config', { bucket: process.env.S3_BUCKET, key: process.env.S3_KEY, secret: process.env.S3_SECRET, region: process.env.S3_REGION });
-	}
-
-	if (process.env.AZURE_STORAGE_ACCOUNT && process.env.AZURE_STORAGE_ACCESS_KEY) {
-		this.set('azurefile config', { account: process.env.AZURE_STORAGE_ACCOUNT, key: process.env.AZURE_STORAGE_ACCESS_KEY });
-	}
-
-	if (process.env.CLOUDINARY_URL) {
-		// process.env.CLOUDINARY_URL is processed by the cloudinary package when this is set
-		this.set('cloudinary config', true);
-	}
-
-	// Attach middleware packages, bound to this instance
-	this.middleware = {
-		api: require('./lib/middleware/api')(this),
-		cors: require('./lib/middleware/cors')(this)
+	var sendError = function(key, err, msg) {
+		msg = msg || 'API Error';
+		key = key || 'unknown error';
+		msg += ' (' + key + ')';
+		console.log(msg + (err ? ':' : ''));
+		if (err) {
+			console.log(err);
+		}
+		res.status(500);
+		sendResponse({ error: key || 'error', detail: err ? err.message : '' });
 	};
-};
 
-_.extend(Keystone.prototype, require('./lib/core/options')());
+	switch (req.params.action) {
+
+		case 'autocomplete':
+			var limit = req.query.limit || 50;
+			var page = req.query.page || 1;
+			var skip = limit * (page - 1);
+				
+			var filters = req.list.getSearchFilters(req.query.q);
+
+			var count = req.list.model.count(filters);
+			var query = req.list.model.find(filters)
+				.limit(limit)
+				.skip(skip)
+				.sort(req.list.defaultSort);
+
+			if (req.query.context === 'relationship') {
+				var srcList = keystone.list(req.query.list);
+				if (!srcList) return sendError('invalid list provided');
+
+				var field = srcList.fields[req.query.field];
+				if (!field) return sendError('invalid field provided');
+
+				_.each(req.query.filters, function(value, key) {
+					query.where(key).equals(value ? value : null);
+					count.where(key).equals(value ? value : null);
+				});
+			}
+			
+			count.exec(function(err, total) {
+
+				if (err) return sendError('database error', err);
+
+				query.exec(function(err, items) {
+
+					if (err) return sendError('database error', err);
+
+					sendResponse({
+						total: total,
+						items: items.map(function(i) {
+							return {
+								name: req.list.getDocumentName(i, false) || '(' + i.id + ')',
+								id: i.id
+							};
+						})
+					});
+
+				});
+
+			});
 
 
-Keystone.prototype.prefixModel = function (key) {
-	var modelPrefix = this.get('model prefix');
+		break;
 
-	if (modelPrefix) {
-		key = modelPrefix + '_' + key;
-	}
+		case 'order':
 
-	return require('mongoose/lib/utils').toCollectionName(key);
-};
+			if (!keystone.security.csrf.validate(req)) {
+				return sendError('invalid csrf');
+			}
 
-/* Attach core functionality to Keystone.prototype */
-Keystone.prototype.bindEmailTestRoutes = require('./lib/core/bindEmailTestRoutes');
-Keystone.prototype.connect = require('./lib/core/connect');
-Keystone.prototype.createItems = require('./lib/core/createItems');
-Keystone.prototype.getOrphanedLists = require('./lib/core/getOrphanedLists');
-Keystone.prototype.importer = require('./lib/core/importer');
-Keystone.prototype.init = require('./lib/core/init');
-Keystone.prototype.initNav = require('./lib/core/initNav');
-Keystone.prototype.list = require('./lib/core/list');
-Keystone.prototype.mount = require('./lib/core/mount');
-Keystone.prototype.populateRelated = require('./lib/core/populateRelated');
-Keystone.prototype.redirect = require('./lib/core/redirect');
-Keystone.prototype.render = require('./lib/core/render');
-Keystone.prototype.routes = require('./lib/core/routes');
-Keystone.prototype.start = require('./lib/core/start');
-Keystone.prototype.wrapHTMLError = require('./lib/core/wrapHTMLError');
+			var order = req.query.order || req.body.order;
+			var queue = [];
 
-/* Expose Admin UI App */
-Keystone.prototype.adminApp = {
-	staticRouter: require('./admin/app/static')
-};
+			if ('string' === typeof order) {
+				order = order.split(',');
+			}
 
-/* Legacy Attach Mechanisms */
-Keystone.prototype.static = function(app) {
-	if (!this.get('headless')) {
-		app.use('/keystone', Keystone.prototype.adminApp.staticRouter);
-	}
-};
+			_.each(order, function(id, i) {
+				queue.push(function(done) {
+					//original
+					//req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
 
-/**
- * The exports object is an instance of Keystone.
- *
- * @api public
- */
-var keystone = module.exports = exports = new Keystone();
+					//console.log("_id:"+id + "&sortOrder:" + i);
+					/* updated */
+					var langKey;
+					switch(req.list.key){
+				        case 'Tour':{
+				            langKey = 'tourLang';
+				            break;
+				        }
+				        case 'Zone':{
+				            langKey = 'zoneLang';
+				            break;
+				        }
+				        case 'PointOfInterest':{
+				            langKey = 'pointOfInterestLang';
+				            break;
+				        }
+				        /* OP Master CMS */
+				        case 'MenuLocation':
+				        case 'News':
+				        case 'Shop':
+				        case 'TopBanner':
+				        case 'Banner':
+				        case 'Tutorial':
+				        case 'Attraction':
+						case 'Show':
+						case 'ConservationMatterIssue':
+						case 'ConservationMatterTopic':
+						case 'ConservationMatterPost':
+						case 'AnimalCollection':
+						case 'GuestService':
+						case 'GuestServicePost':
+						case 'Transportation':
+						case 'GetCloserToTheAnimals':
+						case 'GetCloserToAnimalsPass':
+						case 'TicketInformation':
+						case 'TicketInformationPass':
+						case 'TicketInformationGeneralAdmission':
+						case 'TicketInformationOceanFasTrack':
+						case 'AnimalCollectionGame': {
+				        	langKey ='parentLang';
+				        	break;
+				        }
+				        default:{
+				            break;
+				        }
+			    	}
+			    if(langKey){
+				    var condition = {};
+						req.list.model.findOne({ _id: id }).exec(function(err, result){		           
+					        var condition = {};
+					        condition[langKey] = result[langKey];
+					        req.list.model.update(
+					           	condition, 
+					            { $set: { sortOrder: i }},
+					            {upsert:false, multi: true},
+					            done
+					        );
+					    });
+			    }else{
+			    	req.list.model.update({ _id: id }, { $set: { sortOrder: i } }, done);
+			    }
+				    /* updated end*/
+				});
+			});
+			
 
-// Expose modules and Classes
-keystone.Email = require('./lib/email');
-keystone.Field = require('./fields/types/Type');
-keystone.Field.Types = require('./lib/fieldTypes');
-keystone.Keystone = Keystone;
-keystone.List = require('./lib/list');
-keystone.View = require('./lib/view');
+			async.parallel(queue, function(err) {
 
-keystone.content = require('./lib/content');
-keystone.security = {
-	csrf: require('./lib/security/csrf')
-};
-keystone.utils = utils;
+				if (err) return sendError('database error', err);
 
-/**
- * returns all .js modules (recursively) in the path specified, relative
- * to the module root (where the keystone project is being consumed from).
- *
- * ####Example:
- *
- *     var models = keystone.import('models');
- *
- * @param {String} dirname
- * @api public
- */
+				return sendResponse({
+					success: true
+				});
 
-Keystone.prototype.import = function(dirname) {
+			});
 
-	var initialPath = path.join(this.get('module root'), dirname);
+		break;
 
-	var doImport = function(fromPath) {
+		case 'create':
 
-		var imported = {};
+			if (!keystone.security.csrf.validate(req)) {
+				return sendError('invalid csrf');
+			}
 
-		fs.readdirSync(fromPath).forEach(function(name) {
+			var item = new req.list.model();
+			var updateHandler = item.getUpdateHandler(req);
+			var data = (req.method === 'POST') ? req.body : req.query;
 
-			var fsPath = path.join(fromPath, name),
-			info = fs.statSync(fsPath);
-
-			// recur
-			if (info.isDirectory()) {
-				imported[name] = doImport(fsPath);
-			} else {
-				// only import files that we can `require`
-				var ext = path.extname(name);
-				var base = path.basename(name, ext);
-				if (require.extensions[ext]) {
-					imported[base] = require(fsPath);
+			if (req.list.nameIsInitial) {
+				if (req.list.nameField.validateInput(data)) {
+					req.list.nameField.updateItem(item, data);
+				} else {
+					updateHandler.addValidationError(req.list.nameField.path, 'Name is required.');
 				}
 			}
 
-		});
+			updateHandler.process(data, {
+				flashErrors: true,
+				logErrors: true,
+				fields: req.list.initialFields
+			}, function(err) {
+				if (err) {
+					return sendResponse({
+						success: false,
+						err: err
+					});
+				} else {
+					return sendResponse({
+						success: true,
+						name: req.list.getDocumentName(item, false),
+						id: item.id
+					});
+				}
+			});
 
-		return imported;
-	};
+		break;
 
-	return doImport(initialPath);
-};
-
-
-/**
- * Applies Application updates
- */
-
-Keystone.prototype.applyUpdates = function(callback) {
-	var self = this;
-	self.callHook('pre:updates', function(err){
-		if(err){
-			callback(err);
-		}
-		require('./lib/updates').apply(function(err){
-			if(err){
-				callback(err);
+		case 'fetch':
+		
+			if (!keystone.security.csrf.validate(req)) {
+				return sendError('invalid csrf');
 			}
-			self.callHook('post:updates', callback);
-		});
-	});
-};
+			
+			(function() {
 
+				var queryFilters = req.list.getSearchFilters(req.query.search, req.query.filters);
+				var skip = parseInt(req.query.items.last) - 1;
+				var querystring = require('querystring');
+				var link_to = function(params) {
+						var p = params.page || '';
+						delete params.page;
+						var queryParams = _.clone(req.query.q);
+						for (var i in params) {
+							if (params[i] === undefined) {
+								delete params[i];
+								delete queryParams[i];
+							}
+						}
+						params = querystring.stringify(_.defaults(params, queryParams));
+						return '/keystone/' + req.list.path + (p ? '/' + p : '') + (params ? '?' + params : '');
+					};
 
-/**
- * Logs a configuration error to the console
- *
- * @api public
- */
+				var query = req.list.model.find(queryFilters).sort(req.query.sort).skip(skip).limit(1);
+				var columns = req.list.expandColumns(req.query.cols);
 
-Keystone.prototype.console = {};
-Keystone.prototype.console.err = function(type, msg) {
-	if (keystone.get('logger')) {
-		var dashes = '\n------------------------------------------------\n';
-		console.log(dashes + 'KeystoneJS: ' + type + ':\n\n' + msg + dashes);
+				req.list.selectColumns(query, columns);
+
+				query.exec(function(err, items) {
+					if (err) return sendError('database error', err);
+					if (!items) return sendError('not found');
+
+					var locals, row, pagination;
+
+					req.list.getPages(req.query.items, req.list.pagination.maxPages);
+
+					locals = { list: req.list, columns: columns, item: items[0], csrf_query: req.query.csrf_query, _:_ };
+					row = jade.renderFile(__dirname + '/../../templates/partials/row.jade', locals);
+					pagination = jade.renderFile(__dirname + '/../../templates/partials/pagination.jade', { items: req.query.items, link_to: link_to });
+
+					return sendResponse({
+						item: items[0],
+						row: row,
+						pagination: pagination,
+						success: true,
+						count: 1
+					});
+				});
+			
+			})();
+
+		break;
+
 	}
+
 };
-
-/**
- * Keystone version
- *
- * @api public
- */
-
-keystone.version = require('./package.json').version;
-
-
-// Expose Modules
-keystone.session = require('./lib/session');
