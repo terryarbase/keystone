@@ -19,7 +19,8 @@ module.exports = Field.create({
 
 	getInitialState: function() {
 		return {
-			dateValue: this.props.value ? this.moment(this.props.value).format(this.dateInputFormat) : '',
+			dateValue: this.props.value ? 
+				this.moment(this.props.value).format(this.dateInputFormat) : (this.props.timeOnly ? moment().format(this.dateInputFormat) : ''),
 			timeValue: this.props.value ? this.moment(this.props.value).format(this.timeInputFormat) : ''
 		};
 	},
@@ -79,10 +80,20 @@ module.exports = Field.create({
 	renderUI: function() {
 		var input;
 		var fieldClassName = 'field-ui';
+		const timeOnly = this.props.timeOnly;
+		console.log(this.props);
 		if (this.shouldRenderField()) {
 			input = (
 				<div className={fieldClassName}>
-					<DateInput ref="dateInput" name={this.getInputName(this.props.paths.date)} value={this.state.dateValue} format={this.dateInputFormat} onChange={this.dateChanged} />
+					<DateInput
+						ref="dateInput"
+						name={this.getInputName(this.props.paths.date)}
+						value={this.state.dateValue}
+						format={this.dateInputFormat}
+						onChange={this.dateChanged}
+						disabled={timeOnly}
+						type={timeOnly ? 'hidden' : 'text'}
+					/>
 					<input type="text" name={this.getInputName(this.props.paths.time)} value={this.state.timeValue} placeholder="HH:MM:SS am/pm" onChange={this.timeChanged} autoComplete="off" className="form-control time" />
 					<button type="button" className="btn btn-default btn-set-now" onClick={this.setNow}>Now</button>
 				</div>

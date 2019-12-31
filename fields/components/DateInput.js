@@ -62,7 +62,12 @@ module.exports = React.createClass({
 	},
 
 	render: function() {
-		return <input type="text" name={this.props.name} value={this.state.value} placeholder={this.props.format} onChange={this.handleChange} onBlur={this.handleBlur} autoComplete="off" className="form-control" />;
+		var type = this.props.inputType;
+		var disabled = this.props.disabled;
+		if (!type) {
+			type = 'text';
+		}
+		return <input type={type} disabled={disabled} name={this.props.name} value={this.state.value} placeholder={this.props.format} onChange={this.handleChange} onBlur={this.handleBlur} autoComplete="off" className="form-control" />;
 	}
 	
 });
