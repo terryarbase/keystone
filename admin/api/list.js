@@ -37,7 +37,7 @@ module.exports = function(req, res) {
 				if (!srcList) return sendError('invalid list provided');
 
 				var field = srcList.fields[req.query.field];
-				if (!field) return sendError('invalid field provided');
+				// if (!field) return sendError('invalid field provided');
 
 				_.each(req.query.filters, function(value, key) {
 					query.where(key).equals(value ? value : null);
