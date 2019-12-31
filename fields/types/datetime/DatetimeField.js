@@ -81,7 +81,6 @@ module.exports = Field.create({
 		var input;
 		var fieldClassName = 'field-ui';
 		const timeOnly = this.props.timeOnly;
-		console.log(this.props);
 		if (this.shouldRenderField()) {
 			input = (
 				<div className={fieldClassName}>
@@ -92,7 +91,7 @@ module.exports = Field.create({
 						format={this.dateInputFormat}
 						onChange={this.dateChanged}
 						disabled={timeOnly}
-						type={timeOnly ? 'hidden' : 'text'}
+						inputType={timeOnly ? 'hidden' : 'text'}
 					/>
 					<input type="text" name={this.getInputName(this.props.paths.time)} value={this.state.timeValue} placeholder="HH:MM:SS am/pm" onChange={this.timeChanged} autoComplete="off" className="form-control time" />
 					<button type="button" className="btn btn-default btn-set-now" onClick={this.setNow}>Now</button>
