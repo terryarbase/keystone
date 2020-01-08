@@ -96,12 +96,12 @@ list.prototype.addToSchema = function () {
 		var newField = createField(path, fieldsSpec[path]);
 		fields[path] = newField;
 		fieldsArray.push(newField);
+		itemSchema.path(path, newField.options.many ? [mongoose.Schema.Types.Mixed] : mongoose.Schema.Types.Mixed);
 	});
 
 	// if (this.schemaOptions.decorateSchema) {
 	// 	this.schemaOptions.decorateSchema(itemSchema);
 	// }
-
 	schema.add(this._path.addTo({}, [itemSchema]));
 	this.bindUnderscoreMethods();
 };
