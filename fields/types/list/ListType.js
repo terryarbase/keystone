@@ -98,7 +98,6 @@ list.prototype.addToSchema = function () {
 		fieldsArray.push(newField);
 		itemSchema.path(path, newField.options.many ? [mongoose.Schema.Types.Mixed] : mongoose.Schema.Types.Mixed);
 	});
-
 	// if (this.schemaOptions.decorateSchema) {
 	// 	this.schemaOptions.decorateSchema(itemSchema);
 	// }

@@ -156,7 +156,7 @@ module.exports = Field.create({
 		});
 		this.props.onChange({
 			path: this.props.path,
-			value: this.props.many ? _.pluck(expandedValues, 'value') : simpleValue
+			value: this.props.many ? _.pluck(expandedValues, 'value') : simpleValue,
 		});
 	},
 	
